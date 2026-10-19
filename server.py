@@ -3,9 +3,11 @@
 Run locally:  .venv/bin/uvicorn server:app --port 8080   then open http://127.0.0.1:8080
 On Cloud Run the Dockerfile starts this same command.
 """
+import asyncio
 import io
 import json
 import logging
+import threading
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, Form, UploadFile
@@ -16,27 +18,43 @@ from PIL import Image, UnidentifiedImageError
 from hydrangea import pruning, weather
 from hydrangea.config import PLANTS
 from hydrangea.i18n import LANGS, M, t
-from hydrangea.predict import analyse
 
 MAX_UPLOAD_BYTES = 15 * 1024 * 1024
 MAX_PHOTOS = 6
 log = logging.getLogger("uvicorn.error")
 
 
-@asynccontextmanager
-async def lifespan(_app):
-    # Load CLIP + the text prompts before accepting traffic, so the first photo
-    # isn't the one that waits for the model to load.
+MODEL_TIMEOUT_S = 150
+_ready = threading.Event()
+_engine = {}
+
+
+def _load_model():
+    # Importing torch + loading CLIP takes ~30-40 s after the server wakes up.
+    # Do it in the background so the page itself appears instantly; requests
+    # that need the model wait for it (see _model_ready).
     from hydrangea import zeroshot
     from hydrangea.embed import _model
+    from hydrangea.predict import analyse
 
     _model()
     zeroshot.label_embeddings("plant")
     for plant in [*PLANTS, "unknown"]:
         for task in ("health", "stage"):
             zeroshot.label_embeddings(task, plant)
+    _engine["analyse"] = analyse
+    _ready.set()
     log.info("model loaded")
+
+
+@asynccontextmanager
+async def lifespan(_app):
+    threading.Thread(target=_load_model, daemon=True).start()
     yield
+
+
+async def _model_ready() -> bool:
+    return await asyncio.to_thread(_ready.wait, MODEL_TIMEOUT_S)
 
 
 app = FastAPI(title="Hydrangea Doctor", docs_url=None, redoc_url=None, lifespan=lifespan)
@@ -49,6 +67,13 @@ def error(status: int, key: str, lang: str, **params):
 @app.get("/api/health")
 def healthcheck():
     return {"ok": True}
+
+
+@app.get("/api/warmup")
+async def warmup():
+    """The app calls this as soon as it opens. Holding this request open also
+    keeps Cloud Run's CPU switched on while the model loads in the background."""
+    return {"ready": await _model_ready()}
 
 
 @app.get("/api/species")
@@ -105,8 +130,10 @@ async def analyze(
         ages_by_plant = {k: float(v) for k, v in json.loads(ages).items() if k in PLANTS} if ages else {}
     except (ValueError, TypeError, AttributeError):
         ages_by_plant = {}
-    r = analyse(images, species, height_cm=height_cm or None, age_years=age_years or None, weather=w, plant=plant,
-                ages=ages_by_plant)
+    if not await _model_ready():
+        return error(503, "err_busy", lang)
+    r = await asyncio.to_thread(_engine["analyse"], images, species, height_cm=height_cm or None, age_years=age_years or None, weather=w, plant=plant,
+                                ages=ages_by_plant)
 
     def task_json(res, prefix="label"):
         return {"label": res.label, "text": t(f"{prefix}.{res.label}", lang), "confidence": res.confidence,

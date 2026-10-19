@@ -264,6 +264,7 @@ $("again").onclick = reset;
 
 // ---------- start ----------
 (async function init() {
+  fetch("api/warmup").catch(() => {}); // wake the AI up while she gets the camera ready
   await setLang(lang);
   if (!store.location) $("locAsk").hidden = false;
   else if (store.location === "yes") getLocation();
