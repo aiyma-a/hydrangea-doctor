@@ -28,48 +28,76 @@ IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".heic"}
 # Below this confidence we tell the user we're not sure instead of pretending.
 MIN_CONFIDENCE = 0.5
 
+# Plants the app knows. key -> English words CLIP understands + kind.
+# To add a plant: add it here, add its trimming rules in plants.py and its
+# names in i18n_plants.py.
+PLANTS = {
+    "hydrangea": ("hydrangea", "flower"),
+    "rose": ("rose bush", "flower"),
+    "peony": ("peony", "flower"),
+    "lilac": ("lilac bush", "flower"),
+    "tulip": ("tulip", "flower"),
+    "iris": ("iris flower", "flower"),
+    "apple": ("apple tree", "fruit"),
+    "pear": ("pear tree", "fruit"),
+    "apricot": ("apricot tree", "fruit"),
+    "cherry": ("cherry tree", "fruit"),
+    "plum": ("plum tree", "fruit"),
+    "grape": ("grape vine", "fruit"),
+    "raspberry": ("raspberry bush", "fruit"),
+    "currant": ("currant bush", "fruit"),
+}
+
 # label -> sentences used for zero-shot. Several phrasings per label make the
-# guess more stable (we average them). Edit these freely and re-run evaluate:
-# "prompt engineering" for vision models is a real thing and you can measure it.
+# guess more stable (we average them). {plant} is replaced with the plant's
+# name, e.g. "a apricot tree leaf with brown spots". Edit these freely and
+# re-run training: "prompt engineering" for vision models is a real thing and
+# you can measure it.
 TASKS = {
+    "plant": {key: [f"a photo of a {name}", f"a {name} in a garden", f"a close-up of {name} leaves"]
+              for key, (name, _) in PLANTS.items()},
     "health": {
         "healthy": [
-            "a photo of a healthy hydrangea with green leaves",
-            "a lush green hydrangea plant with no damage",
+            "a photo of a healthy {plant} with green leaves",
+            "a lush green {plant} with no damage",
         ],
         "leaf_spot": [
-            "a hydrangea leaf with brown or purple spots",
-            "a close-up of a hydrangea leaf with fungal leaf spot disease",
+            "a {plant} leaf with brown or purple spots",
+            "a close-up of a {plant} leaf with fungal leaf spot disease",
         ],
         "powdery_mildew": [
-            "a hydrangea leaf covered in white powdery mildew",
-            "a hydrangea leaf with a dusty white fungal coating",
+            "a {plant} leaf covered in white powdery mildew",
+            "a {plant} leaf with a dusty white fungal coating",
         ],
         "wilting": [
-            "a wilting hydrangea with drooping leaves and flowers",
-            "a thirsty hydrangea plant collapsing from lack of water",
+            "a wilting {plant} with drooping leaves",
+            "a thirsty {plant} collapsing from lack of water",
         ],
         "yellowing": [
-            "a hydrangea with yellow leaves and green veins",
-            "a hydrangea leaf turning pale yellow",
+            "a {plant} with yellow leaves and green veins",
+            "a {plant} leaf turning pale yellow",
         ],
     },
     "stage": {
         "budding": [
-            "a hydrangea with small green flower buds",
-            "a hydrangea plant with new spring growth and buds",
+            "a {plant} with small green buds",
+            "a {plant} with new spring growth and buds",
         ],
         "blooming": [
-            "a hydrangea in full bloom with big colorful flowers",
-            "fresh bright hydrangea flower heads",
+            "a {plant} in full bloom with fresh flowers",
+            "bright fresh {plant} flowers",
         ],
         "fading_blooms": [
-            "a hydrangea with faded brown dried flower heads",
-            "spent papery hydrangea blooms turning brown",
+            "a {plant} with faded brown dried flowers",
+            "spent wilted {plant} flowers turning brown",
+        ],
+        "fruiting": [
+            "a {plant} with ripe fruit or berries",
+            "a {plant} branch with fruit hanging",
         ],
         "dormant": [
-            "a dormant hydrangea with bare woody stems in winter",
-            "a leafless hydrangea shrub with dry sticks",
+            "a dormant {plant} with bare woody stems in winter",
+            "a leafless {plant} with bare branches",
         ],
     },
 }

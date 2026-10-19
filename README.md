@@ -1,5 +1,7 @@
 # 🌸 Hydrangea Doctor
 
+> Now covers 14 garden plants: hydrangea, rose, peony, lilac, tulip, iris, apple, pear, apricot, cherry, plum, grape, raspberry, currant. The app recognises the plant (zero-shot CLIP, ~17/19 on test photos) or the user picks it; each plant has its own trimming calendar in `hydrangea/plants.py`.
+
 Take a photo of a hydrangea → find out if it's healthy, what stage it's in,
 and whether (and how far) to trim it, adjusted for your weather and the plant's age.
 

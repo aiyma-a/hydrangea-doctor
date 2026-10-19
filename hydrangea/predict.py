@@ -19,7 +19,7 @@ import joblib
 import numpy as np
 
 from . import pruning, zeroshot
-from .config import MIN_CONFIDENCE, MODELS_DIR, TASKS
+from .config import MIN_CONFIDENCE, MODELS_DIR, PLANTS
 from .embed import embed_images
 from .i18n import LANGS, M, t
 from .weather import Weather
@@ -42,14 +42,18 @@ def _load_trained(task: str):
     return joblib.load(path) if path.exists() else None
 
 
-def classify(embeddings: np.ndarray, task: str) -> list[TaskResult]:
+def classify(embeddings: np.ndarray, task: str, plant: str = "hydrangea") -> list[TaskResult]:
     """One TaskResult per photo."""
     clf = _load_trained(task)
     if clf is not None:
         labels, proba, method = [str(c) for c in clf.classes_], clf.predict_proba(embeddings), "trained"
     else:
-        labels, proba = zeroshot.predict_proba(task, embeddings)
+        labels, proba = zeroshot.predict_proba(task, embeddings, plant)
         method = "zero-shot"
+    if task == "stage" and "fruiting" in labels and PLANTS.get(plant, ("", "flower"))[1] != "fruit":
+        # Flowers don't fruit: drop that answer and re-share its probability.
+        keep = [i for i, label in enumerate(labels) if label != "fruiting"]
+        labels, proba = [labels[i] for i in keep], proba[:, keep] / proba[:, keep].sum(axis=1, keepdims=True)
     return [_result(labels, p, method) for p in proba]
 
 
@@ -74,14 +78,24 @@ def combine_average(results: list[TaskResult]) -> TaskResult:
     return _result(labels, mean, results[0].method)
 
 
+TASKS = ("plant", "health", "stage")
+
+
 def analyse(images: list, species: str = "unknown", month: int | None = None, hemisphere: str = "north",
             height_cm: float | None = None, age_years: float | None = None,
-            weather: Weather | None = None) -> dict:
-    """images: one or more paths / PIL images of the SAME plant."""
+            weather: Weather | None = None, plant: str = "auto") -> dict:
+    """images: one or more paths / PIL images of the SAME plant.
+    plant: a key from config.PLANTS, or "auto" to recognise it from the photos."""
     if not isinstance(images, (list, tuple)):
         images = [images]
     emb = embed_images(list(images))
-    per_photo = {task: classify(emb, task) for task in TASKS}
+    if plant == "auto":
+        plant_result = combine_average(classify(emb, "plant"))
+        plant = "unknown" if plant_result.unsure else plant_result.label
+    else:
+        plant_result = TaskResult(plant, 1.0, {plant: 1.0}, "chosen")
+    per_photo = {"plant": [plant_result] * len(images),
+                 **{task: classify(emb, task, plant) for task in ("health", "stage")}}
     health = combine_health(per_photo["health"])
     stage = combine_average(per_photo["stage"])
     # An unsure guess must not drive the advice: pass "unknown" so the rules
@@ -89,18 +103,21 @@ def analyse(images: list, species: str = "unknown", month: int | None = None, he
     advice = pruning.advise("unknown" if health.unsure else health.label,
                             "unknown" if stage.unsure else stage.label,
                             species, month or date.today().month,
-                            hemisphere, height_cm, age_years, weather)
+                            hemisphere, height_cm, age_years, weather, plant)
     if health.unsure or stage.unsure:
         if advice.trim_now == "yes":  # safety net: an unsure model must never cause a big cut
             advice.trim_now = "light"
+        if health.unsure:  # the photo tip below replaces the generic "couldn't judge health" note
+            advice.notes = [n for n in advice.notes if n.key != "unknown_health"]
         advice.notes[:0] = [M(f"unsure_{task}") for task, r in (("health", health), ("stage", stage)) if r.unsure]
-    return {"health": health, "stage": stage, "advice": advice,
+    return {"plant": plant_result, "plant_key": plant, "health": health, "stage": stage, "advice": advice,
             "photos": [{task: per_photo[task][i] for task in TASKS} for i in range(len(images))]}
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("images", nargs="+")
+    ap.add_argument("--plant", default="auto", choices=["auto", *PLANTS])
     ap.add_argument("--species", default="unknown", choices=list(pruning.SPECIES))
     ap.add_argument("--month", type=int)
     ap.add_argument("--hemisphere", default="north", choices=["north", "south"])
@@ -115,10 +132,12 @@ def main() -> None:
         from .weather import fetch
         weather = fetch(a.place)
         print(weather.summary(a.lang))
-    r = analyse(a.images, a.species, a.month, a.hemisphere, a.height, a.age, weather)
+    r = analyse(a.images, a.species, a.month, a.hemisphere, a.height, a.age, weather, a.plant)
     for path, photo in zip(a.images, r["photos"]):
-        print(f"  {path}: " + ", ".join(f"{t(f'label.{p.label}', a.lang)} {p.confidence:.0%}" for p in photo.values()))
-    for task in TASKS:
+        print(f"  {path}: " + ", ".join(f"{t(f'label.{photo[k].label}', a.lang)} {photo[k].confidence:.0%}" for k in ("health", "stage")))
+    p = r["plant"]
+    print(f"  plant: {t(f'plant.{r['plant_key']}', a.lang)} {p.confidence:.0%} [{p.method}]{'  (unsure)' if p.unsure else ''}")
+    for task in ("health", "stage"):
         res = r[task]
         flag = "  (unsure)" if res.unsure else ""
         print(f"{task:>7}: {t(f'label.{res.label}', a.lang)} {res.confidence:.0%} [{res.method}]{flag}")

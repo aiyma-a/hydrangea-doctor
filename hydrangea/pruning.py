@@ -18,6 +18,7 @@ advice can be shown in English, Russian or Kyrgyz. The text lives in i18n.py.
 """
 from dataclasses import dataclass, field
 
+from . import plants
 from .i18n import M, Msg
 from .weather import Weather
 
@@ -26,6 +27,7 @@ NEW_WOOD = {"panicle", "smooth"}
 SPECIES = ("bigleaf", "oakleaf", "panicle", "smooth", "unknown")
 YOUNG_YEARS = 3  # plants younger than this are still building roots
 OLD_YEARS = 6  # older shrubs benefit from renewal pruning
+RENEWAL_SHRUBS = {"hydrangea", "lilac", "currant"}  # multi-stem shrubs where you cut old stems at the ground
 
 
 @dataclass
@@ -59,11 +61,12 @@ def season(month: int, hemisphere: str = "north") -> str:
 
 def advise(health: str, stage: str, species: str, month: int,
            hemisphere: str = "north", height_cm: float | None = None,
-           age_years: float | None = None, weather: Weather | None = None) -> Advice:
+           age_years: float | None = None, weather: Weather | None = None,
+           plant: str = "hydrangea") -> Advice:
     if weather is not None:
         hemisphere = weather.hemisphere
     s = season(month, hemisphere)
-    a = _advise(health, stage, species, s)
+    a = _advise(health, stage, species, s, plant)
 
     # Weather adjustments
     if weather is not None:
@@ -83,7 +86,7 @@ def advise(health: str, stage: str, species: str, month: int,
             if a.how_far:
                 a.how_far.append(M("young_how"))
             a.notes.append(M("young_note", years=YOUNG_YEARS))
-        elif age_years >= OLD_YEARS:
+        elif age_years >= OLD_YEARS and plant in RENEWAL_SHRUBS:
             a.notes.append(M("renewal_note"))
 
     if height_cm and a.cut_fraction:
@@ -91,7 +94,7 @@ def advise(health: str, stage: str, species: str, month: int,
     return a
 
 
-def _advise(health: str, stage: str, species: str, s: str) -> Advice:
+def _advise(health: str, stage: str, species: str, s: str, plant: str = "hydrangea") -> Advice:
     # 1. Sick or stressed plants first: pruning adds stress.
     if health == "wilting":
         return _a("no", "water_first", notes=["wilting_note"])
@@ -100,6 +103,9 @@ def _advise(health: str, stage: str, species: str, s: str) -> Advice:
         a.headline = [M("remove_infected", disease=M(f"label.{health}"))]
         return a
     notes = {"unknown": ["unknown_health"], "yellowing": ["yellowing_note"]}.get(health, [])
+
+    if plant != "hydrangea":
+        return _advise_other(plant, stage, s, notes)
 
     # 2. Healthy (or just yellowing): depends on species + season + stage.
     if species not in OLD_WOOD | NEW_WOOD:
@@ -122,3 +128,13 @@ def _advise(health: str, stage: str, species: str, s: str) -> Advice:
     if stage == "fading_blooms":
         return _a("light", "light_deadhead", "light_deadhead_how", notes + ["buds_formed", "heads_protect"])
     return _a("no", "leave_old_wood", notes=notes + ["right_window"])
+
+
+def _advise_other(plant: str, stage: str, s: str, notes: list[str]) -> Advice:
+    if plant not in plants.RULES:
+        return _a("light", "unknown_plant", "unknown_plant_how", notes)
+    w, spec = plants.match(plant, s, stage)
+    if w is not None:
+        return _a(w.trim, w.headline, w.how, notes + list(w.notes), cut_fraction=w.cut_fraction)
+    extra = [spec["never"]] if "never" in spec and s in ("winter", "late_winter", "early_spring", "autumn") else []
+    return _a("no", "not_now", notes=notes + extra + [spec["when"]])

@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from PIL import Image, UnidentifiedImageError
 
 from hydrangea import pruning, weather
-from hydrangea.config import TASKS
+from hydrangea.config import PLANTS
 from hydrangea.i18n import LANGS, M, t
 from hydrangea.predict import analyse
 
@@ -30,8 +30,10 @@ async def lifespan(_app):
     from hydrangea.embed import _model
 
     _model()
-    for task in TASKS:
-        zeroshot.label_embeddings(task)
+    zeroshot.label_embeddings("plant")
+    for plant in [*PLANTS, "unknown"]:
+        for task in ("health", "stage"):
+            zeroshot.label_embeddings(task, plant)
     log.info("model loaded")
     yield
 
@@ -54,9 +56,16 @@ def species(lang: str = "en"):
     return {s: t(f"species.{s}", lang) for s in pruning.SPECIES}
 
 
+@app.get("/api/plants")
+def plants(lang: str = "en"):
+    lang = lang if lang in LANGS else "en"
+    return {p: {"name": t(f"plant.{p}", lang), "kind": kind} for p, (_, kind) in PLANTS.items()}
+
+
 @app.post("/api/analyze")
 async def analyze(
     photos: list[UploadFile] = File(...),
+    plant: str = Form("auto"),
     species: str = Form("unknown"),
     age_years: float | None = Form(None),
     height_cm: float | None = Form(None),
@@ -65,7 +74,7 @@ async def analyze(
     lang: str = Form("en"),
 ):
     lang = lang if lang in LANGS else "en"
-    if species not in pruning.SPECIES:
+    if species not in pruning.SPECIES or (plant != "auto" and plant not in PLANTS):
         return error(400, "err_type", lang)
     if not 1 <= len(photos) <= MAX_PHOTOS:
         return error(400, "err_count", lang, max=MAX_PHOTOS)
@@ -90,17 +99,18 @@ async def analyze(
             log.warning("weather failed: %s", e)
             weather_text = M("weather_failed").render(lang)
 
-    r = analyse(images, species, height_cm=height_cm or None, age_years=age_years or None, weather=w)
+    r = analyse(images, species, height_cm=height_cm or None, age_years=age_years or None, weather=w, plant=plant)
 
-    def task_json(res):
-        return {"label": res.label, "text": t(f"label.{res.label}", lang), "confidence": res.confidence,
+    def task_json(res, prefix="label"):
+        return {"label": res.label, "text": t(f"{prefix}.{res.label}", lang), "confidence": res.confidence,
                 "unsure": res.unsure, "method": res.method}
 
     return {
         **r["advice"].render(lang),
         "weather": weather_text,
-        **{task: task_json(r[task]) for task in TASKS},
-        "photos": [{task: task_json(photo[task]) for task in TASKS} for photo in r["photos"]],
+        "plant": {**task_json(r["plant"], "plant"), "key": r["plant_key"], "text": t(f"plant.{r['plant_key']}", lang)},
+        **{task: task_json(r[task]) for task in ("health", "stage")},
+        "photos": [{task: task_json(photo[task]) for task in ("health", "stage")} for photo in r["photos"]],
     }
 
 

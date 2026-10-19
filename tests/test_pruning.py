@@ -122,3 +122,50 @@ def test_stage_is_averaged():
     labels = ("blooming", "dormant")
     r = combine_average([_tr("blooming", 0.9, labels), _tr("dormant", 0.6, labels)])
     assert r.label == "blooming" and abs(r.confidence - 0.65) < 1e-6
+
+
+from hydrangea.config import PLANTS
+
+
+def test_every_plant_renders_in_every_language():
+    for lang in LANGS:
+        for plant in [*PLANTS, "unknown"]:
+            for stage in ["budding", "blooming", "fading_blooms", "fruiting", "dormant", "unknown"]:
+                for month in range(1, 13):
+                    r = advise("healthy", stage, "unknown", month, plant=plant, age_years=10, height_cm=100).render(lang)
+                    assert r["headline"] and "{" not in r["headline"] + r["how_far"] + "".join(r["notes"])
+
+
+def test_apricot_never_in_winter():
+    a = advise("healthy", "dormant", "unknown", 1, plant="apricot")
+    assert a.trim_now == "no" and any("winter" in n for n in a.render()["notes"])
+
+
+def test_apricot_after_harvest():
+    assert advise("healthy", "fruiting", "unknown", 7, plant="apricot").trim_now == "yes"
+
+
+def test_apple_late_winter():
+    assert advise("healthy", "dormant", "unknown", 2, plant="apple").trim_now == "yes"
+
+
+def test_grape_autumn_after_leaf_fall():
+    assert advise("healthy", "dormant", "unknown", 10, plant="grape").trim_now == "yes"
+
+
+def test_peony_cut_down_in_autumn():
+    assert advise("healthy", "dormant", "unknown", 10, plant="peony").trim_now == "yes"
+
+
+def test_lilac_after_flowering_not_winter():
+    assert advise("healthy", "fading_blooms", "unknown", 6, plant="lilac").trim_now == "yes"
+    assert advise("healthy", "dormant", "unknown", 12, plant="lilac").trim_now == "no"
+
+
+def test_no_renewal_advice_for_trees():
+    a = advise("healthy", "dormant", "unknown", 2, plant="apple", age_years=20)
+    assert not any("renewal" in n for n in a.render()["notes"])
+
+
+def test_sick_tree_still_gets_disease_advice():
+    assert advise("wilting", "fruiting", "unknown", 7, plant="cherry").trim_now == "no"

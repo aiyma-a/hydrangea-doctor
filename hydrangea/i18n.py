@@ -210,6 +210,11 @@ MESSAGES: dict[str, dict[str, str]] = {
     },
 }
 
+from .i18n_plants import PLANT_MESSAGES  # noqa: E402
+
+for _lang, _msgs in PLANT_MESSAGES.items():
+    MESSAGES[_lang].update(_msgs)
+
 
 def t(key: str, lang: str = "en", **params) -> str:
     """Translate one key. Falls back to English if a translation is missing."""
