@@ -1,0 +1,12 @@
+# CPU-only torch keeps the download small:
+#   pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
+torch
+torchvision
+transformers
+scikit-learn
+matplotlib
+pillow
+gradio
+pytest
+# optional, for iPhone .heic photos:
+# pillow-heif
