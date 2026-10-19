@@ -32,15 +32,15 @@ MESSAGES: dict[str, dict[str, str]] = {
         "unknown_health": "Couldn't judge health from this photo; advice assumes the plant is healthy.",
         "yellowing_note": "Yellow leaves with green veins usually mean the soil is too alkaline (iron can't be absorbed); pruning won't fix it. A soil pH test is the next step.",
         # unknown species
-        "tell_type": "Tell me the hydrangea type for full advice. Until then, only deadhead.",
+        "tell_type": "Tell me the hydrangea type for full advice. Until then, only cut off faded flowers.",
         "deadhead_safe_how": "Snip faded flower heads just above the first pair of fat buds below the flower. That's safe for every type.",
         "wood_types": "Bigleaf/oakleaf flower on last year's stems; panicle/smooth on this year's. Cutting the wrong type at the wrong time costs you next year's flowers.",
         # new wood
-        "main_prune": "Good time for the main prune.",
+        "main_prune": "Good time for the big yearly trim.",
         "panicle_how": "Cut every stem back by about one third, just above a pair of buds. Remove thin, crossing, or dead stems at the base.",
         "smooth_how": "Cut all stems down to about 30–45 cm from the ground. Shorter stems flop less under heavy flowers.",
         "optional_tidy": "Optional tidy-up only.",
-        "optional_tidy_how": "Deadhead faded flowers if you don't like the look; leave the main prune for late winter.",
+        "optional_tidy_how": "Cut off faded flowers if you don't like the look; leave the big trim for late winter.",
         "dried_heads_interest": "Many people leave the dried flowers on for winter decoration.",
         "not_now_new_wood": "Not now. The main prune is in late winter / early spring.",
         # old wood
@@ -50,7 +50,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "dead_wood_only": "Only remove dead wood.",
         "dead_wood_how": "Cut stems that show no green buds back to the first live pair of buds, or to the ground if fully dead.",
         "scratch_test": "Scratch a stem with your nail: green underneath = alive.",
-        "light_deadhead": "Light deadheading only.",
+        "light_deadhead": "Only cut off the faded flowers.",
         "light_deadhead_how": "Snip only the flower head itself, just above the first pair of buds. No hard cuts.",
         "buds_formed": "Next year's flower buds have already formed in these stems. Hard cuts now remove them.",
         "heads_protect": "Leaving the dried flowers on over winter also protects the buds from frost.",
@@ -71,7 +71,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "young_gentle": "Go gently, it's a young plant.",
         "young_how": "Young plant: cut about half as much as that.",
         "young_note": "Under {years} years old: the plant is still building roots. Remove dead wood and faded flowers, but no more than half the usual cut.",
-        "renewal_note": "Older shrub: also do renewal pruning. Cut up to 1/3 of the oldest, thickest stems right at the ground each year so young stems replace them.",
+        "renewal_note": "Older bush: each year, also cut up to 1/3 of the oldest, thickest stems right at the ground, so young stems can grow in their place.",
         "cm_estimate": "On a {height} cm plant that's about {cut} cm off the top.",
         # confidence
         "unsure_health": "I'm not confident about the plant's health from these photos. Try a close-up of one leaf in daylight.",

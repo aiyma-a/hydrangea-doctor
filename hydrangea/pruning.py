@@ -137,4 +137,4 @@ def _advise_other(plant: str, stage: str, s: str, notes: list[str]) -> Advice:
     if w is not None:
         return _a(w.trim, w.headline, w.how, notes + list(w.notes), cut_fraction=w.cut_fraction)
     extra = [spec["never"]] if "never" in spec and s in ("winter", "late_winter", "early_spring", "autumn") else []
-    return _a("no", "not_now", notes=notes + extra + [spec["when"]])
+    return _a("no", spec["when"], notes=notes + extra)

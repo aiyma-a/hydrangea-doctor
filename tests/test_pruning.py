@@ -52,7 +52,7 @@ def test_young_plant_cut_halved():
 
 def test_old_plant_gets_renewal_note():
     a = advise("healthy", "dormant", "panicle", 2, age_years=10)
-    assert any("renewal" in n for n in a.render()["notes"])
+    assert any("oldest" in n for n in a.render()["notes"])
 
 
 def test_wilting_hot_dry_says_thirst():
@@ -164,8 +164,15 @@ def test_lilac_after_flowering_not_winter():
 
 def test_no_renewal_advice_for_trees():
     a = advise("healthy", "dormant", "unknown", 2, plant="apple", age_years=20)
-    assert not any("renewal" in n for n in a.render()["notes"])
+    assert not any("oldest" in n for n in a.render()["notes"])
 
 
 def test_sick_tree_still_gets_disease_advice():
     assert advise("wilting", "fruiting", "unknown", 7, plant="cherry").trim_now == "no"
+
+
+def test_zeroshot_disease_needs_high_confidence():
+    from hydrangea.predict import _doubt
+    assert _doubt("health", _tr("leaf_spot", 0.6)).unsure
+    assert not _doubt("health", _tr("leaf_spot", 0.8)).unsure
+    assert not _doubt("health", _tr("healthy", 0.6)).unsure

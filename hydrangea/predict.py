@@ -31,10 +31,22 @@ class TaskResult:
     confidence: float
     probabilities: dict[str, float]
     method: str  # "trained" | "zero-shot"
+    min_confidence: float = MIN_CONFIDENCE
 
     @property
     def unsure(self) -> bool:
-        return self.confidence < MIN_CONFIDENCE
+        return self.confidence < self.min_confidence
+
+
+# Untrained (zero-shot) disease guesses are often wrong, and people tend to trust
+# an app too much. So without a trained model, only report a disease when very sure.
+ZEROSHOT_DISEASE_MIN = 0.75
+
+
+def _doubt(task: str, r: TaskResult) -> TaskResult:
+    if task == "health" and r.method == "zero-shot" and r.label != "healthy":
+        r.min_confidence = ZEROSHOT_DISEASE_MIN
+    return r
 
 
 def _load_trained(task: str):
@@ -54,7 +66,7 @@ def classify(embeddings: np.ndarray, task: str, plant: str = "hydrangea") -> lis
         # Flowers don't fruit: drop that answer and re-share its probability.
         keep = [i for i, label in enumerate(labels) if label != "fruiting"]
         labels, proba = [labels[i] for i in keep], proba[:, keep] / proba[:, keep].sum(axis=1, keepdims=True)
-    return [_result(labels, p, method) for p in proba]
+    return [_doubt(task, _result(labels, p, method)) for p in proba]
 
 
 def _result(labels, proba, method) -> TaskResult:
@@ -83,7 +95,7 @@ TASKS = ("plant", "health", "stage")
 
 def analyse(images: list, species: str = "unknown", month: int | None = None, hemisphere: str = "north",
             height_cm: float | None = None, age_years: float | None = None,
-            weather: Weather | None = None, plant: str = "auto") -> dict:
+            weather: Weather | None = None, plant: str = "auto", ages: dict | None = None) -> dict:
     """images: one or more paths / PIL images of the SAME plant.
     plant: a key from config.PLANTS, or "auto" to recognise it from the photos."""
     if not isinstance(images, (list, tuple)):
@@ -94,9 +106,11 @@ def analyse(images: list, species: str = "unknown", month: int | None = None, he
         plant = "unknown" if plant_result.unsure else plant_result.label
     else:
         plant_result = TaskResult(plant, 1.0, {plant: 1.0}, "chosen")
+    if age_years is None and ages:
+        age_years = ages.get(plant)  # remembered age of the recognised plant
     per_photo = {"plant": [plant_result] * len(images),
                  **{task: classify(emb, task, plant) for task in ("health", "stage")}}
-    health = combine_health(per_photo["health"])
+    health = _doubt("health", combine_health(per_photo["health"]))
     stage = combine_average(per_photo["stage"])
     # An unsure guess must not drive the advice: pass "unknown" so the rules
     # fall back to the safe, generic answer instead of e.g. "remove mildew leaves".

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Hydrangea Doctor</title>
-  <meta name="theme-color" content="#7b5ea7">
+  <meta name="theme-color" content="#6b4f98">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -15,55 +15,73 @@
 <body>
   <header>
     <h1>🌸 <span data-i18n="title">Hydrangea Doctor</span></h1>
-    <div class="header-right">
-      <div id="langs" class="langs" role="group" aria-label="Language">
-        <button data-lang="en">EN</button><button data-lang="ru">РУ</button><button data-lang="ky">КЫ</button>
-      </div>
-      <button id="settingsBtn" class="icon-btn" aria-label="Settings">⚙️</button>
+    <div id="langs" class="langs" role="group" aria-label="Language">
+      <button data-lang="ru">РУ</button><button data-lang="ky">КЫ</button><button data-lang="en">EN</button>
     </div>
   </header>
 
   <main>
-    <section id="settings" class="card" hidden>
-      <h2><span data-i18n="aboutPlant">About your plant</span>: <span id="settingsPlant"></span></h2>
-      <label id="speciesRow"><span data-i18n="type">Type</span>
-        <select id="species"></select>
-      </label>
+    <!-- One-time: explain why we want location, before the phone's own popup -->
+    <section id="locAsk" class="card" hidden>
+      <p class="big" data-i18n="locQuestion">🌡️ May I use your location?</p>
+      <p data-i18n="locWhy">Only to check the weather: frost and heat change the advice.</p>
       <div class="row">
-        <label><span data-i18n="age">Age (years)</span><input id="age" type="number" inputmode="decimal" min="0" step="1" placeholder="4"></label>
-        <label><span data-i18n="height">Height (cm)</span><input id="height" type="number" inputmode="decimal" min="0" step="5" placeholder="120"></label>
+        <button id="locYes" class="primary" data-i18n="yes">Yes</button>
+        <button id="locNo" class="secondary" data-i18n="noThanks">No, thanks</button>
       </div>
-      <p class="hint" data-i18n="savedHint">Saved on this phone. The app also uses your location for the weather.</p>
-      <button id="saveSettings" class="primary" data-i18n="save">Save</button>
     </section>
 
-    <section id="capture" class="card">
-      <p class="lead" data-i18n-html="lead">Add photos of <b>one plant</b>: a <b>leaf close-up</b> (for health) and the <b>whole plant</b> (for trimming).</p>
-      <label><span data-i18n="plantLabel">Plant</span>
-        <select id="plant"></select>
-      </label>
-      <div id="thumbs" class="thumbs"></div>
-      <div class="row">
-        <label class="btn" for="camera">📷 <span data-i18n="takePhoto">Take photo</span></label>
-        <label class="btn" for="gallery">🖼️ <span data-i18n="gallery">Gallery</span></label>
-      </div>
-      <input id="camera" type="file" accept="image/*" capture="environment" hidden>
-      <input id="gallery" type="file" accept="image/*" multiple hidden>
-      <p id="count" class="hint center"></p>
-      <button id="check" class="primary" disabled data-i18n="check">Check my plant</button>
+    <!-- Home: one big button -->
+    <section id="home" class="card center">
+      <h2 data-i18n="homeTitle">Take a photo of your plant</h2>
+      <label class="camera-btn" for="camera">📷 <span data-i18n="takePhoto">Take a photo</span></label>
+      <label class="link" for="gallery" data-i18n="fromGallery">or choose from the gallery</label>
+      <p class="hint" data-i18n="tip">Tip: a close-up of one leaf, or the whole plant.</p>
+    </section>
+    <input id="camera" type="file" accept="image/*" capture="environment" hidden>
+    <input id="gallery" type="file" accept="image/*" multiple hidden>
+
+    <div id="thumbs" class="thumbs"></div>
+
+    <section id="loading" class="card center" hidden>
+      <div class="spinner"></div>
+      <p class="big" data-i18n="looking">Looking at your plant…</p>
+      <p id="slow" class="hint" data-i18n="slow" hidden></p>
     </section>
 
-    <section id="loading" class="card center" hidden><div class="spinner"></div><p data-i18n="looking">Looking at your plant…</p><p id="slow" class="hint" data-i18n="slow" hidden></p></section>
-    <section id="result" class="card" hidden>
-      <p id="plantLine" class="plant-line"></p>
-      <div id="badge" class="badge"></div>
-      <h2 id="headline"></h2>
-      <p id="howFar"></p>
-      <ul id="notes"></ul>
-      <p id="weather" class="hint"></p>
-      <details><summary data-i18n="whatSaw">What the model saw</summary><p id="seen" class="hint"></p></details>
-      <button id="again" class="secondary" data-i18n="again">Check another plant</button>
+    <section id="result" hidden>
+      <div id="answer" class="answer"></div>
+      <div class="card">
+        <p id="headline" class="big"></p>
+        <p id="howFar" class="how"></p>
+        <button id="speak" class="secondary" hidden>🔊 <span data-i18n="readAloud">Read aloud</span></button>
+      </div>
+
+      <div id="plantCard" class="card">
+        <p id="plantLine" class="big"></p>
+        <div id="plantConfirm" class="row">
+          <button id="plantYes" class="secondary" data-i18n="yesRight">✓ Yes</button>
+          <button id="plantNo" class="secondary" data-i18n="noChoose">No, choose</button>
+        </div>
+        <div id="plantGrid" class="grid" hidden></div>
+      </div>
+
+      <div id="question" class="card" hidden>
+        <p id="questionText" class="big"></p>
+        <div id="questionChoices" class="grid"></div>
+      </div>
+
+      <details class="card">
+        <summary data-i18n="more">More details</summary>
+        <ul id="notes"></ul>
+        <p id="weather" class="hint"></p>
+        <p id="seen" class="hint"></p>
+      </details>
+
+      <label class="secondary block" for="camera">📷 <span data-i18n="addPhoto">Add another photo of this plant</span></label>
+      <button id="again" class="primary" data-i18n="again">🌿 Check a different plant</button>
     </section>
+
     <section id="error" class="card error" hidden></section>
   </main>
 

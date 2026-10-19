@@ -4,6 +4,7 @@ Run locally:  .venv/bin/uvicorn server:app --port 8080   then open http://127.0.
 On Cloud Run the Dockerfile starts this same command.
 """
 import io
+import json
 import logging
 from contextlib import asynccontextmanager
 
@@ -68,6 +69,7 @@ async def analyze(
     plant: str = Form("auto"),
     species: str = Form("unknown"),
     age_years: float | None = Form(None),
+    ages: str | None = Form(None),  # JSON {plant: years}: the age of each plant the user told us about
     height_cm: float | None = Form(None),
     lat: float | None = Form(None),
     lon: float | None = Form(None),
@@ -99,7 +101,12 @@ async def analyze(
             log.warning("weather failed: %s", e)
             weather_text = M("weather_failed").render(lang)
 
-    r = analyse(images, species, height_cm=height_cm or None, age_years=age_years or None, weather=w, plant=plant)
+    try:
+        ages_by_plant = {k: float(v) for k, v in json.loads(ages).items() if k in PLANTS} if ages else {}
+    except (ValueError, TypeError, AttributeError):
+        ages_by_plant = {}
+    r = analyse(images, species, height_cm=height_cm or None, age_years=age_years or None, weather=w, plant=plant,
+                ages=ages_by_plant)
 
     def task_json(res, prefix="label"):
         return {"label": res.label, "text": t(f"{prefix}.{res.label}", lang), "confidence": res.confidence,

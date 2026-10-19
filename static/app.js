@@ -1,155 +1,131 @@
-// Phone app: language, settings, photos (several at once), location, call the ML server, show advice.
+// Phone app, designed for older users: one big photo button, the answer appears
+// by itself, short text, questions only when they matter.
 const $ = (id) => document.getElementById(id);
 const MAX_PHOTOS = 6;
-const SETTINGS_KEY = "hydrangea-settings"; // {species, plants: {plantKey: {age, height}}}
+const STORE = "hydrangea-store"; // {lang, location: "yes"|"no", species, plants: {key: {age}}}
 const EMOJI = { hydrangea: "🌸", rose: "🌹", peony: "🌺", lilac: "💜", tulip: "🌷", iris: "🪻", apple: "🍎", pear: "🍐",
   apricot: "🍑", cherry: "🍒", plum: "🫐", grape: "🍇", raspberry: "🍓", currant: "🔴", unknown: "🌿" };
-const LANG_KEY = "hydrangea-lang";
+const SPECIES_EMOJI = { bigleaf: "🔵", oakleaf: "🍂", panicle: "🔺", smooth: "⚪", unknown: "❓" };
+const AGES = [["young", 1], ["middle", 4], ["old", 10]];
 
 // Screen texts. The advice itself is translated on the server (hydrangea/i18n.py).
 const UI = {
   en: {
-    title: "Hydrangea Doctor", aboutPlant: "About your plant", plantLabel: "Plant", auto: "🔍 Recognise automatically",
-    recognised: "Recognised:", notSureWhich: "I'm not sure which plant this is. Please pick it above.", change: "Not right? Change", type: "Type", age: "Age (years)", height: "Height (cm)",
-    savedHint: "Saved on this phone. The app also uses your location for the weather.", save: "Save",
-    lead: "Add photos of <b>one plant</b>: a <b>leaf close-up</b> (for health) and the <b>whole plant</b> (for trimming).",
-    takePhoto: "Take photo", gallery: "Gallery", check: "Check my plant", looking: "Looking at your plant…",
-    whatSaw: "What the model saw", again: "Check another plant", remove: "Remove",
-    count: (n) => `${n} of ${MAX_PHOTOS} photos`, tooMany: `Up to ${MAX_PHOTOS} photos at a time.`,
-    badge: { yes: "✂️ Yes, trim now", light: "🌿 Light touch only", no: "✋ Don't trim now" },
-    howFar: "How far:", health: "Health", stage: "Stage", notSure: "not sure", photo: "Photo",
-    offline: "You're offline. Connect to the internet and try again.", failed: "Sorry, something went wrong. Please try again.",
+    title: "Hydrangea Doctor", homeTitle: "Take a photo of your plant", takePhoto: "Take a photo",
+    fromGallery: "or choose from the gallery", tip: "Tip: a close-up of one leaf, or the whole plant.",
+    locQuestion: "🌡️ May I use your location?", locWhy: "Only to check the weather: frost and heat change the advice.",
+    yes: "Yes", noThanks: "No, thanks", looking: "Looking at your plant…",
+    slow: "The first check after a break can take up to a minute. Please wait.",
+    readAloud: "Read aloud", stop: "Stop", yesRight: "✓ Yes", noChoose: "No, choose", more: "More details",
+    addPhoto: "Add another photo of this plant", again: "🌿 Check a different plant", remove: "Remove photo",
+    answer: { yes: "✂️ Yes, trim now", light: "🌿 Only a little", no: "✋ Don't trim now" },
+    thisIs: (p) => `This is: ${p}`, looksLike: (p) => `This looks like: ${p}. Is that right?`,
+    whichPlant: "Which plant is this?", whichHydrangea: "What does your hydrangea look like?",
+    howOld: "How old is this plant?", ages: { young: "Young (1–2 years)", middle: "3–5 years", old: "Older" },
+    tooMany: `Up to ${MAX_PHOTOS} photos at a time.`, health: "Health", stage: "Stage",
+    sure: "sure", probably: "probably", notSure: "not sure",
+    offline: "No internet. Please connect and try again.", failed: "Something went wrong. Please try again.",
   },
   ru: {
-    title: "Доктор Гортензий", aboutPlant: "О вашем растении", plantLabel: "Растение", auto: "🔍 Определить автоматически",
-    recognised: "Определено:", notSureWhich: "Не уверена, что это за растение. Выберите его выше.", change: "Неверно? Изменить", type: "Вид", age: "Возраст (лет)", height: "Высота (см)",
-    savedHint: "Сохраняется на этом телефоне. Для погоды приложение использует ваше местоположение.", save: "Сохранить",
-    lead: "Добавьте фото <b>одного растения</b>: <b>лист крупным планом</b> (здоровье) и <b>куст целиком</b> (обрезка).",
-    takePhoto: "Сфотографировать", gallery: "Галерея", check: "Проверить растение", looking: "Смотрю на ваше растение…", slow: "Первая проверка после перерыва может занять до минуты, пока приложение просыпается.",
-    whatSaw: "Что увидела модель", again: "Проверить другое растение", remove: "Удалить",
-    count: (n) => `${n} из ${MAX_PHOTOS} фото`, tooMany: `Не больше ${MAX_PHOTOS} фото за раз.`,
-    badge: { yes: "✂️ Да, обрезайте", light: "🌿 Только слегка", no: "✋ Не обрезайте сейчас" },
-    howFar: "Сколько срезать:", health: "Здоровье", stage: "Стадия", notSure: "не уверена", photo: "Фото",
+    title: "Доктор Гортензий", homeTitle: "Сфотографируйте растение", takePhoto: "Сфотографировать",
+    fromGallery: "или выбрать из галереи", tip: "Совет: один лист крупным планом или всё растение целиком.",
+    locQuestion: "🌡️ Можно узнать ваше местоположение?", locWhy: "Только чтобы проверить погоду: заморозки и жара меняют совет.",
+    yes: "Да", noThanks: "Нет, спасибо", looking: "Смотрю на ваше растение…",
+    slow: "Первая проверка после перерыва может занять до минуты. Пожалуйста, подождите.",
+    readAloud: "Прочитать вслух", stop: "Стоп", yesRight: "✓ Да", noChoose: "Нет, выбрать", more: "Подробнее",
+    addPhoto: "Добавить ещё фото этого растения", again: "🌿 Проверить другое растение", remove: "Удалить фото",
+    answer: { yes: "✂️ Да, обрезайте", light: "🌿 Только немного", no: "✋ Не обрезайте сейчас" },
+    thisIs: (p) => `Это: ${p}`, looksLike: (p) => `Похоже, это: ${p}. Верно?`,
+    whichPlant: "Что это за растение?", whichHydrangea: "Как выглядит ваша гортензия?",
+    howOld: "Сколько лет этому растению?", ages: { young: "Молодое (1–2 года)", middle: "3–5 лет", old: "Старше" },
+    tooMany: `Не больше ${MAX_PHOTOS} фото за раз.`, health: "Здоровье", stage: "Стадия",
+    sure: "уверена", probably: "скорее всего", notSure: "не уверена",
     offline: "Нет интернета. Подключитесь и попробуйте снова.", failed: "Что-то пошло не так. Попробуйте ещё раз.",
   },
   ky: {
-    title: "Гортензия Доктуру", aboutPlant: "Өсүмдүгүңүз жөнүндө", plantLabel: "Өсүмдүк", auto: "🔍 Автоматтык түрдө аныктоо",
-    recognised: "Аныкталды:", notSureWhich: "Бул кайсы өсүмдүк экенин так биле албадым. Жогорудан тандаңыз.", change: "Туура эмеспи? Өзгөртүү", type: "Түрү", age: "Жашы (жыл)", height: "Бийиктиги (см)",
-    savedHint: "Ушул телефондо сакталат. Аба ырайы үчүн колдонмо жайгашкан жериңизди колдонот.", save: "Сактоо",
-    lead: "<b>Бир өсүмдүктүн</b> сүрөттөрүн кошуңуз: <b>жалбырагын жакындан</b> (ден соолугу үчүн) жана <b>бадалды толугу менен</b> (кыркуу үчүн).",
-    takePhoto: "Сүрөткө тартуу", gallery: "Галерея", check: "Өсүмдүктү текшерүү", looking: "Өсүмдүгүңүздү карап жатам…", slow: "Тыныгуудан кийинки биринчи текшерүү колдонмо ойгонгуча бир мүнөткө чейин созулат.",
-    whatSaw: "Модель эмнени көрдү", again: "Башка өсүмдүктү текшерүү", remove: "Өчүрүү",
-    count: (n) => `${MAX_PHOTOS} сүрөттөн ${n}`, tooMany: `Бир жолу ${MAX_PHOTOS} сүрөткө чейин.`,
-    badge: { yes: "✂️ Ооба, азыр кыркыңыз", light: "🌿 Жеңил гана", no: "✋ Азыр кыркпаңыз" },
-    howFar: "Канча кесүү керек:", health: "Ден соолугу", stage: "Баскычы", notSure: "так эмес", photo: "Сүрөт",
+    title: "Гортензия Доктуру", homeTitle: "Өсүмдүгүңүздү сүрөткө тартыңыз", takePhoto: "Сүрөткө тартуу",
+    fromGallery: "же галереядан тандаңыз", tip: "Кеңеш: бир жалбыракты жакындан же өсүмдүктү толугу менен.",
+    locQuestion: "🌡️ Жайгашкан жериңизди колдонсом болобу?", locWhy: "Аба ырайын текшерүү үчүн гана: үшүк жана ысык кеңешти өзгөртөт.",
+    yes: "Ооба", noThanks: "Жок, рахмат", looking: "Өсүмдүгүңүздү карап жатам…",
+    slow: "Тыныгуудан кийинки биринчи текшерүү бир мүнөткө чейин созулушу мүмкүн. Күтө туруңуз.",
+    readAloud: "Үн менен окуу", stop: "Токтотуу", yesRight: "✓ Ооба", noChoose: "Жок, тандоо", more: "Кененирээк",
+    addPhoto: "Бул өсүмдүктүн дагы бир сүрөтүн кошуу", again: "🌿 Башка өсүмдүктү текшерүү", remove: "Сүрөттү өчүрүү",
+    answer: { yes: "✂️ Ооба, кыркыңыз", light: "🌿 Бир аз гана", no: "✋ Азыр кыркпаңыз" },
+    thisIs: (p) => `Бул: ${p}`, looksLike: (p) => `Бул ${p} окшойт. Туурабы?`,
+    whichPlant: "Бул кайсы өсүмдүк?", whichHydrangea: "Гортензияңыз кандай көрүнөт?",
+    howOld: "Бул өсүмдүк канча жашта?", ages: { young: "Жаш (1–2 жыл)", middle: "3–5 жыл", old: "Улуураак" },
+    tooMany: `Бир жолу ${MAX_PHOTOS} сүрөткө чейин.`, health: "Ден соолугу", stage: "Баскычы",
+    sure: "ишенемин", probably: "балким", notSure: "так эмес",
     offline: "Интернет жок. Туташып, кайра аракет кылыңыз.", failed: "Бир нерсе туура эмес болду. Кайра аракет кылыңыз.",
   },
 };
+const SPEECH_LANG = { en: "en-US", ru: "ru-RU", ky: "ky-KG" };
 
-let plantNames = {};
-let lang = localStorage.getItem(LANG_KEY) || ({ ru: "ru", ky: "ky" }[navigator.language.slice(0, 2)] ?? "en");
+const store = (() => { try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch { return {}; } })();
+const save = () => localStorage.setItem(STORE, JSON.stringify(store));
+store.plants ||= {};
+let lang = store.lang || ({ ru: "ru", ky: "ky" }[navigator.language.slice(0, 2)] ?? "ru");
 let photos = []; // [{file, url}]
+let plant = "auto"; // what we send; becomes the confirmed/chosen plant
 let coords = null;
+let plantNames = {}, speciesNames = {};
+let last = null; // last server answer
 const tr = () => UI[lang];
 
-function loadSettings() { try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || null; } catch { return null; } }
-
+// ---------- language ----------
 async function setLang(l) {
-  lang = l; localStorage.setItem(LANG_KEY, l); document.documentElement.lang = l;
+  lang = l; store.lang = l; save(); document.documentElement.lang = l; document.title = tr().title;
   document.querySelectorAll("[data-i18n]").forEach((el) => (el.textContent = tr()[el.dataset.i18n]));
-  document.querySelectorAll("[data-i18n-html]").forEach((el) => (el.innerHTML = tr()[el.dataset.i18nHtml]));
   document.querySelectorAll("#langs button").forEach((b) => b.classList.toggle("on", b.dataset.lang === l));
-  document.title = tr().title;
-  const [species, plants] = await Promise.all([
-    fetch(`api/species?lang=${l}`).then((r) => r.json()), fetch(`api/plants?lang=${l}`).then((r) => r.json())]);
+  const [plants, species] = await Promise.all([
+    fetch(`api/plants?lang=${l}`).then((r) => r.json()), fetch(`api/species?lang=${l}`).then((r) => r.json())]);
   plantNames = Object.fromEntries(Object.entries(plants).map(([k, v]) => [k, v.name]));
-  const currentPlant = $("plant").value || "auto";
-  $("plant").replaceChildren(new Option(tr().auto, "auto"),
-    ...Object.entries(plants).map(([k, v]) => new Option(`${EMOJI[k] || ""} ${v.name}`, k)));
-  $("plant").value = currentPlant;
-  showPlantSettings();
-  const current = $("species").value || loadSettings()?.species || "unknown";
-  $("species").replaceChildren(...Object.entries(species).map(([v, text]) => new Option(text, v)));
-  $("species").value = current;
+  speciesNames = species;
   renderThumbs();
-  if (!$("result").hidden && lastForm) submit(); // re-show the advice in the new language
+  if (photos.length && last) analyse(); // show the same answer in the new language
 }
+document.querySelectorAll("#langs button").forEach((b) => (b.onclick = () => setLang(b.dataset.lang)));
 
-async function init() {
-  await setLang(lang);
-  if (!loadSettings()) $("settings").hidden = false; // first run: ask about the plant
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+// ---------- location (asked once, with an explanation first) ----------
+function getLocation() {
   navigator.geolocation?.getCurrentPosition(
     (p) => (coords = { lat: p.coords.latitude, lon: p.coords.longitude }),
-    () => (coords = null), // refused or unavailable: advice just ignores weather
-    { maximumAge: 3600e3, timeout: 10e3 });
+    () => (coords = null), { maximumAge: 3600e3, timeout: 10e3 });
 }
+$("locYes").onclick = () => { store.location = "yes"; save(); $("locAsk").hidden = true; getLocation(); };
+$("locNo").onclick = () => { store.location = "no"; save(); $("locAsk").hidden = true; };
 
-document.querySelectorAll("#langs button").forEach((b) => (b.onclick = () => setLang(b.dataset.lang)));
-$("settingsBtn").onclick = () => ($("settings").hidden = !$("settings").hidden);
-// Age/height are remembered per plant type; the hydrangea type is only asked for hydrangeas.
-function plantSettings(key) { return loadSettings()?.plants?.[key] || {}; }
-function showPlantSettings() {
-  const key = $("plant").value;
-  const s = loadSettings() || {};
-  $("settingsPlant").textContent = key === "auto" ? "" : `${EMOJI[key] || ""} ${plantNames[key] || ""}`;
-  $("speciesRow").hidden = !(key === "hydrangea" || key === "auto");
-  $("species").value = s.species || "unknown";
-  $("age").value = plantSettings(key).age ?? ""; $("height").value = plantSettings(key).height ?? "";
-}
-$("plant").onchange = () => {
-  showPlantSettings();
-  if (!$("result").hidden && lastForm) { lastForm.set("plant", $("plant").value); applyPlantSettings(lastForm); submit(); }
-};
-$("saveSettings").onclick = () => {
-  const s = loadSettings() || { plants: {} };
-  s.plants ||= {};
-  s.species = $("species").value;
-  s.plants[$("plant").value] = { age: $("age").value, height: $("height").value };
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
-  $("settings").hidden = true;
-  if (!$("result").hidden && lastForm) { applyPlantSettings(lastForm); submit(); }
-};
-function applyPlantSettings(form) {
-  const p = plantSettings(form.get("plant"));
-  form.delete("age_years"); form.delete("height_cm");
-  if (p.age) form.append("age_years", p.age);
-  if (p.height) form.append("height_cm", p.height);
-  form.set("species", loadSettings()?.species || "unknown");
-}
+// ---------- photos ----------
+for (const id of ["camera", "gallery"]) $(id).onchange = (e) => { addPhotos([...e.target.files]); e.target.value = ""; };
 
-// ---- photos ----
 function addPhotos(files) {
+  if (!files.length) return;
   $("error").hidden = true;
   for (const file of files) {
     if (photos.length >= MAX_PHOTOS) { showError(tr().tooMany); break; }
     photos.push({ file, url: URL.createObjectURL(file) });
   }
-  $("result").hidden = true;
   renderThumbs();
+  analyse(); // no "Check" button: the answer comes by itself
 }
 
-function renderThumbs(perPhoto = null) {
+function renderThumbs() {
   $("thumbs").replaceChildren(...photos.map((p, i) => {
-    const box = document.createElement("div"); box.className = "thumb";
-    const img = Object.assign(document.createElement("img"), { src: p.url, alt: `${tr().photo} ${i + 1}` });
-    const x = Object.assign(document.createElement("button"), { textContent: "✕", ariaLabel: tr().remove, className: "remove" });
-    x.onclick = () => { URL.revokeObjectURL(p.url); photos.splice(i, 1); $("result").hidden = true; renderThumbs(); };
+    const box = Object.assign(document.createElement("div"), { className: "thumb" });
+    const img = Object.assign(document.createElement("img"), { src: p.url, alt: "" });
+    const x = Object.assign(document.createElement("button"), { textContent: "✕", className: "remove" });
+    x.setAttribute("aria-label", tr().remove);
+    x.onclick = () => {
+      URL.revokeObjectURL(p.url); photos.splice(i, 1); renderThumbs();
+      photos.length ? analyse() : reset();
+    };
     box.append(img, x);
-    if (perPhoto?.[i]) {
-      const cap = document.createElement("small");
-      cap.textContent = `${perPhoto[i].health.text} · ${perPhoto[i].stage.text}`;
-      box.append(cap);
-    }
     return box;
   }));
-  $("count").textContent = photos.length ? tr().count(photos.length) : "";
-  $("check").disabled = photos.length === 0;
+  $("home").hidden = photos.length > 0;
 }
 
-for (const id of ["camera", "gallery"]) $(id).onchange = (e) => { addPhotos([...e.target.files]); e.target.value = ""; };
-
-// Shrink each photo on the phone before upload: faster on mobile data, and the model only needs ~224px anyway.
+// Shrink each photo on the phone before upload: faster on mobile data; the model only needs ~224px.
 function shrink(file, maxSide = 1024) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -157,73 +133,139 @@ function shrink(file, maxSide = 1024) {
       const k = Math.min(1, maxSide / Math.max(img.width, img.height));
       const c = Object.assign(document.createElement("canvas"), { width: img.width * k, height: img.height * k });
       c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-      c.toBlob((b) => (b ? resolve(b) : reject(new Error("read"))), "image/jpeg", 0.85);
+      c.toBlob((b) => (b ? resolve(b) : reject(new Error(tr().failed))), "image/jpeg", 0.85);
       URL.revokeObjectURL(img.src);
     };
-    img.onerror = () => reject(new Error("read"));
+    img.onerror = () => reject(new Error(tr().failed));
     img.src = URL.createObjectURL(file);
   });
 }
 
-// ---- analyse ----
-let lastForm = null;
-$("check").onclick = async () => {
-  lastForm = new FormData();
-  for (const [i, p] of photos.entries()) lastForm.append("photos", await shrink(p.file), `photo${i}.jpg`);
-  lastForm.append("plant", $("plant").value);
-  applyPlantSettings(lastForm);
-  if (coords) { lastForm.append("lat", coords.lat); lastForm.append("lon", coords.lon); }
-  submit();
-};
-
-async function submit() {
-  for (const id of ["result", "error", "settings"]) $(id).hidden = true;
-  $("loading").hidden = false; $("check").disabled = true;
-  $("slow").hidden = true;
+// ---------- ask the server ----------
+let requestId = 0;
+async function analyse() {
+  const id = ++requestId;
+  stopSpeaking();
+  for (const s of ["result", "error"]) $(s).hidden = true;
+  $("loading").hidden = false; $("slow").hidden = true;
   const slowTimer = setTimeout(() => ($("slow").hidden = false), 8000);
   try {
-    lastForm.set("lang", lang);
-    const res = await fetch("api/analyze", { method: "POST", body: lastForm });
+    const form = new FormData();
+    for (const [i, p] of photos.entries()) form.append("photos", await shrink(p.file), `photo${i}.jpg`);
+    form.append("plant", plant);
+    form.append("lang", lang);
+    form.append("species", store.species || "unknown");
+    form.append("ages", JSON.stringify(Object.fromEntries(
+      Object.entries(store.plants).filter(([, v]) => v.age).map(([k, v]) => [k, v.age]))));
+    if (coords) { form.append("lat", coords.lat); form.append("lon", coords.lon); }
+    const res = await fetch("api/analyze", { method: "POST", body: form });
     const data = await res.json().catch(() => ({}));
+    if (id !== requestId) return; // a newer request replaced this one
     if (!res.ok) throw new Error(data.detail || tr().failed);
+    last = data;
     show(data);
   } catch (e) {
-    showError(navigator.onLine ? e.message || tr().failed : tr().offline);
+    if (id === requestId) showError(navigator.onLine ? e.message || tr().failed : tr().offline);
   } finally {
     clearTimeout(slowTimer);
-    $("loading").hidden = true; $("check").disabled = photos.length === 0;
+    if (id === requestId) $("loading").hidden = true;
   }
 }
 
 function showError(msg) { $("error").textContent = msg; $("error").hidden = false; }
 
+const certainty = (c) => (c >= 0.85 ? tr().sure : c >= 0.6 ? tr().probably : tr().notSure);
+
+// ---------- show the answer ----------
 function show(d) {
-  const p = d.plant;
-  const plantText = `${EMOJI[p.key] || "🌿"} ${p.text}`;
-  $("plantLine").replaceChildren();
-  if (p.method === "chosen") $("plantLine").textContent = plantText;
-  else {
-    $("plantLine").append(p.key === "unknown" ? tr().notSureWhich : `${tr().recognised} ${plantText} (${Math.round(p.confidence * 100)}%) `);
-    const btn = Object.assign(document.createElement("button"), { className: "link-btn", textContent: tr().change });
-    btn.onclick = () => { $("plant").scrollIntoView({ behavior: "smooth", block: "center" }); $("plant").focus(); };
-    $("plantLine").append(" ", btn);
-  }
-  $("badge").textContent = tr().badge[d.trim_now];
-  $("badge").className = `badge ${d.trim_now}`;
+  $("answer").textContent = tr().answer[d.trim_now];
+  $("answer").className = `answer ${d.trim_now}`;
   $("headline").textContent = d.headline;
-  $("howFar").textContent = d.how_far ? `${tr().howFar} ${d.how_far}` : "";
+  $("howFar").textContent = d.how_far;
+  $("speak").hidden = !("speechSynthesis" in window);
+
+  // Which plant
+  const p = d.plant, name = `${EMOJI[p.key] || "🌿"} ${p.text}`;
+  $("plantGrid").hidden = true;
+  if (p.key === "unknown") {
+    $("plantLine").textContent = tr().whichPlant; $("plantConfirm").hidden = true; showPlantGrid();
+  } else if (p.method === "chosen") {
+    $("plantLine").textContent = tr().thisIs(name); $("plantConfirm").hidden = true;
+  } else {
+    $("plantLine").textContent = tr().looksLike(name); $("plantConfirm").hidden = false;
+  }
+
+  // One question at a time, only when it changes the advice
+  const key = p.key;
+  if (key === "hydrangea" && !store.species) askQuestion(tr().whichHydrangea,
+    Object.entries(speciesNames).map(([k, v]) => [k, `${SPECIES_EMOJI[k] || ""}`, v]),
+    (k) => { store.species = k; save(); analyse(); });
+  else if (key !== "unknown" && d.trim_now !== "no" && !store.plants[key]?.age) askQuestion(tr().howOld,
+    AGES.map(([k, years]) => [years, "", tr().ages[k]]),
+    (years) => { store.plants[key] = { ...store.plants[key], age: years }; save(); plant = key; analyse(); });
+  else $("question").hidden = true;
+
+  // Details
   $("notes").replaceChildren(...d.notes.map((n) => Object.assign(document.createElement("li"), { textContent: n })));
   $("weather").textContent = d.weather ? `🌦️ ${d.weather}` : "";
-  const fmt = (t) => `${t.text} (${Math.round(t.confidence * 100)}%${t.unsure ? ", " + tr().notSure : ""})`;
-  $("seen").textContent = `${tr().health}: ${fmt(d.health)} · ${tr().stage}: ${fmt(d.stage)} · ${d.health.method}`;
-  renderThumbs(d.photos);
+  $("seen").textContent = `${tr().health}: ${d.health.text} (${certainty(d.health.confidence)}) · ${tr().stage}: ${d.stage.text} (${certainty(d.stage.confidence)})`;
+
   $("result").hidden = false;
-  $("result").scrollIntoView({ behavior: "smooth" });
+  $("thumbs").scrollIntoView({ behavior: "smooth" });
 }
 
-$("again").onclick = () => {
-  photos.forEach((p) => URL.revokeObjectURL(p.url)); photos = []; lastForm = null;
-  $("result").hidden = true; renderThumbs(); window.scrollTo({ top: 0, behavior: "smooth" });
+function askQuestion(text, choices, onPick) {
+  $("questionText").textContent = text;
+  $("questionChoices").replaceChildren(...choices.map(([value, emoji, label]) => {
+    const b = document.createElement("button");
+    b.innerHTML = emoji ? `<span class="e">${emoji}</span>` : "";
+    b.append(label);
+    b.onclick = () => onPick(value);
+    return b;
+  }));
+  $("question").hidden = false;
+}
+
+function showPlantGrid() {
+  $("plantGrid").replaceChildren(...Object.entries(plantNames).map(([k, v]) => {
+    const b = document.createElement("button");
+    b.innerHTML = `<span class="e">${EMOJI[k] || "🌿"}</span>`;
+    b.append(v);
+    b.classList.toggle("on", k === last?.plant?.key);
+    b.onclick = () => { plant = k; analyse(); };
+    return b;
+  }));
+  $("plantGrid").hidden = false;
+}
+$("plantYes").onclick = () => { plant = last.plant.key; $("plantConfirm").hidden = true; $("plantLine").textContent = tr().thisIs(`${EMOJI[plant]} ${last.plant.text}`); };
+$("plantNo").onclick = () => { $("plantConfirm").hidden = true; $("plantLine").textContent = tr().whichPlant; showPlantGrid(); };
+
+// ---------- read aloud ----------
+function stopSpeaking() { if ("speechSynthesis" in window) speechSynthesis.cancel(); }
+$("speak").onclick = () => {
+  if (speechSynthesis.speaking) { stopSpeaking(); return; }
+  const u = new SpeechSynthesisUtterance([$("answer").textContent.replace(/^\S+\s/, ""), last.headline, last.how_far].join(". "));
+  const voices = speechSynthesis.getVoices();
+  const voice = voices.find((v) => v.lang.startsWith(lang)) || (lang === "ky" && voices.find((v) => v.lang.startsWith("ru")));
+  if (voice) u.voice = voice;
+  u.lang = voice?.lang || SPEECH_LANG[lang];
+  u.rate = 0.9; // a little slower is easier to follow
+  speechSynthesis.speak(u);
 };
 
-init();
+// ---------- start over ----------
+function reset() {
+  stopSpeaking();
+  photos.forEach((p) => URL.revokeObjectURL(p.url)); photos = []; plant = "auto"; last = null; requestId++;
+  for (const s of ["result", "error", "loading"]) $(s).hidden = true;
+  renderThumbs(); window.scrollTo({ top: 0, behavior: "smooth" });
+}
+$("again").onclick = reset;
+
+// ---------- start ----------
+(async function init() {
+  await setLang(lang);
+  if (!store.location) $("locAsk").hidden = false;
+  else if (store.location === "yes") getLocation();
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+})();
