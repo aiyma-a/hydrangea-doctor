@@ -5,6 +5,7 @@ On Cloud Run the Dockerfile starts this same command.
 """
 import io
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import JSONResponse
@@ -19,7 +20,23 @@ from hydrangea.predict import analyse
 MAX_UPLOAD_BYTES = 15 * 1024 * 1024
 MAX_PHOTOS = 6
 log = logging.getLogger("uvicorn.error")
-app = FastAPI(title="Hydrangea Doctor", docs_url=None, redoc_url=None)
+
+
+@asynccontextmanager
+async def lifespan(_app):
+    # Load CLIP + the text prompts before accepting traffic, so the first photo
+    # isn't the one that waits for the model to load.
+    from hydrangea import zeroshot
+    from hydrangea.embed import _model
+
+    _model()
+    for task in TASKS:
+        zeroshot.label_embeddings(task)
+    log.info("model loaded")
+    yield
+
+
+app = FastAPI(title="Hydrangea Doctor", docs_url=None, redoc_url=None, lifespan=lifespan)
 
 
 def error(status: int, key: str, lang: str, **params):

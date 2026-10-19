@@ -21,7 +21,7 @@ const UI = {
     title: "Доктор Гортензий", aboutPlant: "О вашем растении", type: "Вид", age: "Возраст (лет)", height: "Высота (см)",
     savedHint: "Сохраняется на этом телефоне. Для погоды приложение использует ваше местоположение.", save: "Сохранить",
     lead: "Добавьте фото <b>одного растения</b>: <b>лист крупным планом</b> (здоровье) и <b>куст целиком</b> (обрезка).",
-    takePhoto: "Сфотографировать", gallery: "Галерея", check: "Проверить гортензию", looking: "Смотрю на ваше растение…",
+    takePhoto: "Сфотографировать", gallery: "Галерея", check: "Проверить гортензию", looking: "Смотрю на ваше растение…", slow: "Первая проверка после перерыва может занять до минуты, пока приложение просыпается.",
     whatSaw: "Что увидела модель", again: "Проверить другое растение", remove: "Удалить",
     count: (n) => `${n} из ${MAX_PHOTOS} фото`, tooMany: `Не больше ${MAX_PHOTOS} фото за раз.`,
     badge: { yes: "✂️ Да, обрезайте", light: "🌿 Только слегка", no: "✋ Не обрезайте сейчас" },
@@ -32,7 +32,7 @@ const UI = {
     title: "Гортензия Доктуру", aboutPlant: "Өсүмдүгүңүз жөнүндө", type: "Түрү", age: "Жашы (жыл)", height: "Бийиктиги (см)",
     savedHint: "Ушул телефондо сакталат. Аба ырайы үчүн колдонмо жайгашкан жериңизди колдонот.", save: "Сактоо",
     lead: "<b>Бир өсүмдүктүн</b> сүрөттөрүн кошуңуз: <b>жалбырагын жакындан</b> (ден соолугу үчүн) жана <b>бадалды толугу менен</b> (кыркуу үчүн).",
-    takePhoto: "Сүрөткө тартуу", gallery: "Галерея", check: "Гортензияны текшерүү", looking: "Өсүмдүгүңүздү карап жатам…",
+    takePhoto: "Сүрөткө тартуу", gallery: "Галерея", check: "Гортензияны текшерүү", looking: "Өсүмдүгүңүздү карап жатам…", slow: "Тыныгуудан кийинки биринчи текшерүү колдонмо ойгонгуча бир мүнөткө чейин созулат.",
     whatSaw: "Модель эмнени көрдү", again: "Башка өсүмдүктү текшерүү", remove: "Өчүрүү",
     count: (n) => `${MAX_PHOTOS} сүрөттөн ${n}`, tooMany: `Бир жолу ${MAX_PHOTOS} сүрөткө чейин.`,
     badge: { yes: "✂️ Ооба, азыр кыркыңыз", light: "🌿 Жеңил гана", no: "✋ Азыр кыркпаңыз" },
@@ -144,6 +144,8 @@ $("check").onclick = async () => {
 async function submit() {
   for (const id of ["result", "error", "settings"]) $(id).hidden = true;
   $("loading").hidden = false; $("check").disabled = true;
+  $("slow").hidden = true;
+  const slowTimer = setTimeout(() => ($("slow").hidden = false), 8000);
   try {
     lastForm.set("lang", lang);
     const res = await fetch("api/analyze", { method: "POST", body: lastForm });
@@ -153,6 +155,7 @@ async function submit() {
   } catch (e) {
     showError(navigator.onLine ? e.message || tr().failed : tr().offline);
   } finally {
+    clearTimeout(slowTimer);
     $("loading").hidden = true; $("check").disabled = photos.length === 0;
   }
 }
