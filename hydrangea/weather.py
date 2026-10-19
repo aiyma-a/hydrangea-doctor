@@ -63,6 +63,11 @@ def summarize(daily: dict, place: str, latitude: float, past_days: int = 7) -> W
 
 def fetch(place: str) -> Weather:
     lat, lon, name = geocode(place)
+    return fetch_coords(lat, lon, name)
+
+
+def fetch_coords(lat: float, lon: float, name: str = "Your location") -> Weather:
+    """Weather for exact coordinates, e.g. from the phone's GPS."""
     res = _get("https://api.open-meteo.com/v1/forecast", {
         "latitude": lat, "longitude": lon, "timezone": "auto",
         "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum",

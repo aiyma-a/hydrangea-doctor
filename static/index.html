@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Hydrangea Doctor</title>
+  <meta name="theme-color" content="#7b5ea7">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Hydrangea">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>🌸 Hydrangea Doctor</h1>
+    <button id="settingsBtn" class="icon-btn" aria-label="My plant">⚙️</button>
+  </header>
+
+  <main>
+    <!-- Step 1: settings (shown first time, then hidden behind ⚙️) -->
+    <section id="settings" class="card" hidden>
+      <h2>About your plant</h2>
+      <label>Type
+        <select id="species"></select>
+      </label>
+      <div class="row">
+        <label>Age (years)<input id="age" type="number" inputmode="decimal" min="0" step="1" placeholder="e.g. 4"></label>
+        <label>Height (cm)<input id="height" type="number" inputmode="decimal" min="0" step="5" placeholder="e.g. 120"></label>
+      </div>
+      <p class="hint">Saved on this phone. The app also uses your location for the weather.</p>
+      <button id="saveSettings" class="primary">Save</button>
+    </section>
+
+    <!-- Step 2: photo -->
+    <section id="capture" class="card">
+      <p class="lead">Take a photo of a <b>leaf</b> (for health) or the <b>whole plant</b> (for trimming).</p>
+      <label class="camera primary" for="photo">📷 Take photo</label>
+      <input id="photo" type="file" accept="image/*" capture="environment" hidden>
+      <label class="link" for="gallery">or choose from gallery</label>
+      <input id="gallery" type="file" accept="image/*" hidden>
+      <img id="preview" alt="" hidden>
+    </section>
+
+    <!-- Step 3: result -->
+    <section id="loading" class="card center" hidden><div class="spinner"></div><p>Looking at your plant…</p></section>
+    <section id="result" class="card" hidden>
+      <div id="badge" class="badge"></div>
+      <h2 id="headline"></h2>
+      <p id="howFar"></p>
+      <ul id="notes"></ul>
+      <p id="weather" class="hint"></p>
+      <details><summary>What the model saw</summary><p id="seen" class="hint"></p></details>
+    </section>
+    <section id="error" class="card error" hidden></section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

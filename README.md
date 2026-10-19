@@ -45,6 +45,29 @@ python3 -m venv .venv
 .venv/bin/python -m hydrangea.predict photo.jpg --species bigleaf --place Bishkek --age 4 --height 120
 ```
 
+## Phone app (for Mom 📱)
+
+An installable web app (PWA): open the link on the phone → **Add to Home Screen**.
+It takes a photo with the camera, uses the phone's GPS for weather, and remembers
+the plant's type/age on the phone. The ML runs on the server (`server.py`).
+
+```bash
+.venv/bin/uvicorn server:app --port 8080      # local test: http://127.0.0.1:8080
+```
+
+| File | What it is |
+|---|---|
+| `server.py` | API (`POST /api/analyze`) + serves the app |
+| `static/` | the phone app: `index.html`, `app.js`, `style.css` |
+| `static/manifest.webmanifest`, `static/sw.js` | what makes it installable |
+| `Dockerfile` | packages everything for Google Cloud Run |
+
+Install on the phone:
+- **iPhone:** open the link in Safari → Share button → *Add to Home Screen*.
+- **Android:** open in Chrome → ⋮ menu → *Install app* / *Add to Home screen*.
+
+After retraining, redeploy so the server gets the new `models/*.joblib`.
+
 ## Add your photos and train
 
 1. Put each photo in the folder for its label:
