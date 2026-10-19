@@ -1,35 +1,118 @@
-// Phone app logic: settings, camera, location, call the ML server, show advice.
+// Phone app: language, settings, photos (several at once), location, call the ML server, show advice.
 const $ = (id) => document.getElementById(id);
-const BADGE = { yes: "✂️ Yes, trim now", light: "🌿 Light touch only", no: "✋ Don't trim now" };
+const MAX_PHOTOS = 6;
 const SETTINGS_KEY = "hydrangea-settings";
+const LANG_KEY = "hydrangea-lang";
+
+// Screen texts. The advice itself is translated on the server (hydrangea/i18n.py).
+const UI = {
+  en: {
+    title: "Hydrangea Doctor", aboutPlant: "About your plant", type: "Type", age: "Age (years)", height: "Height (cm)",
+    savedHint: "Saved on this phone. The app also uses your location for the weather.", save: "Save",
+    lead: "Add photos of <b>one plant</b>: a <b>leaf close-up</b> (for health) and the <b>whole plant</b> (for trimming).",
+    takePhoto: "Take photo", gallery: "Gallery", check: "Check my hydrangea", looking: "Looking at your plant…",
+    whatSaw: "What the model saw", again: "Check another plant", remove: "Remove",
+    count: (n) => `${n} of ${MAX_PHOTOS} photos`, tooMany: `Up to ${MAX_PHOTOS} photos at a time.`,
+    badge: { yes: "✂️ Yes, trim now", light: "🌿 Light touch only", no: "✋ Don't trim now" },
+    howFar: "How far:", health: "Health", stage: "Stage", notSure: "not sure", photo: "Photo",
+    offline: "You're offline. Connect to the internet and try again.", failed: "Sorry, something went wrong. Please try again.",
+  },
+  ru: {
+    title: "Доктор Гортензий", aboutPlant: "О вашем растении", type: "Вид", age: "Возраст (лет)", height: "Высота (см)",
+    savedHint: "Сохраняется на этом телефоне. Для погоды приложение использует ваше местоположение.", save: "Сохранить",
+    lead: "Добавьте фото <b>одного растения</b>: <b>лист крупным планом</b> (здоровье) и <b>куст целиком</b> (обрезка).",
+    takePhoto: "Сфотографировать", gallery: "Галерея", check: "Проверить гортензию", looking: "Смотрю на ваше растение…",
+    whatSaw: "Что увидела модель", again: "Проверить другое растение", remove: "Удалить",
+    count: (n) => `${n} из ${MAX_PHOTOS} фото`, tooMany: `Не больше ${MAX_PHOTOS} фото за раз.`,
+    badge: { yes: "✂️ Да, обрезайте", light: "🌿 Только слегка", no: "✋ Не обрезайте сейчас" },
+    howFar: "Сколько срезать:", health: "Здоровье", stage: "Стадия", notSure: "не уверена", photo: "Фото",
+    offline: "Нет интернета. Подключитесь и попробуйте снова.", failed: "Что-то пошло не так. Попробуйте ещё раз.",
+  },
+  ky: {
+    title: "Гортензия Доктуру", aboutPlant: "Өсүмдүгүңүз жөнүндө", type: "Түрү", age: "Жашы (жыл)", height: "Бийиктиги (см)",
+    savedHint: "Ушул телефондо сакталат. Аба ырайы үчүн колдонмо жайгашкан жериңизди колдонот.", save: "Сактоо",
+    lead: "<b>Бир өсүмдүктүн</b> сүрөттөрүн кошуңуз: <b>жалбырагын жакындан</b> (ден соолугу үчүн) жана <b>бадалды толугу менен</b> (кыркуу үчүн).",
+    takePhoto: "Сүрөткө тартуу", gallery: "Галерея", check: "Гортензияны текшерүү", looking: "Өсүмдүгүңүздү карап жатам…",
+    whatSaw: "Модель эмнени көрдү", again: "Башка өсүмдүктү текшерүү", remove: "Өчүрүү",
+    count: (n) => `${MAX_PHOTOS} сүрөттөн ${n}`, tooMany: `Бир жолу ${MAX_PHOTOS} сүрөткө чейин.`,
+    badge: { yes: "✂️ Ооба, азыр кыркыңыз", light: "🌿 Жеңил гана", no: "✋ Азыр кыркпаңыз" },
+    howFar: "Канча кесүү керек:", health: "Ден соолугу", stage: "Баскычы", notSure: "так эмес", photo: "Сүрөт",
+    offline: "Интернет жок. Туташып, кайра аракет кылыңыз.", failed: "Бир нерсе туура эмес болду. Кайра аракет кылыңыз.",
+  },
+};
+
+let lang = localStorage.getItem(LANG_KEY) || ({ ru: "ru", ky: "ky" }[navigator.language.slice(0, 2)] ?? "en");
+let photos = []; // [{file, url}]
 let coords = null;
+const tr = () => UI[lang];
 
 function loadSettings() { try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || null; } catch { return null; } }
 
-async function init() {
-  const species = await fetch("api/species").then((r) => r.json());
-  for (const [value, text] of Object.entries(species)) $("species").add(new Option(text, value));
-  const s = loadSettings();
-  if (s) { $("species").value = s.species; $("age").value = s.age ?? ""; $("height").value = s.height ?? ""; }
-  else { $("species").value = "unknown"; $("settings").hidden = false; } // first run: ask about the plant
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
-  askLocation();
+async function setLang(l) {
+  lang = l; localStorage.setItem(LANG_KEY, l); document.documentElement.lang = l;
+  document.querySelectorAll("[data-i18n]").forEach((el) => (el.textContent = tr()[el.dataset.i18n]));
+  document.querySelectorAll("[data-i18n-html]").forEach((el) => (el.innerHTML = tr()[el.dataset.i18nHtml]));
+  document.querySelectorAll("#langs button").forEach((b) => b.classList.toggle("on", b.dataset.lang === l));
+  document.title = tr().title;
+  const species = await fetch(`api/species?lang=${l}`).then((r) => r.json());
+  const current = $("species").value || loadSettings()?.species || "unknown";
+  $("species").replaceChildren(...Object.entries(species).map(([v, text]) => new Option(text, v)));
+  $("species").value = current;
+  renderThumbs();
+  if (!$("result").hidden && lastForm) submit(); // re-show the advice in the new language
 }
 
-function askLocation() {
+async function init() {
+  const s = loadSettings();
+  await setLang(lang);
+  if (s) { $("species").value = s.species; $("age").value = s.age ?? ""; $("height").value = s.height ?? ""; }
+  else $("settings").hidden = false; // first run: ask about the plant
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
   navigator.geolocation?.getCurrentPosition(
     (p) => (coords = { lat: p.coords.latitude, lon: p.coords.longitude }),
     () => (coords = null), // refused or unavailable: advice just ignores weather
     { maximumAge: 3600e3, timeout: 10e3 });
 }
 
+document.querySelectorAll("#langs button").forEach((b) => (b.onclick = () => setLang(b.dataset.lang)));
 $("settingsBtn").onclick = () => ($("settings").hidden = !$("settings").hidden);
 $("saveSettings").onclick = () => {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify({ species: $("species").value, age: $("age").value, height: $("height").value }));
   $("settings").hidden = true;
 };
 
-// Shrink the photo on the phone before upload: faster on mobile data, and the model only needs ~224px anyway.
+// ---- photos ----
+function addPhotos(files) {
+  $("error").hidden = true;
+  for (const file of files) {
+    if (photos.length >= MAX_PHOTOS) { showError(tr().tooMany); break; }
+    photos.push({ file, url: URL.createObjectURL(file) });
+  }
+  $("result").hidden = true;
+  renderThumbs();
+}
+
+function renderThumbs(perPhoto = null) {
+  $("thumbs").replaceChildren(...photos.map((p, i) => {
+    const box = document.createElement("div"); box.className = "thumb";
+    const img = Object.assign(document.createElement("img"), { src: p.url, alt: `${tr().photo} ${i + 1}` });
+    const x = Object.assign(document.createElement("button"), { textContent: "✕", ariaLabel: tr().remove, className: "remove" });
+    x.onclick = () => { URL.revokeObjectURL(p.url); photos.splice(i, 1); $("result").hidden = true; renderThumbs(); };
+    box.append(img, x);
+    if (perPhoto?.[i]) {
+      const cap = document.createElement("small");
+      cap.textContent = `${perPhoto[i].health.text} · ${perPhoto[i].stage.text}`;
+      box.append(cap);
+    }
+    return box;
+  }));
+  $("count").textContent = photos.length ? tr().count(photos.length) : "";
+  $("check").disabled = photos.length === 0;
+}
+
+for (const id of ["camera", "gallery"]) $(id).onchange = (e) => { addPhotos([...e.target.files]); e.target.value = ""; };
+
+// Shrink each photo on the phone before upload: faster on mobile data, and the model only needs ~224px anyway.
 function shrink(file, maxSide = 1024) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -37,51 +120,62 @@ function shrink(file, maxSide = 1024) {
       const k = Math.min(1, maxSide / Math.max(img.width, img.height));
       const c = Object.assign(document.createElement("canvas"), { width: img.width * k, height: img.height * k });
       c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-      c.toBlob((b) => (b ? resolve(b) : reject(new Error("Couldn't read photo"))), "image/jpeg", 0.85);
+      c.toBlob((b) => (b ? resolve(b) : reject(new Error("read"))), "image/jpeg", 0.85);
       URL.revokeObjectURL(img.src);
     };
-    img.onerror = () => reject(new Error("Couldn't read photo"));
+    img.onerror = () => reject(new Error("read"));
     img.src = URL.createObjectURL(file);
   });
 }
 
-async function analyse(file) {
-  if (!file) return;
+// ---- analyse ----
+let lastForm = null;
+$("check").onclick = async () => {
+  lastForm = new FormData();
+  for (const [i, p] of photos.entries()) lastForm.append("photos", await shrink(p.file), `photo${i}.jpg`);
+  const s = loadSettings() || { species: $("species").value };
+  lastForm.append("species", s.species || "unknown");
+  if (s.age) lastForm.append("age_years", s.age);
+  if (s.height) lastForm.append("height_cm", s.height);
+  if (coords) { lastForm.append("lat", coords.lat); lastForm.append("lon", coords.lon); }
+  submit();
+};
+
+async function submit() {
   for (const id of ["result", "error", "settings"]) $(id).hidden = true;
-  $("preview").src = URL.createObjectURL(file); $("preview").hidden = false;
-  $("loading").hidden = false;
+  $("loading").hidden = false; $("check").disabled = true;
   try {
-    const s = loadSettings() || { species: $("species").value };
-    const form = new FormData();
-    form.append("photo", await shrink(file), "photo.jpg");
-    form.append("species", s.species || "unknown");
-    if (s.age) form.append("age_years", s.age);
-    if (s.height) form.append("height_cm", s.height);
-    if (coords) { form.append("lat", coords.lat); form.append("lon", coords.lon); }
-    const res = await fetch("api/analyze", { method: "POST", body: form });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.detail || "Something went wrong");
+    lastForm.set("lang", lang);
+    const res = await fetch("api/analyze", { method: "POST", body: lastForm });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.detail || tr().failed);
     show(data);
   } catch (e) {
-    $("error").textContent = navigator.onLine ? `Sorry: ${e.message}. Please try again.` : "You're offline. Connect to the internet and try again.";
-    $("error").hidden = false;
+    showError(navigator.onLine ? e.message || tr().failed : tr().offline);
   } finally {
-    $("loading").hidden = true;
+    $("loading").hidden = true; $("check").disabled = photos.length === 0;
   }
 }
 
+function showError(msg) { $("error").textContent = msg; $("error").hidden = false; }
+
 function show(d) {
-  $("badge").textContent = BADGE[d.trim_now];
+  $("badge").textContent = tr().badge[d.trim_now];
   $("badge").className = `badge ${d.trim_now}`;
   $("headline").textContent = d.headline;
-  $("howFar").textContent = d.how_far ? `How far: ${d.how_far}` : "";
+  $("howFar").textContent = d.how_far ? `${tr().howFar} ${d.how_far}` : "";
   $("notes").replaceChildren(...d.notes.map((n) => Object.assign(document.createElement("li"), { textContent: n })));
   $("weather").textContent = d.weather ? `🌦️ ${d.weather}` : "";
-  const fmt = (t) => `${t.label.replace("_", " ")} (${Math.round(t.confidence * 100)}%${t.unsure ? ", not sure" : ""})`;
-  $("seen").textContent = `Health: ${fmt(d.health)} · Stage: ${fmt(d.stage)} · ${d.health.method} model`;
+  const fmt = (t) => `${t.text} (${Math.round(t.confidence * 100)}%${t.unsure ? ", " + tr().notSure : ""})`;
+  $("seen").textContent = `${tr().health}: ${fmt(d.health)} · ${tr().stage}: ${fmt(d.stage)} · ${d.health.method}`;
+  renderThumbs(d.photos);
   $("result").hidden = false;
   $("result").scrollIntoView({ behavior: "smooth" });
 }
 
-for (const id of ["photo", "gallery"]) $(id).onchange = (e) => { analyse(e.target.files[0]); e.target.value = ""; };
+$("again").onclick = () => {
+  photos.forEach((p) => URL.revokeObjectURL(p.url)); photos = []; lastForm = null;
+  $("result").hidden = true; renderThumbs(); window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
 init();

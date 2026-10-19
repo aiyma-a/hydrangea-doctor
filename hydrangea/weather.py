@@ -9,6 +9,8 @@ import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 
+from .i18n import M, Msg
+
 FROST_C = 0.0
 HOT_C = 30.0
 DRY_MM = 5.0  # total rain over 7 days below this counts as "dry"
@@ -16,7 +18,7 @@ DRY_MM = 5.0  # total rain over 7 days below this counts as "dry"
 
 @dataclass
 class Weather:
-    place: str
+    place: str | Msg
     latitude: float
     frost_soon: bool  # min temp <= 0°C in the next 14 days
     first_frost_in_days: int | None
@@ -28,11 +30,10 @@ class Weather:
     def hemisphere(self) -> str:
         return "south" if self.latitude < 0 else "north"
 
-    def summary(self) -> str:
-        frost = (f"frost expected in {self.first_frost_in_days} day(s)" if self.frost_soon
-                 else "no frost in the next 14 days")
-        return (f"{self.place}: last 7 days max {self.max_temp_7d:.0f}°C, "
-                f"{self.rain_7d_mm:.0f} mm rain; {frost}.")
+    def summary(self, lang: str = "en") -> str:
+        frost = M("frost_in", days=self.first_frost_in_days) if self.frost_soon else M("no_frost")
+        return M("weather_summary", place=self.place, max_temp=f"{self.max_temp_7d:.0f}",
+                 rain=f"{self.rain_7d_mm:.0f}", frost=frost).render(lang)
 
 
 def _get(url: str, params: dict) -> dict:
@@ -48,7 +49,7 @@ def geocode(place: str) -> tuple[float, float, str]:
     return r["latitude"], r["longitude"], f"{r['name']}, {r.get('country', '')}".strip(", ")
 
 
-def summarize(daily: dict, place: str, latitude: float, past_days: int = 7) -> Weather:
+def summarize(daily: dict, place: str | Msg, latitude: float, past_days: int = 7) -> Weather:
     tmin, tmax, rain = daily["temperature_2m_min"], daily["temperature_2m_max"], daily["precipitation_sum"]
     past = slice(0, past_days)
     future_min = tmin[past_days:]
@@ -66,7 +67,7 @@ def fetch(place: str) -> Weather:
     return fetch_coords(lat, lon, name)
 
 
-def fetch_coords(lat: float, lon: float, name: str = "Your location") -> Weather:
+def fetch_coords(lat: float, lon: float, name: str | Msg = M("your_location")) -> Weather:
     """Weather for exact coordinates, e.g. from the phone's GPS."""
     res = _get("https://api.open-meteo.com/v1/forecast", {
         "latitude": lat, "longitude": lon, "timezone": "auto",

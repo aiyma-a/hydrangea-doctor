@@ -6,17 +6,24 @@ On Cloud Run the Dockerfile starts this same command.
 import io
 import logging
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, UploadFile
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, UnidentifiedImageError
 
 from hydrangea import pruning, weather
 from hydrangea.config import TASKS
+from hydrangea.i18n import LANGS, M, t
 from hydrangea.predict import analyse
 
 MAX_UPLOAD_BYTES = 15 * 1024 * 1024
+MAX_PHOTOS = 6
 log = logging.getLogger("uvicorn.error")
 app = FastAPI(title="Hydrangea Doctor", docs_url=None, redoc_url=None)
+
+
+def error(status: int, key: str, lang: str, **params):
+    return JSONResponse({"detail": t(key, lang, **params)}, status_code=status)
 
 
 @app.get("/api/health")
@@ -24,50 +31,60 @@ def healthcheck():
     return {"ok": True}
 
 
+@app.get("/api/species")
+def species(lang: str = "en"):
+    lang = lang if lang in LANGS else "en"
+    return {s: t(f"species.{s}", lang) for s in pruning.SPECIES}
+
+
 @app.post("/api/analyze")
 async def analyze(
-    photo: UploadFile = File(...),
+    photos: list[UploadFile] = File(...),
     species: str = Form("unknown"),
     age_years: float | None = Form(None),
     height_cm: float | None = Form(None),
     lat: float | None = Form(None),
     lon: float | None = Form(None),
+    lang: str = Form("en"),
 ):
+    lang = lang if lang in LANGS else "en"
     if species not in pruning.SPECIES:
-        raise HTTPException(400, "Unknown hydrangea type")
-    data = await photo.read(MAX_UPLOAD_BYTES + 1)
-    if len(data) > MAX_UPLOAD_BYTES:
-        raise HTTPException(413, "Photo is too large")
-    try:
-        image = Image.open(io.BytesIO(data))
-        image.load()
-    except (UnidentifiedImageError, OSError):
-        raise HTTPException(400, "That file isn't a photo I can read")
+        return error(400, "err_type", lang)
+    if not 1 <= len(photos) <= MAX_PHOTOS:
+        return error(400, "err_count", lang, max=MAX_PHOTOS)
+    images = []
+    for photo in photos:
+        data = await photo.read(MAX_UPLOAD_BYTES + 1)
+        if len(data) > MAX_UPLOAD_BYTES:
+            return error(413, "err_too_large", lang)
+        try:
+            image = Image.open(io.BytesIO(data))
+            image.load()
+        except (UnidentifiedImageError, OSError):
+            return error(400, "err_not_photo", lang)
+        images.append(image)
 
-    w, weather_note = None, None
+    w, weather_text = None, None
     if lat is not None and lon is not None and -90 <= lat <= 90 and -180 <= lon <= 180:
         try:
             w = weather.fetch_coords(lat, lon)
+            weather_text = w.summary(lang)
         except Exception as e:  # weather is a bonus; never fail the whole request on it
             log.warning("weather failed: %s", e)
-            weather_note = "Couldn't get the weather right now; advice ignores it."
+            weather_text = M("weather_failed").render(lang)
 
-    r = analyse(image, species, height_cm=height_cm or None, age_years=age_years or None, weather=w)
-    adv = r["advice"]
+    r = analyse(images, species, height_cm=height_cm or None, age_years=age_years or None, weather=w)
+
+    def task_json(res):
+        return {"label": res.label, "text": t(f"label.{res.label}", lang), "confidence": res.confidence,
+                "unsure": res.unsure, "method": res.method}
+
     return {
-        "trim_now": adv.trim_now,
-        "headline": adv.headline,
-        "how_far": adv.how_far,
-        "notes": adv.notes,
-        "weather": w.summary() if w else weather_note,
-        **{task: {"label": r[task].label, "confidence": r[task].confidence,
-                  "unsure": r[task].unsure, "method": r[task].method} for task in TASKS},
+        **r["advice"].render(lang),
+        "weather": weather_text,
+        **{task: task_json(r[task]) for task in TASKS},
+        "photos": [{task: task_json(photo[task]) for task in TASKS} for photo in r["photos"]],
     }
-
-
-@app.get("/api/species")
-def species():
-    return pruning.SPECIES
 
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")

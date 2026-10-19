@@ -14,44 +14,51 @@
 </head>
 <body>
   <header>
-    <h1>🌸 Hydrangea Doctor</h1>
-    <button id="settingsBtn" class="icon-btn" aria-label="My plant">⚙️</button>
+    <h1>🌸 <span data-i18n="title">Hydrangea Doctor</span></h1>
+    <div class="header-right">
+      <div id="langs" class="langs" role="group" aria-label="Language">
+        <button data-lang="en">EN</button><button data-lang="ru">РУ</button><button data-lang="ky">КЫ</button>
+      </div>
+      <button id="settingsBtn" class="icon-btn" aria-label="Settings">⚙️</button>
+    </div>
   </header>
 
   <main>
-    <!-- Step 1: settings (shown first time, then hidden behind ⚙️) -->
     <section id="settings" class="card" hidden>
-      <h2>About your plant</h2>
-      <label>Type
+      <h2 data-i18n="aboutPlant">About your plant</h2>
+      <label><span data-i18n="type">Type</span>
         <select id="species"></select>
       </label>
       <div class="row">
-        <label>Age (years)<input id="age" type="number" inputmode="decimal" min="0" step="1" placeholder="e.g. 4"></label>
-        <label>Height (cm)<input id="height" type="number" inputmode="decimal" min="0" step="5" placeholder="e.g. 120"></label>
+        <label><span data-i18n="age">Age (years)</span><input id="age" type="number" inputmode="decimal" min="0" step="1" placeholder="4"></label>
+        <label><span data-i18n="height">Height (cm)</span><input id="height" type="number" inputmode="decimal" min="0" step="5" placeholder="120"></label>
       </div>
-      <p class="hint">Saved on this phone. The app also uses your location for the weather.</p>
-      <button id="saveSettings" class="primary">Save</button>
+      <p class="hint" data-i18n="savedHint">Saved on this phone. The app also uses your location for the weather.</p>
+      <button id="saveSettings" class="primary" data-i18n="save">Save</button>
     </section>
 
-    <!-- Step 2: photo -->
     <section id="capture" class="card">
-      <p class="lead">Take a photo of a <b>leaf</b> (for health) or the <b>whole plant</b> (for trimming).</p>
-      <label class="camera primary" for="photo">📷 Take photo</label>
-      <input id="photo" type="file" accept="image/*" capture="environment" hidden>
-      <label class="link" for="gallery">or choose from gallery</label>
-      <input id="gallery" type="file" accept="image/*" hidden>
-      <img id="preview" alt="" hidden>
+      <p class="lead" data-i18n-html="lead">Add photos of <b>one plant</b>: a <b>leaf close-up</b> (for health) and the <b>whole plant</b> (for trimming).</p>
+      <div id="thumbs" class="thumbs"></div>
+      <div class="row">
+        <label class="btn" for="camera">📷 <span data-i18n="takePhoto">Take photo</span></label>
+        <label class="btn" for="gallery">🖼️ <span data-i18n="gallery">Gallery</span></label>
+      </div>
+      <input id="camera" type="file" accept="image/*" capture="environment" hidden>
+      <input id="gallery" type="file" accept="image/*" multiple hidden>
+      <p id="count" class="hint center"></p>
+      <button id="check" class="primary" disabled data-i18n="check">Check my hydrangea</button>
     </section>
 
-    <!-- Step 3: result -->
-    <section id="loading" class="card center" hidden><div class="spinner"></div><p>Looking at your plant…</p></section>
+    <section id="loading" class="card center" hidden><div class="spinner"></div><p data-i18n="looking">Looking at your plant…</p></section>
     <section id="result" class="card" hidden>
       <div id="badge" class="badge"></div>
       <h2 id="headline"></h2>
       <p id="howFar"></p>
       <ul id="notes"></ul>
       <p id="weather" class="hint"></p>
-      <details><summary>What the model saw</summary><p id="seen" class="hint"></p></details>
+      <details><summary data-i18n="whatSaw">What the model saw</summary><p id="seen" class="hint"></p></details>
+      <button id="again" class="secondary" data-i18n="again">Check another plant</button>
     </section>
     <section id="error" class="card error" hidden></section>
   </main>
