@@ -5,22 +5,34 @@ const API = location.hostname.endsWith("github.io") ? "https://hydrangea-doctor-
 const $ = (id) => document.getElementById(id);
 const MAX_PHOTOS = 6;
 const STORE = "hydrangea-store"; // {lang, location: "yes"|"no", species, plants: {key: {age}}}
-const EMOJI = { hydrangea: "🌸", rose: "🌹", peony: "🌺", lilac: "💜", tulip: "🌷", iris: "🪻", apple: "🍎", pear: "🍐",
-  apricot: "🍑", cherry: "🍒", plum: "🫐", grape: "🍇", raspberry: "🍓", currant: "🔴", unknown: "🌿" };
-const SPECIES_EMOJI = { bigleaf: "🔵", oakleaf: "🍂", panicle: "🔺", smooth: "⚪", unknown: "❓" };
+const EMOJI = {}, SPECIES_EMOJI = {}; // text only, deliberately
 const AGES = [["young", 1], ["middle", 4], ["old", 10]];
 
 // Screen texts. The advice itself is translated on the server (hydrangea/i18n.py).
 const UI = {
   en: {
+    eyebrow: "Plant health and pruning guidance",
+    heroTitle: "Know when to prune, and when to wait.",
+    heroLead: "Photograph a plant. Get a clear pruning answer based on what it looks like and the weather where you are.",
+    howTitle: "How it works",
+    s1t: "Photograph",
+    s1d: "One leaf up close, or the whole plant. Up to six photos.",
+    s2t: "Analyse",
+    s2d: "An image model reads the plant's stage and health. Local weather is added.",
+    s3t: "Act",
+    s3d: "You get one clear answer: trim now, only a little, or wait.",
+    honestTitle: "What it can and cannot do",
+    honest1: "It estimates the growth stage and visible health problems from a photo, and checks frost and heat before advising a cut.",
+    honest2: "It is not a diagnosis. When the photo is unclear it says it is not sure and asks for a closer one. Garden-specific accuracy improves as labelled photos are added.",
+    footPrivacy: "Photos are analysed and not stored.",
     title: "Hydrangea Doctor", homeTitle: "Take a photo of your plant", takePhoto: "Take a photo",
     fromGallery: "or choose from the gallery", tip: "Tip: a close-up of one leaf, or the whole plant.",
-    locQuestion: "🌡️ May I use your location?", locWhy: "Only to check the weather: frost and heat change the advice.",
+    locQuestion: "May I use your location?", locWhy: "Only to check the weather: frost and heat change the advice.",
     yes: "Yes", noThanks: "No, thanks", looking: "Looking at your plant…",
     slow: "The first check after a break can take up to a minute. Please wait.",
-    readAloud: "Read aloud", stop: "Stop", yesRight: "✓ Yes", noChoose: "No, choose", more: "More details",
-    addPhoto: "Add another photo of this plant", again: "🌿 Check a different plant", remove: "Remove photo",
-    answer: { yes: "✂️ Yes, trim now", light: "🌿 Only a little", no: "✋ Don't trim now" },
+    readAloud: "Read aloud", stop: "Stop", yesRight: "Yes", noChoose: "No, choose", more: "More details",
+    addPhoto: "Add another photo of this plant", again: "Check a different plant", remove: "Remove photo",
+    answer: { yes: "Yes, trim now", light: "Only a little", no: "Don't trim now" },
     thisIs: (p) => `This is: ${p}`, looksLike: (p) => `This looks like: ${p}. Is that right?`,
     whichPlant: "Which plant is this?", whichHydrangea: "What does your hydrangea look like?",
     howOld: "How old is this plant?", ages: { young: "Young (1–2 years)", middle: "3–5 years", old: "Older" },
@@ -29,14 +41,28 @@ const UI = {
     offline: "No internet. Please connect and try again.", failed: "Something went wrong. Please try again.",
   },
   ru: {
+    eyebrow: "Здоровье растений и обрезка",
+    heroTitle: "Знайте, когда обрезать, а когда подождать.",
+    heroLead: "Сфотографируйте растение. Получите понятный ответ об обрезке с учётом его вида и погоды в вашем месте.",
+    howTitle: "Как это работает",
+    s1t: "Сфотографируйте",
+    s1d: "Один лист крупным планом или всё растение. До шести фото.",
+    s2t: "Анализ",
+    s2d: "Модель по фото определяет стадию и состояние растения. Добавляется местная погода.",
+    s3t: "Действие",
+    s3d: "Один чёткий ответ: обрезать сейчас, немного или подождать.",
+    honestTitle: "Что умеет и чего не умеет",
+    honest1: "Оценивает стадию роста и видимые проблемы со здоровьем по фото и проверяет заморозки и жару перед советом об обрезке.",
+    honest2: "Это не диагноз. Если фото нечёткое, приложение скажет, что не уверено, и попросит снимок ближе. Точность для вашего сада растёт по мере добавления размеченных фото.",
+    footPrivacy: "Фото анализируются и не сохраняются.",
     title: "Доктор Гортензий", homeTitle: "Сфотографируйте растение", takePhoto: "Сфотографировать",
     fromGallery: "или выбрать из галереи", tip: "Совет: один лист крупным планом или всё растение целиком.",
-    locQuestion: "🌡️ Можно узнать ваше местоположение?", locWhy: "Только чтобы проверить погоду: заморозки и жара меняют совет.",
+    locQuestion: "Можно узнать ваше местоположение?", locWhy: "Только чтобы проверить погоду: заморозки и жара меняют совет.",
     yes: "Да", noThanks: "Нет, спасибо", looking: "Смотрю на ваше растение…",
     slow: "Первая проверка после перерыва может занять до минуты. Пожалуйста, подождите.",
-    readAloud: "Прочитать вслух", stop: "Стоп", yesRight: "✓ Да", noChoose: "Нет, выбрать", more: "Подробнее",
-    addPhoto: "Добавить ещё фото этого растения", again: "🌿 Проверить другое растение", remove: "Удалить фото",
-    answer: { yes: "✂️ Да, обрезайте", light: "🌿 Только немного", no: "✋ Не обрезайте сейчас" },
+    readAloud: "Прочитать вслух", stop: "Стоп", yesRight: "Да", noChoose: "Нет, выбрать", more: "Подробнее",
+    addPhoto: "Добавить ещё фото этого растения", again: "Проверить другое растение", remove: "Удалить фото",
+    answer: { yes: "Да, обрезайте", light: "Только немного", no: "Не обрезайте сейчас" },
     thisIs: (p) => `Это: ${p}`, looksLike: (p) => `Похоже, это: ${p}. Верно?`,
     whichPlant: "Что это за растение?", whichHydrangea: "Как выглядит ваша гортензия?",
     howOld: "Сколько лет этому растению?", ages: { young: "Молодое (1–2 года)", middle: "3–5 лет", old: "Старше" },
@@ -45,14 +71,28 @@ const UI = {
     offline: "Нет интернета. Подключитесь и попробуйте снова.", failed: "Что-то пошло не так. Попробуйте ещё раз.",
   },
   ky: {
+    eyebrow: "Өсүмдүктүн ден соолугу жана кыркуу",
+    heroTitle: "Качан кыркууну, качан күтүүнү билиңиз.",
+    heroLead: "Өсүмдүктү сүрөткө тартыңыз. Анын көрүнүшүнө жана жериңиздеги аба ырайына жараша так жооп алыңыз.",
+    howTitle: "Бул кантип иштейт",
+    s1t: "Сүрөткө тартыңыз",
+    s1d: "Бир жалбырак жакындан же өсүмдүк толугу менен. Алты сүрөткө чейин.",
+    s2t: "Талдоо",
+    s2d: "Модель сүрөттөн өсүмдүктүн баскычын жана абалын аныктайт. Жергиликтүү аба ырайы кошулат.",
+    s3t: "Иш-аракет",
+    s3d: "Бир так жооп: азыр кыркуу, бир аз гана же күтүү.",
+    honestTitle: "Эмне кыла алат жана эмне кыла албайт",
+    honest1: "Сүрөттөн өсүү баскычын жана көрүнгөн көйгөйлөрдү баалайт, кыркуудан мурун үшүк менен ысыкты текшерет.",
+    honest2: "Бул диагноз эмес. Сүрөт даана эмес болсо, ишенбей турганын айтып, жакындан тартууну суранат. Бакчаңыз үчүн тактык белгиленген сүрөттөр кошулган сайын жакшырат.",
+    footPrivacy: "Сүрөттөр талдоодон өтөт, сакталбайт.",
     title: "Гортензия Доктуру", homeTitle: "Өсүмдүгүңүздү сүрөткө тартыңыз", takePhoto: "Сүрөткө тартуу",
     fromGallery: "же галереядан тандаңыз", tip: "Кеңеш: бир жалбыракты жакындан же өсүмдүктү толугу менен.",
-    locQuestion: "🌡️ Жайгашкан жериңизди колдонсом болобу?", locWhy: "Аба ырайын текшерүү үчүн гана: үшүк жана ысык кеңешти өзгөртөт.",
+    locQuestion: "Жайгашкан жериңизди колдонсом болобу?", locWhy: "Аба ырайын текшерүү үчүн гана: үшүк жана ысык кеңешти өзгөртөт.",
     yes: "Ооба", noThanks: "Жок, рахмат", looking: "Өсүмдүгүңүздү карап жатам…",
     slow: "Тыныгуудан кийинки биринчи текшерүү бир мүнөткө чейин созулушу мүмкүн. Күтө туруңуз.",
-    readAloud: "Үн менен окуу", stop: "Токтотуу", yesRight: "✓ Ооба", noChoose: "Жок, тандоо", more: "Кененирээк",
-    addPhoto: "Бул өсүмдүктүн дагы бир сүрөтүн кошуу", again: "🌿 Башка өсүмдүктү текшерүү", remove: "Сүрөттү өчүрүү",
-    answer: { yes: "✂️ Ооба, кыркыңыз", light: "🌿 Бир аз гана", no: "✋ Азыр кыркпаңыз" },
+    readAloud: "Үн менен окуу", stop: "Токтотуу", yesRight: "Ооба", noChoose: "Жок, тандоо", more: "Кененирээк",
+    addPhoto: "Бул өсүмдүктүн дагы бир сүрөтүн кошуу", again: "Башка өсүмдүктү текшерүү", remove: "Сүрөттү өчүрүү",
+    answer: { yes: "Ооба, кыркыңыз", light: "Бир аз гана", no: "Азыр кыркпаңыз" },
     thisIs: (p) => `Бул: ${p}`, looksLike: (p) => `Бул ${p} окшойт. Туурабы?`,
     whichPlant: "Бул кайсы өсүмдүк?", whichHydrangea: "Гортензияңыз кандай көрүнөт?",
     howOld: "Бул өсүмдүк канча жашта?", ages: { young: "Жаш (1–2 жыл)", middle: "3–5 жыл", old: "Улуураак" },
@@ -125,6 +165,7 @@ function renderThumbs() {
     return box;
   }));
   $("home").hidden = photos.length > 0;
+  document.body.classList.toggle("working", photos.length > 0);
 }
 
 // Shrink each photo on the phone before upload: faster on mobile data; the model only needs ~224px.
@@ -187,7 +228,7 @@ function show(d) {
   $("speak").hidden = !("speechSynthesis" in window);
 
   // Which plant
-  const p = d.plant, name = `${EMOJI[p.key] || "🌿"} ${p.text}`;
+  const p = d.plant, name = p.text;
   $("plantGrid").hidden = true;
   if (p.key === "unknown") {
     $("plantLine").textContent = tr().whichPlant; $("plantConfirm").hidden = true; showPlantGrid();
@@ -209,7 +250,7 @@ function show(d) {
 
   // Details
   $("notes").replaceChildren(...d.notes.map((n) => Object.assign(document.createElement("li"), { textContent: n })));
-  $("weather").textContent = d.weather ? `🌦️ ${d.weather}` : "";
+  $("weather").textContent = d.weather ? d.weather : "";
   $("seen").textContent = `${tr().health}: ${d.health.text} (${certainty(d.health.confidence)}) · ${tr().stage}: ${d.stage.text} (${certainty(d.stage.confidence)})`;
 
   $("result").hidden = false;
@@ -231,7 +272,7 @@ function askQuestion(text, choices, onPick) {
 function showPlantGrid() {
   $("plantGrid").replaceChildren(...Object.entries(plantNames).map(([k, v]) => {
     const b = document.createElement("button");
-    b.innerHTML = `<span class="e">${EMOJI[k] || "🌿"}</span>`;
+    b.innerHTML = ``;
     b.append(v);
     b.classList.toggle("on", k === last?.plant?.key);
     b.onclick = () => { plant = k; analyse(); };
@@ -239,7 +280,7 @@ function showPlantGrid() {
   }));
   $("plantGrid").hidden = false;
 }
-$("plantYes").onclick = () => { plant = last.plant.key; $("plantConfirm").hidden = true; $("plantLine").textContent = tr().thisIs(`${EMOJI[plant]} ${last.plant.text}`); };
+$("plantYes").onclick = () => { plant = last.plant.key; $("plantConfirm").hidden = true; $("plantLine").textContent = tr().thisIs(last.plant.text); };
 $("plantNo").onclick = () => { $("plantConfirm").hidden = true; $("plantLine").textContent = tr().whichPlant; showPlantGrid(); };
 
 // ---------- read aloud ----------

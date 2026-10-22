@@ -1,6 +1,6 @@
 // Service worker: makes the app installable and opens instantly by caching the app shell.
 // The ML itself needs the internet (it runs on the server).
-const CACHE = "hydrangea-v9";
+const CACHE = "hydrangea-v10";
 const SHELL = ["./", "index.html", "style.css", "app.js", "manifest.webmanifest", "icons/icon-192.png"];
 
 self.addEventListener("install", (e) => e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL))));
