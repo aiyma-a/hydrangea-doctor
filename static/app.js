@@ -1,3 +1,5 @@
+// On GitHub Pages the page is static, so the AI is called on Cloud Run. Elsewhere the server serves both.
+const API = location.hostname.endsWith("github.io") ? "https://hydrangea-doctor-624126191196.us-central1.run.app/" : "";
 // Phone app, designed for older users: one big photo button, the answer appears
 // by itself, short text, questions only when they matter.
 const $ = (id) => document.getElementById(id);
@@ -78,7 +80,7 @@ async function setLang(l) {
   document.querySelectorAll("[data-i18n]").forEach((el) => (el.textContent = tr()[el.dataset.i18n]));
   document.querySelectorAll("#langs button").forEach((b) => b.classList.toggle("on", b.dataset.lang === l));
   const [plants, species] = await Promise.all([
-    fetch(`api/plants?lang=${l}`).then((r) => r.json()), fetch(`api/species?lang=${l}`).then((r) => r.json())]);
+    fetch(API + `api/plants?lang=${l}`).then((r) => r.json()), fetch(API + `api/species?lang=${l}`).then((r) => r.json())]);
   plantNames = Object.fromEntries(Object.entries(plants).map(([k, v]) => [k, v.name]));
   speciesNames = species;
   renderThumbs();
@@ -158,7 +160,7 @@ async function analyse() {
     form.append("ages", JSON.stringify(Object.fromEntries(
       Object.entries(store.plants).filter(([, v]) => v.age).map(([k, v]) => [k, v.age]))));
     if (coords) { form.append("lat", coords.lat); form.append("lon", coords.lon); }
-    const res = await fetch("api/analyze", { method: "POST", body: form });
+    const res = await fetch(API + "api/analyze", { method: "POST", body: form });
     const data = await res.json().catch(() => ({}));
     if (id !== requestId) return; // a newer request replaced this one
     if (!res.ok) throw new Error(data.detail || tr().failed);
@@ -264,7 +266,7 @@ $("again").onclick = reset;
 
 // ---------- start ----------
 (async function init() {
-  fetch("api/warmup").catch(() => {}); // wake the AI up while she gets the camera ready
+  fetch(API + "api/warmup").catch(() => {}); // wake the AI up while she gets the camera ready
   await setLang(lang);
   if (!store.location) $("locAsk").hidden = false;
   else if (store.location === "yes") getLocation();

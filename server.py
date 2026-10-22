@@ -11,6 +11,7 @@ import threading
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, Form, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, UnidentifiedImageError
@@ -58,6 +59,8 @@ async def _model_ready() -> bool:
 
 
 app = FastAPI(title="Hydrangea Doctor", docs_url=None, redoc_url=None, lifespan=lifespan)
+# The GitHub Pages copy of the app calls this API from another origin.
+app.add_middleware(CORSMiddleware, allow_origins=["https://aiyma-a.github.io"], allow_methods=["GET", "POST"], allow_headers=["*"])
 
 
 def error(status: int, key: str, lang: str, **params):
