@@ -20,6 +20,8 @@
     .figs { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:12px; }
     .figs img { width:100%; border:1px solid var(--line); border-radius:10px; background:#fff; }
     .figs figcaption { font-size:.9rem; color:var(--muted); margin-top:4px; }
+    .rt { display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:flex-end; }
+    @media (max-width:720px) { .rt .link { display:none; } }
     .note { background:var(--iris-soft); border-radius:10px; padding:14px 18px; margin:18px 0; max-width:42em; }
     @media (max-width:720px) { .figs { grid-template-columns:1fr; } }
   </style>
@@ -27,59 +29,61 @@
 <body>
   <header class="top">
     <div class="wrap bar">
-      <a class="brand" href="./"><img src="icons/logo.svg" width="32" height="32" alt=""><span>Hydrangea Doctor</span></a>
-      <a class="link" href="./">← Back to the app</a>
+      <a class="brand" href="./"><img src="icons/logo.svg" width="32" height="32" alt=""><span data-i18n="app_name">Hydrangea Doctor</span></a>
+      <div class="rt"><a class="link" href="./" data-i18n="back">← Back to the app</a>
+        <div id="langs" class="langs" role="group" aria-label="Language"><button data-lang="ru">РУ</button><button data-lang="ky">КЫ</button><button data-lang="en">EN</button></div></div>
     </div>
   </header>
   <main class="wrap doc">
-    <p class="eyebrow" style="margin-top:36px">Evaluation</p>
-    <h2 style="margin-top:0">How accurate is it?</h2>
-    <p>We tested the photo model on a hand-checked set of freely licensed photos from Wikimedia Commons. This page shows the numbers, the size of the test, and the limits.</p>
+    <p class="eyebrow" style="margin-top:36px" data-i18n="eyebrow">Evaluation</p>
+    <h2 style="margin-top:0" data-i18n="title">How accurate is it?</h2>
+    <p data-i18n="intro">We tested the photo model on a hand-checked set of freely licensed photos from Wikimedia Commons. This page shows the numbers, the size of the test, and the limits.</p>
 
-    <h3>Summary</h3>
+    <h3 data-i18n="summary">Summary</h3>
     <div class="tablewrap"><table>
-      <tr><th>Question</th><th class="num">Photos</th><th class="num">Untrained model</th><th class="num">Trained on our photos*</th><th class="num">Random guessing</th></tr>
-      <tr class="best"><td>Growth stage (4 classes)</td><td class="num">66</td><td class="num">64%</td><td class="num">85%<br><small>95% range 74–92%</small></td><td class="num">35%</td></tr>
-      <tr class="best"><td>Health (5 classes)</td><td class="num">45</td><td class="num">49%</td><td class="num">89%<br><small>95% range 77–95%</small></td><td class="num">29%</td></tr>
+      <tr><th data-i18n="question">Question</th><th class="num" data-i18n="photos">Photos</th><th class="num" data-i18n="untrained">Untrained model</th><th class="num" data-i18n="trained">Trained on our photos*</th><th class="num" data-i18n="random">Random guessing</th></tr>
+      <tr class="best"><td data-i18n="stage4">Growth stage (4 classes)</td><td class="num">66</td><td class="num">64%</td><td class="num">85%<br><small><span data-i18n="range">95% range</span> 74–92%</small></td><td class="num">35%</td></tr>
+      <tr class="best"><td data-i18n="health5">Health (5 classes)</td><td class="num">45</td><td class="num">49%</td><td class="num">89%<br><small><span data-i18n="range">95% range</span> 77–95%</small></td><td class="num">29%</td></tr>
     </table></div>
-    <p class="hint">* Cross-validated: every photo was scored by a model that never saw it, and photos were never split across training and testing. "Random guessing" means always answering the most common class.</p>
+    <p class="hint" data-i18n="foot1">* Cross-validated: every photo was scored by a model that never saw it, and photos were never split across training and testing. "Random guessing" means always answering the most common class.</p>
 
-    <div class="note"><b>The live app uses the untrained model.</b> It is the 64% and 49% column. The trained model is held back until it is tested on real garden photos, because Wikimedia photos look different from a phone photo of a garden.</div>
+    <div class="note" data-i18n="note" data-html><b>The live app uses the untrained model.</b></div>
 
-    <h3>What the test set contains</h3>
+    <h3 data-i18n="contains">What the test set contains</h3>
     <div class="tablewrap"><table>
-      <tr><th>Question</th><th>Class</th><th class="num">Photos</th></tr>
-      <tr><td rowspan="4">Stage</td><td>Blooming</td><td class="num">23</td></tr>
-      <tr><td>Budding</td><td class="num">16</td></tr>
-      <tr><td>Fading blooms</td><td class="num">16</td></tr>
-      <tr><td>Dormant</td><td class="num">11</td></tr>
-      <tr><td rowspan="5">Health</td><td>Leaf spot</td><td class="num">13</td></tr>
-      <tr><td>Powdery mildew</td><td class="num">11</td></tr>
-      <tr><td>Healthy</td><td class="num">9</td></tr>
-      <tr><td>Yellowing</td><td class="num">7</td></tr>
-      <tr><td>Wilting</td><td class="num">5</td></tr>
+      <tr><th data-i18n="question">Question</th><th data-i18n="class">Class</th><th class="num" data-i18n="photos">Photos</th></tr>
+      <tr><td rowspan="4" data-i18n="stage">Stage</td><td data-i18n="blooming">Blooming</td><td class="num">23</td></tr>
+      <tr><td data-i18n="budding">Budding</td><td class="num">16</td></tr>
+      <tr><td data-i18n="fading">Fading blooms</td><td class="num">16</td></tr>
+      <tr><td data-i18n="dormant">Dormant</td><td class="num">11</td></tr>
+      <tr><td rowspan="5" data-i18n="health">Health</td><td data-i18n="leafspot">Leaf spot</td><td class="num">13</td></tr>
+      <tr><td data-i18n="mildew">Powdery mildew</td><td class="num">11</td></tr>
+      <tr><td data-i18n="healthy">Healthy</td><td class="num">9</td></tr>
+      <tr><td data-i18n="yellowing">Yellowing</td><td class="num">7</td></tr>
+      <tr><td data-i18n="wilting">Wilting</td><td class="num">5</td></tr>
     </table></div>
-    <p>We started from 225 photos found by keyword search. Many were wrong: scanned single leaves, book pages, autumn maple trees. We looked at every photo and kept only those that show what the label says. Some were moved to the class they actually show. We chose photos before seeing any model score.</p>
+    <p data-i18n="curation">We started from 225 photos found by keyword search. Many were wrong: scanned single leaves, book pages, autumn maple trees. We looked at every photo and kept only those that show what the label says. Some were moved to the class they actually show. We chose photos before seeing any model score.</p>
 
-    <h3>Where it goes wrong</h3>
+    <h3 data-i18n="wrong">Where it goes wrong</h3>
     <figure class="figs" style="margin:12px 0 0">
-      <div><img src="results/health_trained.png" alt="Health confusion matrix, trained" loading="lazy"><figcaption>Health, trained: rows are the true class, columns are the answer.</figcaption></div>
-      <div><img src="results/stage_trained.png" alt="Stage confusion matrix, trained" loading="lazy"><figcaption>Stage, trained.</figcaption></div>
+      <div><img src="results/health_trained.png" alt="Health confusion matrix, trained" loading="lazy"><figcaption data-i18n="cap1">Health, trained: rows are the true class, columns are the answer.</figcaption></div>
+      <div><img src="results/stage_trained.png" alt="Stage confusion matrix, trained" loading="lazy"><figcaption data-i18n="cap2">Stage, trained.</figcaption></div>
     </figure>
 
-    <h3>Limits you should know</h3>
+    <h3 data-i18n="limits">Limits you should know</h3>
     <ul>
-      <li><b>Small test.</b> 45 and 66 photos. A single photo moves the result by 1–2 points. The ranges above show the real uncertainty.</li>
-      <li><b>Wilting has only 5 photos.</b> Its result is close to anecdotal.</li>
-      <li><b>Not a garden test.</b> Wikimedia photos are often well framed. Phone photos in a garden are harder, so expect lower accuracy there.</li>
-      <li><b>Curated by hand.</b> Removing bad photos makes the test cleaner, and also easier. The earlier unfiltered run scored 70% on health and 76% on stage.</li>
-      <li><b>Advice, not diagnosis.</b> When the model is unsure the app says so and asks for another photo.</li>
+      <li data-i18n="li0" data-html><b>Small test.</b> 45 and 66 photos. A single photo moves the result by 1–2 points. The ranges above show the real uncertainty.</li>
+      <li data-i18n="li1" data-html><b>Wilting has only 5 photos.</b> Its result is close to anecdotal.</li>
+      <li data-i18n="li2" data-html><b>Not a garden test.</b> Wikimedia photos are often well framed. Phone photos in a garden are harder, so expect lower accuracy there.</li>
+      <li data-i18n="li3" data-html><b>Curated by hand.</b> Removing bad photos makes the test cleaner, and also easier. The earlier unfiltered run scored 70% on health and 76% on stage.</li>
+      <li data-i18n="li4" data-html><b>Advice, not diagnosis.</b> When the model is unsure the app says so and asks for another photo.</li>
     </ul>
 
-    <h3>Next</h3>
-    <p>Labelled photos from real gardens, checked by a gardener, are the next step. They will let us report a number that matches how the app is used.</p>
-    <p class="hint">The code, the curation list and the photo credits are in the <a href="https://github.com/aiyma-a/hydrangea-doctor">open repository</a>.</p>
+    <h3 data-i18n="next">Next</h3>
+    <p data-i18n="nextp">Labelled photos from real gardens, checked by a gardener, are the next step. They will let us report a number that matches how the app is used.</p>
+    <p class="hint" data-i18n="code" data-html>The code, the curation list and the photo credits are in the <a href="https://github.com/aiyma-a/hydrangea-doctor">open repository</a>.</p>
   </main>
-  <footer class="wrap foot"><span>Hydrangea Doctor</span><span><a href="./">App</a> · <a href="https://github.com/aiyma-a/hydrangea-doctor" rel="noopener">Open source</a></span></footer>
+  <footer class="wrap foot"><span data-i18n="app_name">Hydrangea Doctor</span><span><a href="./" data-i18n="app">App</a> · <a href="https://github.com/aiyma-a/hydrangea-doctor" rel="noopener">Open source</a></span></footer>
+<script src="results.js"></script>
 </body>
 </html>
