@@ -9,3 +9,6 @@ data/**/*.heic
 data/**/*.webp
 models/*.joblib
 .pytest_cache/
+data_raw/
+reports_raw/
+models_aside/

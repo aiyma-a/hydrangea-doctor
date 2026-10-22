@@ -91,3 +91,7 @@ body.working main { padding-top:20px; }
   .band { padding:28px 0; }
 }
 @media (prefers-reduced-motion: reduce) { .spinner { animation-duration:3s; } .answer, .panel { animation:none; } }
+
+.nav { margin-left:auto; } .nav a { color:var(--forest); font-weight:600; text-decoration:none; padding:10px 6px; }
+.brand img { display:block; }
+@media (max-width:720px) { .nav { display:none; } .brand span { font-size:1.05rem; } }

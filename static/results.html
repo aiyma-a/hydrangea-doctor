@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Results · Hydrangea Doctor</title>
+  <meta name="theme-color" content="#1f3d2f">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .doc h2 { font-size:clamp(1.8rem,4vw,2.4rem); color:var(--forest); margin:36px 0 8px; line-height:1.15; }
+    .doc h3 { font-size:1.35rem; color:var(--forest); margin:36px 0 10px; }
+    .doc p, .doc li { color:var(--muted); max-width:42em; }
+    table { border-collapse:collapse; width:100%; margin:12px 0 4px; font-size:1rem; background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+    th, td { text-align:left; padding:10px 14px; border-bottom:1px solid var(--line); }
+    th { background:var(--iris-soft); color:var(--forest); font-weight:600; }
+    td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+    tr.best td { font-weight:600; color:var(--forest); }
+    .tablewrap { overflow-x:auto; }
+    .figs { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:12px; }
+    .figs img { width:100%; border:1px solid var(--line); border-radius:10px; background:#fff; }
+    .figs figcaption { font-size:.9rem; color:var(--muted); margin-top:4px; }
+    .note { background:var(--iris-soft); border-radius:10px; padding:14px 18px; margin:18px 0; max-width:42em; }
+    @media (max-width:720px) { .figs { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap bar">
+      <a class="brand" href="./"><img src="icons/logo.svg" width="32" height="32" alt=""><span>Hydrangea Doctor</span></a>
+      <a class="link" href="./">← Back to the app</a>
+    </div>
+  </header>
+  <main class="wrap doc">
+    <p class="eyebrow" style="margin-top:36px">Evaluation</p>
+    <h2 style="margin-top:0">How accurate is it?</h2>
+    <p>We tested the photo model on a hand-checked set of freely licensed photos from Wikimedia Commons. This page shows the numbers, the size of the test, and the limits.</p>
+
+    <h3>Summary</h3>
+    <div class="tablewrap"><table>
+      <tr><th>Question</th><th class="num">Photos</th><th class="num">Untrained model</th><th class="num">Trained on our photos*</th><th class="num">Random guessing</th></tr>
+      <tr class="best"><td>Growth stage (4 classes)</td><td class="num">66</td><td class="num">64%</td><td class="num">85%<br><small>95% range 74–92%</small></td><td class="num">35%</td></tr>
+      <tr class="best"><td>Health (5 classes)</td><td class="num">45</td><td class="num">49%</td><td class="num">89%<br><small>95% range 77–95%</small></td><td class="num">29%</td></tr>
+    </table></div>
+    <p class="hint">* Cross-validated: every photo was scored by a model that never saw it, and photos were never split across training and testing. "Random guessing" means always answering the most common class.</p>
+
+    <div class="note"><b>The live app uses the untrained model.</b> It is the 64% and 49% column. The trained model is held back until it is tested on real garden photos, because Wikimedia photos look different from a phone photo of a garden.</div>
+
+    <h3>What the test set contains</h3>
+    <div class="tablewrap"><table>
+      <tr><th>Question</th><th>Class</th><th class="num">Photos</th></tr>
+      <tr><td rowspan="4">Stage</td><td>Blooming</td><td class="num">23</td></tr>
+      <tr><td>Budding</td><td class="num">16</td></tr>
+      <tr><td>Fading blooms</td><td class="num">16</td></tr>
+      <tr><td>Dormant</td><td class="num">11</td></tr>
+      <tr><td rowspan="5">Health</td><td>Leaf spot</td><td class="num">13</td></tr>
+      <tr><td>Powdery mildew</td><td class="num">11</td></tr>
+      <tr><td>Healthy</td><td class="num">9</td></tr>
+      <tr><td>Yellowing</td><td class="num">7</td></tr>
+      <tr><td>Wilting</td><td class="num">5</td></tr>
+    </table></div>
+    <p>We started from 225 photos found by keyword search. Many were wrong: scanned single leaves, book pages, autumn maple trees. We looked at every photo and kept only those that show what the label says. Some were moved to the class they actually show. We chose photos before seeing any model score.</p>
+
+    <h3>Where it goes wrong</h3>
+    <figure class="figs" style="margin:12px 0 0">
+      <div><img src="results/health_trained.png" alt="Health confusion matrix, trained" loading="lazy"><figcaption>Health, trained: rows are the true class, columns are the answer.</figcaption></div>
+      <div><img src="results/stage_trained.png" alt="Stage confusion matrix, trained" loading="lazy"><figcaption>Stage, trained.</figcaption></div>
+    </figure>
+
+    <h3>Limits you should know</h3>
+    <ul>
+      <li><b>Small test.</b> 45 and 66 photos. A single photo moves the result by 1–2 points. The ranges above show the real uncertainty.</li>
+      <li><b>Wilting has only 5 photos.</b> Its result is close to anecdotal.</li>
+      <li><b>Not a garden test.</b> Wikimedia photos are often well framed. Phone photos in a garden are harder, so expect lower accuracy there.</li>
+      <li><b>Curated by hand.</b> Removing bad photos makes the test cleaner, and also easier. The earlier unfiltered run scored 70% on health and 76% on stage.</li>
+      <li><b>Advice, not diagnosis.</b> When the model is unsure the app says so and asks for another photo.</li>
+    </ul>
+
+    <h3>Next</h3>
+    <p>Labelled photos from real gardens, checked by a gardener, are the next step. They will let us report a number that matches how the app is used.</p>
+    <p class="hint">The code, the curation list and the photo credits are in the <a href="https://github.com/aiyma-a/hydrangea-doctor">open repository</a>.</p>
+  </main>
+  <footer class="wrap foot"><span>Hydrangea Doctor</span><span><a href="./">App</a> · <a href="https://github.com/aiyma-a/hydrangea-doctor" rel="noopener">Open source</a></span></footer>
+</body>
+</html>

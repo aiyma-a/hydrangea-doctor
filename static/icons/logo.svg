@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Hydrangea Doctor">
+  <defs>
+    <g id="f"><circle cx="0" cy="-3.4" r="3.4"/><circle cx="3.4" cy="0" r="3.4"/><circle cx="0" cy="3.4" r="3.4"/><circle cx="-3.4" cy="0" r="3.4"/></g>
+  </defs>
+  <path d="M32 61V40" stroke="#2f6b4a" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M32 54C23 54 17 49 15 41c9 0 15 4 17 13z" fill="#2f6b4a"/>
+  <path d="M32 50c8 0 13-4 15-11-8 0-13 4-15 11z" fill="#3f8a5f"/>
+  <g fill="#7d6bb8"><use href="#f" x="23" y="15"/><use href="#f" x="41" y="15"/><use href="#f" x="14" y="26"/><use href="#f" x="50" y="26"/></g>
+  <g fill="#5b4b8a"><use href="#f" x="32" y="11"/><use href="#f" x="23" y="28"/><use href="#f" x="41" y="28"/><use href="#f" x="32" y="22"/></g>
+  <g fill="#9d8fd0"><use href="#f" x="32" y="34"/><use href="#f" x="22" y="39" transform="translate(0 -3)"/><use href="#f" x="42" y="39" transform="translate(0 -3)"/></g>
+  <g fill="#fff"><circle cx="32" cy="11" r="1.2"/><circle cx="32" cy="22" r="1.2"/><circle cx="23" cy="28" r="1.2"/><circle cx="41" cy="28" r="1.2"/><circle cx="32" cy="34" r="1.2"/></g>
+</svg>

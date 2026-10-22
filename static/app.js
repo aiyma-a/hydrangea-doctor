@@ -11,6 +11,7 @@ const AGES = [["young", 1], ["middle", 4], ["old", 10]];
 // Screen texts. The advice itself is translated on the server (hydrangea/i18n.py).
 const UI = {
   en: {
+    resultsLink: "Results",
     eyebrow: "Plant health and pruning guidance",
     heroTitle: "Know when to prune, and when to wait.",
     heroLead: "Photograph a plant. Get a clear pruning answer based on what it looks like and the weather where you are.",
@@ -41,6 +42,7 @@ const UI = {
     offline: "No internet. Please connect and try again.", failed: "Something went wrong. Please try again.",
   },
   ru: {
+    resultsLink: "Результаты",
     eyebrow: "Здоровье растений и обрезка",
     heroTitle: "Знайте, когда обрезать, а когда подождать.",
     heroLead: "Сфотографируйте растение. Получите понятный ответ об обрезке с учётом его вида и погоды в вашем месте.",
@@ -71,6 +73,7 @@ const UI = {
     offline: "Нет интернета. Подключитесь и попробуйте снова.", failed: "Что-то пошло не так. Попробуйте ещё раз.",
   },
   ky: {
+    resultsLink: "Жыйынтыктар",
     eyebrow: "Өсүмдүктүн ден соолугу жана кыркуу",
     heroTitle: "Качан кыркууну, качан күтүүнү билиңиз.",
     heroLead: "Өсүмдүктү сүрөткө тартыңыз. Анын көрүнүшүнө жана жериңиздеги аба ырайына жараша так жооп алыңыз.",
