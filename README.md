@@ -5,6 +5,27 @@
 Take a photo of a hydrangea → find out if it's healthy, what stage it's in,
 and whether (and how far) to trim it, adjusted for your weather and the plant's age.
 
+## Try it
+
+**On a phone (fastest):** open https://hydrangea-doctor-624126191196.us-central1.run.app
+- The first open after a quiet period can take about a minute while the model wakes up. Then answers take a few seconds.
+- Tap the big camera button and take a photo. You can add up to 6 photos of the same plant.
+- Choose English, Russian or Kyrgyz. The app shows what is wrong with the plant, what stage it is in, and whether to trim now.
+- To install it: Android Chrome → menu → *Add to Home screen*. iPhone Safari → Share → *Add to Home Screen*.
+
+**On your own computer:**
+
+```bash
+git clone https://github.com/aiyma-a/hydrangea-doctor.git
+cd hydrangea-doctor
+python3 -m venv .venv
+.venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
+.venv/bin/pip install -r requirements.txt
+.venv/bin/uvicorn server:app --port 8080     # then open http://127.0.0.1:8080
+```
+
+The first start downloads the CLIP model (about 600 MB). Run the tests with `.venv/bin/python -m pytest`.
+
 ## How it works
 
 ```

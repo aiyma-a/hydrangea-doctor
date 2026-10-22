@@ -8,5 +8,9 @@ matplotlib
 pillow
 gradio
 pytest
+fastapi
+uvicorn
+python-multipart
+joblib
 # optional, for iPhone .heic photos:
 # pillow-heif
