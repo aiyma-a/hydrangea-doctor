@@ -12,3 +12,4 @@ models/*.joblib
 data_raw/
 reports_raw/
 models_aside/
+data_neg/

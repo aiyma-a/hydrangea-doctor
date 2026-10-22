@@ -36,14 +36,15 @@ def _load_model():
     # that need the model wait for it (see _model_ready).
     from hydrangea import zeroshot
     from hydrangea.embed import _model
-    from hydrangea.predict import analyse
+    from hydrangea.predict import NotAPlant, analyse
 
     _model()
     zeroshot.label_embeddings("plant")
     for plant in [*PLANTS, "unknown"]:
         for task in ("health", "stage"):
             zeroshot.label_embeddings(task, plant)
-    _engine["analyse"] = analyse
+    zeroshot._presence_embeddings()
+    _engine["analyse"], _engine["NotAPlant"] = analyse, NotAPlant
     _ready.set()
     log.info("model loaded")
 
@@ -135,8 +136,11 @@ async def analyze(
         ages_by_plant = {}
     if not await _model_ready():
         return error(503, "err_busy", lang)
-    r = await asyncio.to_thread(_engine["analyse"], images, species, height_cm=height_cm or None, age_years=age_years or None, weather=w, plant=plant,
-                                ages=ages_by_plant)
+    try:
+        r = await asyncio.to_thread(_engine["analyse"], images, species, height_cm=height_cm or None, age_years=age_years or None, weather=w,
+                                    plant=plant, ages=ages_by_plant)
+    except _engine["NotAPlant"]:
+        return JSONResponse({"detail": t("err_no_plant", lang), "code": "not_plant"}, status_code=422)
 
     def task_json(res, prefix="label"):
         return {"label": res.label, "text": t(f"{prefix}.{res.label}", lang), "confidence": res.confidence,

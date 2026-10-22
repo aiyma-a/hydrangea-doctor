@@ -11,6 +11,10 @@ const AGES = [["young", 1], ["middle", 4], ["old", 10]];
 // Screen texts. The advice itself is translated on the server (hydrangea/i18n.py).
 const UI = {
   en: {
+    tooDark: "This photo is too dark. Try again near a window or in daylight.",
+    tooBlurry: "This photo is blurry. Hold the phone steady and tap the plant on the screen to focus.",
+    useAnyway: "Use it anyway",
+    takeAnother: "Take another photo",
     resultsLink: "Results",
     eyebrow: "Plant health and pruning guidance",
     heroTitle: "Know when to prune, and when to wait.",
@@ -42,6 +46,10 @@ const UI = {
     offline: "No internet. Please connect and try again.", failed: "Something went wrong. Please try again.",
   },
   ru: {
+    tooDark: "Фото слишком тёмное. Попробуйте у окна или при дневном свете.",
+    tooBlurry: "Фото размытое. Держите телефон ровно и коснитесь растения на экране, чтобы навести резкость.",
+    useAnyway: "Всё равно использовать",
+    takeAnother: "Сфотографировать ещё раз",
     resultsLink: "Результаты",
     eyebrow: "Здоровье растений и обрезка",
     heroTitle: "Знайте, когда обрезать, а когда подождать.",
@@ -73,6 +81,10 @@ const UI = {
     offline: "Нет интернета. Подключитесь и попробуйте снова.", failed: "Что-то пошло не так. Попробуйте ещё раз.",
   },
   ky: {
+    tooDark: "Сүрөт өтө караңгы. Терезенин жанында же күндүзгү жарыкта кайра тартып көрүңүз.",
+    tooBlurry: "Сүрөт даана эмес. Телефонду кыймылдатпай кармап, фокус алуу үчүн экрандагы өсүмдүккө тийиңиз.",
+    useAnyway: "Баары бир колдонуу",
+    takeAnother: "Дагы бир сүрөт тартуу",
     resultsLink: "Жыйынтыктар",
     eyebrow: "Өсүмдүктүн ден соолугу жана кыркуу",
     heroTitle: "Качан кыркууну, качан күтүүнү билиңиз.",
@@ -143,9 +155,43 @@ $("locNo").onclick = () => { store.location = "no"; save(); $("locAsk").hidden =
 // ---------- photos ----------
 for (const id of ["camera", "gallery"]) $(id).onchange = (e) => { addPhotos([...e.target.files]); e.target.value = ""; };
 
-function addPhotos(files) {
+// A quick look at brightness and sharpness on a small copy, so a bad photo gets a friendly hint
+// before it is sent. Thresholds were checked on 111 real plant photos (none flagged).
+const DARK_BELOW = 40, BLUR_BELOW = 100;
+async function photoProblem(file) {
+  try {
+    const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = URL.createObjectURL(file); });
+    const k = 256 / Math.max(img.width, img.height), w = Math.max(3, Math.round(img.width * k)), h = Math.max(3, Math.round(img.height * k));
+    const c = Object.assign(document.createElement("canvas"), { width: w, height: h });
+    const ctx = c.getContext("2d", { willReadFrequently: true }); ctx.drawImage(img, 0, 0, w, h); URL.revokeObjectURL(img.src);
+    const d = ctx.getImageData(0, 0, w, h).data, g = new Float32Array(w * h);
+    let sum = 0;
+    for (let i = 0; i < g.length; i++) { g[i] = 0.299 * d[4 * i] + 0.587 * d[4 * i + 1] + 0.114 * d[4 * i + 2]; sum += g[i]; }
+    if (sum / g.length < DARK_BELOW) return "tooDark";
+    let n = 0, s = 0, s2 = 0; // variance of the Laplacian: low means no sharp edges
+    for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+      const i = y * w + x, v = 4 * g[i] - g[i - 1] - g[i + 1] - g[i - w] - g[i + w];
+      n++; s += v; s2 += v * v;
+    }
+    return s2 / n - (s / n) ** 2 < BLUR_BELOW ? "tooBlurry" : null;
+  } catch { return null; } // if we cannot check, just carry on
+}
+
+function showNotice(text, canUseAnyway, onUse) {
+  $("noticeText").textContent = text; $("noticeUse").hidden = !canUseAnyway; $("noticeUse").onclick = onUse;
+  $("notice").hidden = false; $("notice").scrollIntoView({ behavior: "smooth" });
+}
+
+async function addPhotos(files) {
   if (!files.length) return;
-  $("error").hidden = true;
+  $("error").hidden = true; $("notice").hidden = true;
+  const problems = await Promise.all(files.map(photoProblem));
+  const bad = problems.find(Boolean);
+  if (bad) { showNotice(tr()[bad], true, () => { $("notice").hidden = true; acceptPhotos(files); }); return; }
+  acceptPhotos(files);
+}
+
+function acceptPhotos(files) {
   for (const file of files) {
     if (photos.length >= MAX_PHOTOS) { showError(tr().tooMany); break; }
     photos.push({ file, url: URL.createObjectURL(file) });
@@ -192,7 +238,7 @@ let requestId = 0;
 async function analyse() {
   const id = ++requestId;
   stopSpeaking();
-  for (const s of ["result", "error"]) $(s).hidden = true;
+  for (const s of ["result", "error", "notice"]) $(s).hidden = true;
   $("loading").hidden = false; $("slow").hidden = true;
   const slowTimer = setTimeout(() => ($("slow").hidden = false), 8000);
   try {
@@ -207,6 +253,7 @@ async function analyse() {
     const res = await fetch(API + "api/analyze", { method: "POST", body: form });
     const data = await res.json().catch(() => ({}));
     if (id !== requestId) return; // a newer request replaced this one
+    if (res.status === 422 && data.code === "not_plant") { showNotice(data.detail, false); return; }
     if (!res.ok) throw new Error(data.detail || tr().failed);
     last = data;
     show(data);
@@ -303,7 +350,7 @@ $("speak").onclick = () => {
 function reset() {
   stopSpeaking();
   photos.forEach((p) => URL.revokeObjectURL(p.url)); photos = []; plant = "auto"; last = null; requestId++;
-  for (const s of ["result", "error", "loading"]) $(s).hidden = true;
+  for (const s of ["result", "error", "loading", "notice"]) $(s).hidden = true;
   renderThumbs(); window.scrollTo({ top: 0, behavior: "smooth" });
 }
 $("again").onclick = reset;

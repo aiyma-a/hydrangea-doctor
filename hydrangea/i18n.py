@@ -82,6 +82,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "err_not_photo": "One of the files isn't a photo I can read.",
         "err_count": "Please send between 1 and {max} photos.",
         "err_busy": "The app is still waking up. Please try again in a moment.",
+        "err_no_plant": "I don't see a plant in this photo. Please photograph a leaf, or the whole plant.",
     },
     "ru": {
         "label.healthy": "здорова", "label.leaf_spot": "пятнистость листьев", "label.powdery_mildew": "мучнистая роса",
@@ -146,6 +147,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "err_not_photo": "Один из файлов не удалось прочитать как фото.",
         "err_count": "Отправьте от 1 до {max} фото.",
         "err_busy": "Приложение ещё просыпается. Попробуйте ещё раз через минуту.",
+        "err_no_plant": "Я не вижу на фото растения. Сфотографируйте лист или растение целиком.",
     },
     "ky": {
         "label.healthy": "дени сак", "label.leaf_spot": "жалбырактагы тактар", "label.powdery_mildew": "ак күл оорусу",
@@ -210,6 +212,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "err_not_photo": "Файлдардын бири сүрөт катары окулган жок.",
         "err_count": "1ден {max}ге чейин сүрөт жөнөтүңүз.",
         "err_busy": "Колдонмо дагы эле ойгонуп жатат. Бир аздан кийин кайра аракет кылыңыз.",
+        "err_no_plant": "Сүрөттө өсүмдүк көрүнбөйт. Жалбырактын же өсүмдүктүн толугу менен сүрөтүн тартыңыз.",
     },
 }
 

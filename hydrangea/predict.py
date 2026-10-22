@@ -93,6 +93,10 @@ def combine_average(results: list[TaskResult]) -> TaskResult:
 TASKS = ("plant", "health", "stage")
 
 
+class NotAPlant(Exception):
+    """None of the photos seems to show a plant."""
+
+
 def analyse(images: list, species: str = "unknown", month: int | None = None, hemisphere: str = "north",
             height_cm: float | None = None, age_years: float | None = None,
             weather: Weather | None = None, plant: str = "auto", ages: dict | None = None) -> dict:
@@ -101,6 +105,8 @@ def analyse(images: list, species: str = "unknown", month: int | None = None, he
     if not isinstance(images, (list, tuple)):
         images = [images]
     emb = embed_images(list(images))
+    if (zeroshot.plant_score(emb) < zeroshot.PLANT_MIN).all():  # only when EVERY photo looks like not-a-plant
+        raise NotAPlant
     if plant == "auto":
         plant_result = combine_average(classify(emb, "plant"))
         plant = "unknown" if plant_result.unsure else plant_result.label
@@ -146,7 +152,10 @@ def main() -> None:
         from .weather import fetch
         weather = fetch(a.place)
         print(weather.summary(a.lang))
-    r = analyse(a.images, a.species, a.month, a.hemisphere, a.height, a.age, weather, a.plant)
+    try:
+        r = analyse(a.images, a.species, a.month, a.hemisphere, a.height, a.age, weather, a.plant)
+    except NotAPlant:
+        raise SystemExit(t("err_no_plant", a.lang))
     for path, photo in zip(a.images, r["photos"]):
         print(f"  {path}: " + ", ".join(f"{t(f'label.{photo[k].label}', a.lang)} {photo[k].confidence:.0%}" for k in ("health", "stage")))
     p = r["plant"]
