@@ -59,9 +59,10 @@
 
     <div id="thumbs" class="thumbs"></div>
 
-    <section id="speciesPick" class="panel" hidden>
-      <p id="speciesPickText" class="big"></p>
-      <div id="speciesChoices" class="grid"></div>
+    <!-- One compact card for everything we may need to know: plant, kind, age -->
+    <section id="about-plant" class="panel plantcard" hidden>
+      <div id="plantRows" class="rows"></div>
+      <div id="plantChoices" class="grid" hidden></div>
     </section>
 
     <section id="loading" class="panel center" hidden>
@@ -79,36 +80,27 @@
     </section>
 
     <section id="result" hidden>
-      <div id="answer" class="answer"></div>
-      <div class="panel">
-        <p id="headline" class="big"></p>
-        <p id="howFar" class="how"></p>
-        <button id="speak" class="secondary" hidden data-i18n="readAloud">Read aloud</button>
-      </div>
-
-      <div id="plantCard" class="panel">
-        <p id="plantLine" class="big"></p>
-        <div id="plantConfirm" class="row">
-          <button id="plantYes" class="secondary" data-i18n="yesRight">Yes</button>
-          <button id="plantNo" class="secondary" data-i18n="noChoose">No, choose</button>
+      <div id="answerCard" class="answer">
+        <div class="verdict-row">
+          <span id="verdictIcon" class="vicon" aria-hidden="true"></span>
+          <h2 id="answer" class="verdict"></h2>
+          <button id="speak" class="iconbtn" hidden aria-label="Read aloud">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>
+          </button>
         </div>
-        <div id="plantGrid" class="grid" hidden></div>
+        <p id="headline" class="reason"></p>
+        <p id="howFar" class="how"></p>
       </div>
 
-      <div id="question" class="panel" hidden>
-        <p id="questionText" class="big"></p>
-        <div id="questionChoices" class="grid"></div>
-      </div>
-
-      <details class="panel">
-        <summary data-i18n="more">More details</summary>
+      <details class="panel why">
+        <summary data-i18n="why">Why this answer</summary>
+        <p id="seen" class="seen"></p>
         <ul id="notes"></ul>
         <p id="weather" class="hint"></p>
-        <p id="seen" class="hint"></p>
       </details>
 
-      <label class="secondary block" for="camera" data-i18n="addPhoto">Add another photo of this plant</label>
-      <button id="again" class="primary" data-i18n="again">Check a different plant</button>
+      <label class="primary" for="camera" data-i18n="addPhoto">Add another photo of this plant</label>
+      <button id="again" class="textbtn" data-i18n="again">Check a different plant</button>
     </section>
 
     <section id="error" class="panel error" role="alert" hidden></section>

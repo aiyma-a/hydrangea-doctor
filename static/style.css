@@ -96,3 +96,26 @@ body.working main { padding-top:20px; }
 .brand img { display:block; }
 @media (max-width:720px) { .nav { display:none; } .brand span { font-size:1.05rem; } }
 .notice { border-left:6px solid #c58a1b; background:#fbf5e8; } .notice .row { flex-wrap:wrap; } .notice .primary { margin-bottom:0; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+
+/* After the photo: one compact card of questions, then one verdict */
+.plantcard { padding:6px 20px; }
+.arow { padding:12px 0; border-bottom:1px solid var(--line); } .arow:last-child { border-bottom:0; }
+.ahead { display:flex; align-items:baseline; gap:10px; min-height:32px; }
+.alabel { color:var(--muted); font-size:.85rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; min-width:5.5em; }
+.avalue { color:var(--forest); font-size:1.1rem; }
+.textbtn { background:none; border:0; color:var(--iris); font-weight:600; text-decoration:underline; text-underline-offset:3px; min-height:44px; padding:0 8px; }
+.change { margin-left:auto; }
+.arow > .grid { margin-top:4px; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); }
+.arow > .grid button { min-height:52px; }
+#about-plant { max-width:640px; }
+
+.verdict-row { display:flex; align-items:center; gap:14px; }
+.verdict { flex:1; margin:0; font-size:1.7rem; line-height:1.2; font-family:inherit; font-weight:inherit; }
+.vicon { flex:none; width:44px; height:44px; border-radius:50%; display:grid; place-items:center; color:#fff; font:700 1.5rem system-ui; }
+.answer.yes .vicon { background:var(--green); } .answer.light .vicon { background:#c58a1b; } .answer.no .vicon { background:var(--red); }
+.iconbtn { flex:none; width:48px; height:48px; border-radius:50%; border:1.5px solid currentColor; background:#fff; color:inherit; display:grid; place-items:center; }
+.reason { font:1.1rem/1.5 system-ui, sans-serif; color:var(--ink); margin:14px 0 0; }
+.answer .how { background:rgba(255,255,255,.7); font:1rem/1.5 system-ui, sans-serif; color:var(--ink); margin:12px 0 0; }
+.why .seen { font-size:.95rem; color:var(--muted); margin:8px 0; }
+#result > .primary { margin-top:4px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+#again { display:block; margin:0 auto; }

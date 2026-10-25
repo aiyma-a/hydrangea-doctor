@@ -11,6 +11,7 @@ const AGES = [["young", 1], ["middle", 4], ["old", 10]];
 // Screen texts. The advice itself is translated on the server (hydrangea/i18n.py).
 const UI = {
   en: {
+    why: "Why this answer", rowPlant: "Plant", rowKind: "Kind", rowAge: "Age", change: "Change",
     tooDark: "This photo is too dark. Try again near a window or in daylight.",
     tooBlurry: "This photo is blurry. Hold the phone steady and tap the plant on the screen to focus.",
     useAnyway: "Use it anyway",
@@ -46,6 +47,7 @@ const UI = {
     offline: "No internet. Please connect and try again.", failed: "Something went wrong. Please try again.",
   },
   ru: {
+    why: "Почему такой ответ", rowPlant: "Растение", rowKind: "Вид", rowAge: "Возраст", change: "Изменить",
     tooDark: "Фото слишком тёмное. Попробуйте у окна или при дневном свете.",
     tooBlurry: "Фото размытое. Держите телефон ровно и коснитесь растения на экране, чтобы навести резкость.",
     useAnyway: "Всё равно использовать",
@@ -81,6 +83,7 @@ const UI = {
     offline: "Нет интернета. Подключитесь и попробуйте снова.", failed: "Что-то пошло не так. Попробуйте ещё раз.",
   },
   ky: {
+    why: "Эмне үчүн мындай жооп", rowPlant: "Өсүмдүк", rowKind: "Түрү", rowAge: "Жашы", change: "Өзгөртүү",
     tooDark: "Сүрөт өтө караңгы. Терезенин жанында же күндүзгү жарыкта кайра тартып көрүңүз.",
     tooBlurry: "Сүрөт даана эмес. Телефонду кыймылдатпай кармап, фокус алуу үчүн экрандагы өсүмдүккө тийиңиз.",
     useAnyway: "Баары бир колдонуу",
@@ -215,21 +218,58 @@ function renderThumbs() {
   }));
   $("home").hidden = photos.length > 0;
   document.body.classList.toggle("working", photos.length > 0);
-  renderSpeciesPick();
+  renderAbout();
 }
 
-// Right under the photos, so the kind of hydrangea is picked before the answer is read.
-// Choosing "I don't know" is an answer too: it is remembered and not asked again.
-function renderSpeciesPick() {
-  const other = last && last.plant.key !== "hydrangea" && last.plant.key !== "unknown";
-  $("speciesPick").hidden = photos.length === 0 || other;
-  $("speciesPickText").textContent = tr().pickSpecies;
-  $("speciesChoices").replaceChildren(...Object.entries(speciesNames).map(([k, v]) => {
-    const b = Object.assign(document.createElement("button"), { textContent: v });
-    b.classList.toggle("on", store.species === k);
-    b.onclick = () => { store.species = k; save(); renderSpeciesPick(); analyse(); };
-    return b;
-  }));
+// One compact card right under the photos: plant, kind, age. A row with an answer shows as
+// "Label: value  Change"; a row still open shows big choice buttons. Only open rows take space.
+// "I don't know" is an answer too: it is remembered and not asked again.
+let editing = null;
+function aboutRow(id, label, value, choices) {
+  const row = Object.assign(document.createElement("div"), { className: "arow" });
+  const head = Object.assign(document.createElement("div"), { className: "ahead" });
+  head.append(Object.assign(document.createElement("span"), { className: "alabel", textContent: label }));
+  const open = value == null || editing === id;
+  if (!open) {
+    head.append(Object.assign(document.createElement("b"), { className: "avalue", textContent: value }));
+    const c = Object.assign(document.createElement("button"), { className: "textbtn change", textContent: tr().change });
+    c.onclick = () => { editing = id; renderAbout(); };
+    head.append(c);
+  }
+  row.append(head);
+  if (open) {
+    const g = Object.assign(document.createElement("div"), { className: "grid" });
+    g.append(...choices.map(([v, text, on]) => {
+      const b = Object.assign(document.createElement("button"), { textContent: text });
+      b.classList.toggle("on", on);
+      b.onclick = () => { editing = null; pick(id, v); };
+      return b;
+    }));
+    row.append(g);
+  }
+  return row;
+}
+function pick(id, v) {
+  if (id === "plant") plant = v;
+  else if (id === "species") { store.species = v; save(); }
+  else { store.plants[last.plant.key] = { ...store.plants[last.plant.key], age: v }; save(); plant = last.plant.key; }
+  renderAbout(); analyse();
+}
+function renderAbout() {
+  const key = last?.plant.key, known = key && key !== "unknown";
+  const rows = [];
+  if (last) rows.push(aboutRow("plant", tr().rowPlant, known ? last.plant.text : null,
+    Object.entries(plantNames).map(([k, v]) => [k, v, k === key])));
+  if (!last || key === "hydrangea" || key === "unknown")
+    rows.push(aboutRow("species", tr().rowKind, store.species ? speciesNames[store.species] : null,
+      Object.entries(speciesNames).map(([k, v]) => [k, v, store.species === k])));
+  if (known) {
+    const years = store.plants[key]?.age, askAge = last.trim_now !== "no" || years;
+    if (askAge) rows.push(aboutRow("age", tr().rowAge, years ? tr().ages[AGES.find(([, y]) => y === years)?.[0]] : null,
+      AGES.map(([k, y]) => [y, tr().ages[k], years === y])));
+  }
+  $("about-plant").hidden = photos.length === 0 || rows.length === 0;
+  $("about-plant").replaceChildren(...rows);
 }
 
 // Shrink each photo on the phone before upload: faster on mobile data; the model only needs ~224px.
@@ -287,70 +327,27 @@ const certainty = (c) => (c >= 0.85 ? tr().sure : c >= 0.6 ? tr().probably : tr(
 // ---------- show the answer ----------
 function show(d) {
   $("answer").textContent = tr().answer[d.trim_now];
-  $("answer").className = `answer ${d.trim_now}`;
+  $("answerCard").className = `answer ${d.trim_now}`;
+  $("verdictIcon").textContent = { yes: "✓", light: "~", no: "✕" }[d.trim_now];
   $("headline").textContent = d.headline;
   $("howFar").textContent = d.how_far;
   $("speak").hidden = !("speechSynthesis" in window);
 
-  // Which plant
-  const p = d.plant, name = p.text;
-  $("plantGrid").hidden = true;
-  if (p.key === "unknown") {
-    $("plantLine").textContent = tr().whichPlant; $("plantConfirm").hidden = true; showPlantGrid();
-  } else if (p.method === "chosen") {
-    $("plantLine").textContent = tr().thisIs(name); $("plantConfirm").hidden = true;
-  } else {
-    $("plantLine").textContent = tr().looksLike(name); $("plantConfirm").hidden = false;
-  }
-
-  // One question at a time, only when it changes the advice
-  const key = p.key;
-  if (key !== "unknown" && d.trim_now !== "no" && !store.plants[key]?.age) askQuestion(tr().howOld,
-    AGES.map(([k, years]) => [years, "", tr().ages[k]]),
-    (years) => { store.plants[key] = { ...store.plants[key], age: years }; save(); plant = key; analyse(); });
-  else $("question").hidden = true;
-
-  // Details
+  // Details, folded away
   $("notes").replaceChildren(...d.notes.map((n) => Object.assign(document.createElement("li"), { textContent: n })));
   $("weather").textContent = d.weather ? d.weather : "";
   $("seen").textContent = `${tr().health}: ${d.health.text} (${certainty(d.health.confidence)}) · ${tr().stage}: ${d.stage.text} (${certainty(d.stage.confidence)})`;
 
-  renderSpeciesPick(); // hide it if this turned out not to be a hydrangea
+  renderAbout();
   $("result").hidden = false;
-  $("thumbs").scrollIntoView({ behavior: "smooth" });
+  $("answerCard").scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
-
-function askQuestion(text, choices, onPick) {
-  $("questionText").textContent = text;
-  $("questionChoices").replaceChildren(...choices.map(([value, emoji, label]) => {
-    const b = document.createElement("button");
-    b.innerHTML = emoji ? `<span class="e">${emoji}</span>` : "";
-    b.append(label);
-    b.onclick = () => onPick(value);
-    return b;
-  }));
-  $("question").hidden = false;
-}
-
-function showPlantGrid() {
-  $("plantGrid").replaceChildren(...Object.entries(plantNames).map(([k, v]) => {
-    const b = document.createElement("button");
-    b.innerHTML = ``;
-    b.append(v);
-    b.classList.toggle("on", k === last?.plant?.key);
-    b.onclick = () => { plant = k; analyse(); };
-    return b;
-  }));
-  $("plantGrid").hidden = false;
-}
-$("plantYes").onclick = () => { plant = last.plant.key; $("plantConfirm").hidden = true; $("plantLine").textContent = tr().thisIs(last.plant.text); };
-$("plantNo").onclick = () => { $("plantConfirm").hidden = true; $("plantLine").textContent = tr().whichPlant; showPlantGrid(); };
 
 // ---------- read aloud ----------
 function stopSpeaking() { if ("speechSynthesis" in window) speechSynthesis.cancel(); }
 $("speak").onclick = () => {
   if (speechSynthesis.speaking) { stopSpeaking(); return; }
-  const u = new SpeechSynthesisUtterance([$("answer").textContent.replace(/^\S+\s/, ""), last.headline, last.how_far].join(". "));
+  const u = new SpeechSynthesisUtterance([$("answer").textContent, last.headline, last.how_far].join(". "));
   const voices = speechSynthesis.getVoices();
   const voice = voices.find((v) => v.lang.startsWith(lang)) || (lang === "ky" && voices.find((v) => v.lang.startsWith("ru")));
   if (voice) u.voice = voice;
@@ -362,7 +359,7 @@ $("speak").onclick = () => {
 // ---------- start over ----------
 function reset() {
   stopSpeaking();
-  photos.forEach((p) => URL.revokeObjectURL(p.url)); photos = []; plant = "auto"; last = null; requestId++;
+  photos.forEach((p) => URL.revokeObjectURL(p.url)); photos = []; plant = "auto"; last = null; editing = null; requestId++;
   for (const s of ["result", "error", "loading", "notice"]) $(s).hidden = true;
   renderThumbs(); window.scrollTo({ top: 0, behavior: "smooth" });
 }
