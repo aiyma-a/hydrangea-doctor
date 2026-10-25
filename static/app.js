@@ -39,7 +39,7 @@ const UI = {
     addPhoto: "Add another photo of this plant", again: "Check a different plant", remove: "Remove photo",
     answer: { yes: "Yes, trim now", light: "Only a little", no: "Don't trim now" },
     thisIs: (p) => `This is: ${p}`, looksLike: (p) => `This looks like: ${p}. Is that right?`,
-    whichPlant: "Which plant is this?", whichHydrangea: "What does your hydrangea look like?",
+    whichPlant: "Which plant is this?", whichHydrangea: "What does your hydrangea look like?", pickSpecies: "If it is a hydrangea: which kind?",
     howOld: "How old is this plant?", ages: { young: "Young (1–2 years)", middle: "3–5 years", old: "Older" },
     tooMany: `Up to ${MAX_PHOTOS} photos at a time.`, health: "Health", stage: "Stage",
     sure: "sure", probably: "probably", notSure: "not sure",
@@ -74,7 +74,7 @@ const UI = {
     addPhoto: "Добавить ещё фото этого растения", again: "Проверить другое растение", remove: "Удалить фото",
     answer: { yes: "Да, обрезайте", light: "Только немного", no: "Не обрезайте сейчас" },
     thisIs: (p) => `Это: ${p}`, looksLike: (p) => `Похоже, это: ${p}. Верно?`,
-    whichPlant: "Что это за растение?", whichHydrangea: "Как выглядит ваша гортензия?",
+    whichPlant: "Что это за растение?", whichHydrangea: "Как выглядит ваша гортензия?", pickSpecies: "Если это гортензия: какая?",
     howOld: "Сколько лет этому растению?", ages: { young: "Молодое (1–2 года)", middle: "3–5 лет", old: "Старше" },
     tooMany: `Не больше ${MAX_PHOTOS} фото за раз.`, health: "Здоровье", stage: "Стадия",
     sure: "уверена", probably: "скорее всего", notSure: "не уверена",
@@ -109,7 +109,7 @@ const UI = {
     addPhoto: "Бул өсүмдүктүн дагы бир сүрөтүн кошуу", again: "Башка өсүмдүктү текшерүү", remove: "Сүрөттү өчүрүү",
     answer: { yes: "Ооба, кыркыңыз", light: "Бир аз гана", no: "Азыр кыркпаңыз" },
     thisIs: (p) => `Бул: ${p}`, looksLike: (p) => `Бул ${p} окшойт. Туурабы?`,
-    whichPlant: "Бул кайсы өсүмдүк?", whichHydrangea: "Гортензияңыз кандай көрүнөт?",
+    whichPlant: "Бул кайсы өсүмдүк?", whichHydrangea: "Гортензияңыз кандай көрүнөт?", pickSpecies: "Эгер бул гортензия болсо: кайсы түрү?",
     howOld: "Бул өсүмдүк канча жашта?", ages: { young: "Жаш (1–2 жыл)", middle: "3–5 жыл", old: "Улуураак" },
     tooMany: `Бир жолу ${MAX_PHOTOS} сүрөткө чейин.`, health: "Ден соолугу", stage: "Баскычы",
     sure: "ишенемин", probably: "балким", notSure: "так эмес",
@@ -215,6 +215,21 @@ function renderThumbs() {
   }));
   $("home").hidden = photos.length > 0;
   document.body.classList.toggle("working", photos.length > 0);
+  renderSpeciesPick();
+}
+
+// Right under the photos, so the kind of hydrangea is picked before the answer is read.
+// Choosing "I don't know" is an answer too: it is remembered and not asked again.
+function renderSpeciesPick() {
+  const other = last && last.plant.key !== "hydrangea" && last.plant.key !== "unknown";
+  $("speciesPick").hidden = photos.length === 0 || other;
+  $("speciesPickText").textContent = tr().pickSpecies;
+  $("speciesChoices").replaceChildren(...Object.entries(speciesNames).map(([k, v]) => {
+    const b = Object.assign(document.createElement("button"), { textContent: v });
+    b.classList.toggle("on", store.species === k);
+    b.onclick = () => { store.species = k; save(); renderSpeciesPick(); analyse(); };
+    return b;
+  }));
 }
 
 // Shrink each photo on the phone before upload: faster on mobile data; the model only needs ~224px.
@@ -290,10 +305,7 @@ function show(d) {
 
   // One question at a time, only when it changes the advice
   const key = p.key;
-  if (key === "hydrangea" && !store.species) askQuestion(tr().whichHydrangea,
-    Object.entries(speciesNames).map(([k, v]) => [k, `${SPECIES_EMOJI[k] || ""}`, v]),
-    (k) => { store.species = k; save(); analyse(); });
-  else if (key !== "unknown" && d.trim_now !== "no" && !store.plants[key]?.age) askQuestion(tr().howOld,
+  if (key !== "unknown" && d.trim_now !== "no" && !store.plants[key]?.age) askQuestion(tr().howOld,
     AGES.map(([k, years]) => [years, "", tr().ages[k]]),
     (years) => { store.plants[key] = { ...store.plants[key], age: years }; save(); plant = key; analyse(); });
   else $("question").hidden = true;
@@ -303,6 +315,7 @@ function show(d) {
   $("weather").textContent = d.weather ? d.weather : "";
   $("seen").textContent = `${tr().health}: ${d.health.text} (${certainty(d.health.confidence)}) · ${tr().stage}: ${d.stage.text} (${certainty(d.stage.confidence)})`;
 
+  renderSpeciesPick(); // hide it if this turned out not to be a hydrangea
   $("result").hidden = false;
   $("thumbs").scrollIntoView({ behavior: "smooth" });
 }
