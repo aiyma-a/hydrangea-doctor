@@ -57,6 +57,10 @@ TASKS = {
     "plant": {key: [f"a photo of a {name}", f"a {name} in a garden", f"a close-up of {name} leaves"]
               for key, (name, _) in PLANTS.items()},
     "health": {
+        "autumn": [
+            "a {plant} in autumn with golden yellow leaves and dried flower heads",
+            "normal autumn colour change on a {plant}, leaves turning yellow and brown before winter",
+        ],
         "healthy": [
             "a photo of a healthy {plant} with green leaves",
             "a lush green {plant} with no damage",

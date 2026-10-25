@@ -86,7 +86,7 @@ def test_unknown_health_and_stage_fall_back_safely():
 def test_every_advice_renders_in_every_language():
     w_frost = w(frost=True)
     for lang in LANGS:
-        for health in ["healthy", "leaf_spot", "powdery_mildew", "wilting", "yellowing", "unknown"]:
+        for health in ["healthy", "autumn", "leaf_spot", "powdery_mildew", "wilting", "yellowing", "unknown"]:
             for stage in ["budding", "blooming", "fading_blooms", "dormant", "unknown"]:
                 for species in ["bigleaf", "oakleaf", "panicle", "smooth", "unknown"]:
                     for month in range(1, 13):
@@ -176,3 +176,15 @@ def test_zeroshot_disease_needs_high_confidence():
     assert _doubt("health", _tr("leaf_spot", 0.6)).unsure
     assert not _doubt("health", _tr("leaf_spot", 0.8)).unsure
     assert not _doubt("health", _tr("healthy", 0.6)).unsure
+
+
+def test_autumn_is_not_a_problem():
+    # Autumn yellowing must not be reported as disease and must not change the advice.
+    assert advise("autumn", "fading_blooms", "panicle", 10).trim_now == advise("healthy", "fading_blooms", "panicle", 10).trim_now
+    assert "autumn_note" in [n.key for n in advise("autumn", "fading_blooms", "panicle", 10).notes]
+
+
+def test_autumn_does_not_override_healthy_and_is_not_a_problem():
+    labels = ("healthy", "leaf_spot", "autumn")
+    assert combine_health([_tr("autumn", 0.8, labels), _tr("leaf_spot", 0.4, labels)]).label == "autumn"
+    assert combine_health([_tr("autumn", 0.8, labels), _tr("leaf_spot", 0.7, labels)]).label == "leaf_spot"

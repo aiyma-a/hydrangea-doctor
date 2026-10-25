@@ -102,7 +102,7 @@ def _advise(health: str, stage: str, species: str, s: str, plant: str = "hydrang
         a = _a("light", "remove_infected", "remove_infected_how", ["bin_leaves", "water_soil", "hold_shaping"])
         a.headline = [M("remove_infected", disease=M(f"label.{health}"))]
         return a
-    notes = {"unknown": ["unknown_health"], "yellowing": ["yellowing_note"]}.get(health, [])
+    notes = {"unknown": ["unknown_health"], "yellowing": ["yellowing_note"], "autumn": ["autumn_note"]}.get(health, [])
 
     if plant != "hydrangea":
         return _advise_other(plant, stage, s, notes)

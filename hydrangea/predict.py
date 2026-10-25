@@ -42,9 +42,13 @@ class TaskResult:
 # an app too much. So without a trained model, only report a disease when very sure.
 ZEROSHOT_DISEASE_MIN = 0.75
 
+# Health answers that mean "nothing to treat". "autumn" is a plant going dormant
+# on schedule: yellow leaves and dry flower heads in autumn are not a disease.
+NO_PROBLEM = ("healthy", "autumn")
+
 
 def _doubt(task: str, r: TaskResult) -> TaskResult:
-    if task == "health" and r.method == "zero-shot" and r.label != "healthy":
+    if task == "health" and r.method == "zero-shot" and r.label not in NO_PROBLEM:
         r.min_confidence = ZEROSHOT_DISEASE_MIN
     return r
 
@@ -75,10 +79,10 @@ def _result(labels, proba, method) -> TaskResult:
 
 
 def combine_health(results: list[TaskResult]) -> TaskResult:
-    problems = [r for r in results if r.label != "healthy" and not r.unsure]
+    problems = [r for r in results if r.label not in NO_PROBLEM and not r.unsure]
     if problems:
         return max(problems, key=lambda r: r.confidence)
-    healthy = [r for r in results if r.label == "healthy" and not r.unsure]
+    healthy = [r for r in results if r.label in NO_PROBLEM and not r.unsure]
     if healthy:
         return max(healthy, key=lambda r: r.confidence)
     return combine_average(results)

@@ -12,7 +12,7 @@ LANGS = ("en", "ru", "ky")
 MESSAGES: dict[str, dict[str, str]] = {
     "en": {
         # labels
-        "label.healthy": "healthy", "label.leaf_spot": "leaf spot", "label.powdery_mildew": "powdery mildew",
+        "label.autumn": "normal autumn change", "label.healthy": "healthy", "label.leaf_spot": "leaf spot", "label.powdery_mildew": "powdery mildew",
         "label.wilting": "wilting", "label.yellowing": "yellowing leaves", "label.unknown": "not sure",
         "label.budding": "budding", "label.blooming": "blooming", "label.fading_blooms": "fading flowers",
         "label.dormant": "dormant (resting)",
@@ -30,6 +30,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "water_soil": "Water at the soil, not over the leaves, and clean the pruners between cuts.",
         "hold_shaping": "Hold off on any shaping cuts until the plant is healthy.",
         "unknown_health": "Couldn't judge health from this photo; advice assumes the plant is healthy.",
+        "autumn_note": "Yellow leaves and dry flower heads in autumn are the plant getting ready for winter, not a disease. Nothing to treat.",
         "yellowing_note": "Yellow leaves with green veins usually mean the soil is too alkaline (iron can't be absorbed); pruning won't fix it. A soil pH test is the next step.",
         # unknown species
         "tell_type": "Tell me the hydrangea type for full advice. Until then, only cut off faded flowers.",
@@ -85,7 +86,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "err_no_plant": "I don't see a plant in this photo. Please photograph a leaf, or the whole plant.",
     },
     "ru": {
-        "label.healthy": "здорова", "label.leaf_spot": "пятнистость листьев", "label.powdery_mildew": "мучнистая роса",
+        "label.autumn": "обычная осенняя смена цвета", "label.healthy": "здорова", "label.leaf_spot": "пятнистость листьев", "label.powdery_mildew": "мучнистая роса",
         "label.wilting": "вянет", "label.yellowing": "желтеют листья", "label.unknown": "не уверена",
         "label.budding": "бутоны", "label.blooming": "цветёт", "label.fading_blooms": "цветы отцветают",
         "label.dormant": "в покое",
@@ -102,6 +103,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "water_soil": "Поливайте под корень, а не по листьям, и протирайте секатор после каждого среза.",
         "hold_shaping": "Формирующую обрезку отложите, пока растение не поправится.",
         "unknown_health": "По этому фото не удалось оценить здоровье; совет исходит из того, что растение здорово.",
+        "autumn_note": "Жёлтые листья и сухие соцветия осенью — растение готовится к зиме, а не болеет. Лечить ничего не нужно.",
         "yellowing_note": "Жёлтые листья с зелёными прожилками обычно значат, что почва слишком щелочная (железо не усваивается); обрезка не поможет. Следующий шаг — проверить pH почвы.",
         "tell_type": "Укажите вид гортензии для полного совета. Пока — только удаляйте отцветшие соцветия.",
         "deadhead_safe_how": "Срежьте отцветшее соцветие чуть выше первой пары крупных почек под ним. Это безопасно для любого вида.",
@@ -150,7 +152,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "err_no_plant": "Я не вижу на фото растения. Сфотографируйте лист или растение целиком.",
     },
     "ky": {
-        "label.healthy": "дени сак", "label.leaf_spot": "жалбырактагы тактар", "label.powdery_mildew": "ак күл оорусу",
+        "label.autumn": "күздүн адаттагы өзгөрүшү", "label.healthy": "дени сак", "label.leaf_spot": "жалбырактагы тактар", "label.powdery_mildew": "ак күл оорусу",
         "label.wilting": "солуп жатат", "label.yellowing": "жалбырактар саргайып жатат", "label.unknown": "так эмес",
         "label.budding": "бүчүр байлап жатат", "label.blooming": "гүлдөп жатат", "label.fading_blooms": "гүлдөрү соолуп жатат",
         "label.dormant": "тынымда",
@@ -167,6 +169,7 @@ MESSAGES: dict[str, dict[str, str]] = {
         "water_soil": "Жалбырагына эмес, түбүнө сугарыңыз жана ар бир кесүүдөн кийин кайчыны тазалаңыз.",
         "hold_shaping": "Өсүмдүк айыкмайынча калыптандыруучу кыркууну кийинкиге калтырыңыз.",
         "unknown_health": "Бул сүрөттөн ден соолугун аныктай алган жокмун; кеңеш өсүмдүк дени сак деп эсептейт.",
+        "autumn_note": "Күзүндө жалбырактын саргайышы жана гүл баштарынын кургашы — өсүмдүк кышка даярданып жатат, оору эмес. Дарылоонун кереги жок.",
         "yellowing_note": "Жашыл тамырчалары бар сары жалбырактар көбүнчө топурак өтө щелочтуу экенин билдирет (темир сиңбейт); кыркуу жардам бербейт. Кийинки кадам — топурактын pH деңгээлин текшерүү.",
         "tell_type": "Толук кеңеш үчүн гортензиянын түрүн тандаңыз. Азырынча соолуган гүлдөрдү гана кесиңиз.",
         "deadhead_safe_how": "Соолуган гүлдү анын астындагы биринчи жуп чоң бүчүрдөн бир аз жогору кесиңиз. Бул бардык түргө коопсуз.",
