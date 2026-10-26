@@ -43,6 +43,7 @@ class Advice:
     how_far: list[Msg] = field(default_factory=list)
     notes: list[Msg] = field(default_factory=list)
     cut_fraction: float = 0.0  # share of stem height to remove (for the cm estimate)
+    season: str = ""  # season name from season(), so the app can show season-specific tips
 
     def render(self, lang: str = "en") -> dict:
         return {
@@ -50,6 +51,7 @@ class Advice:
             "headline": " ".join(m.render(lang) for m in self.headline),
             "how_far": " ".join(m.render(lang) for m in self.how_far),
             "notes": [m.render(lang) for m in self.notes],
+            "season": self.season,
             "diagram": next((f"cuts/{DIAGRAMS[m.key]}.svg" for m in self.how_far if m.key in DIAGRAMS), None),
         }
 
@@ -74,6 +76,7 @@ def advise(health: str, stage: str, species: str, month: int,
         hemisphere = weather.hemisphere
     s = season(month, hemisphere)
     a = _advise(health, stage, species, s, plant)
+    a.season = s
 
     # Weather adjustments
     if weather is not None:

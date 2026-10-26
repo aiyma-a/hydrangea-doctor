@@ -10,7 +10,7 @@
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Hydrangea">
+  <meta name="apple-mobile-web-app-title" content="Hydrangea 🍂">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,7 +18,7 @@
     <div class="wrap bar">
       <a class="brand" href="./" aria-label="Hydrangea Doctor">
         <img src="icons/logo.svg" width="32" height="32" alt="">
-        <span data-i18n="title">Hydrangea Doctor</span>
+        <span class="name"><span data-i18n="title">Hydrangea Doctor</span><small data-i18n="edition">Fall edition</small></span>
       </a>
       <nav class="nav"><a href="results.html" data-i18n="resultsLink">Results</a></nav>
       <div id="langs" class="langs" role="group" aria-label="Language">
@@ -41,6 +41,7 @@
     <!-- Landing hero + upload -->
     <section id="home" class="hero">
       <div class="hero-text">
+        <img class="leaves" src="icons/leaves.svg" alt="">
         <p class="eyebrow" data-i18n="eyebrow">Plant health and pruning guidance</p>
         <h2 data-i18n="heroTitle">Know when to prune, and when to wait.</h2>
         <p class="lead" data-i18n="heroLead">Photograph a plant. Get a clear pruning answer based on what it looks like and the weather where you are.</p>
@@ -97,6 +98,11 @@
         <p id="howFar" class="how"></p>
         <img id="cutPic" class="cutpic" alt="" hidden>
       </div>
+
+      <section id="winterCard" class="panel winter" hidden>
+        <h3 data-i18n="winterTitle">Before winter</h3>
+        <ul id="winterList"></ul>
+      </section>
 
       <section class="panel chat">
         <h3 data-i18n="chatTitle">Ask about this plant</h3>

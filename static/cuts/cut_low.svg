@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 190" role="img"><style>.s{stroke:#4f7d3a;stroke-width:5;stroke-linecap:round;fill:none}.g{stroke:#c9c2b0;stroke-width:5;stroke-linecap:round;fill:none}.b{fill:#7cb342}.c{stroke:#e53935;stroke-width:3;stroke-dasharray:6 4}.t{fill:#e53935;font:700 13px sans-serif}.l{fill:#5d4a3a;font:600 13px sans-serif}.k{fill:#8d6e63}</style><rect width="320" height="190" rx="14" fill="#f3f8ec"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 190" role="img"><style>.s{stroke:#4f7d3a;stroke-width:5;stroke-linecap:round;fill:none}.g{stroke:#c9c2b0;stroke-width:5;stroke-linecap:round;fill:none}.b{fill:#7cb342}.c{stroke:#e53935;stroke-width:3;stroke-dasharray:6 4}.t{fill:#e53935;font:700 13px sans-serif}.l{fill:#5d4a3a;font:600 13px sans-serif}.k{fill:#8d6e63}</style><rect width="320" height="190" rx="14" fill="#fdf1d8"/>
 <rect x="0" y="165" width="320" height="25" fill="#8d6e63" opacity=".35"/>
 <path class="s" d="M50 168V30M75 168L70 24M100 168L108 30M125 168V36"/>
 <line class="c" x1="30" y1="120" x2="145" y2="120"/><text class="t" x="34" y="112">✂</text>

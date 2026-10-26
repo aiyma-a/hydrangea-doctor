@@ -12,14 +12,15 @@ const AGES = [["young", 1], ["middle", 4], ["old", 10]];
 const UI = {
   en: {
     chatTitle: "Ask about this plant", chatPlaceholder: "For example: can I cut it now?", chatSend: "Ask", chatThinking: "Thinking…", chatNote: "An AI answers. It can be wrong; ask a garden shop before using any spray.",
+    edition: "Fall edition", winterTitle: "Before winter", winterTips: ["Stop feeding: fertiliser now pushes soft new growth that frost kills.", "Leave dried hydrangea flower heads on for winter. They protect the buds.", "Mulch: spread 5–8 cm of dry leaves or compost over the roots.", "Young plants (under 3 years): cover them on freezing nights.", "Rake up leaves with spots or mould and put them in the bin, not the compost."],
     why: "Why this answer", rowPlant: "Plant", rowKind: "Kind", rowAge: "Age", change: "Change",
     tooDark: "This photo is too dark. Try again near a window or in daylight.",
     tooBlurry: "This photo is blurry. Hold the phone steady and tap the plant on the screen to focus.",
     useAnyway: "Use it anyway",
     takeAnother: "Take another photo",
     resultsLink: "Results",
-    eyebrow: "Plant health and pruning guidance",
-    heroTitle: "Know when to prune, and when to wait.",
+    eyebrow: "Fall garden check",
+    heroTitle: "What to do with your plants before winter.",
     heroLead: "Photograph a plant. Get a clear pruning answer based on what it looks like and the weather where you are.",
     howTitle: "How it works",
     s1t: "Photograph",
@@ -49,14 +50,15 @@ const UI = {
   },
   ru: {
     chatTitle: "Спросить про это растение", chatPlaceholder: "Например: можно ли обрезать сейчас?", chatSend: "Спросить", chatThinking: "Думаю…", chatNote: "Отвечает ИИ. Он может ошибаться; перед любым опрыскиванием спросите в садовом магазине.",
+    edition: "Осеннее издание", winterTitle: "Перед зимой", winterTips: ["Не подкармливайте: удобрения сейчас вызывают нежный рост, который убьёт мороз.", "Сухие соцветия гортензии оставьте на зиму: они защищают почки.", "Замульчируйте: насыпьте на корни 5–8 см сухих листьев или компоста.", "Молодые растения (младше 3 лет): укрывайте на морозные ночи.", "Листья с пятнами или плесенью соберите и выбросьте, а не в компост."],
     why: "Почему такой ответ", rowPlant: "Растение", rowKind: "Вид", rowAge: "Возраст", change: "Изменить",
     tooDark: "Фото слишком тёмное. Попробуйте у окна или при дневном свете.",
     tooBlurry: "Фото размытое. Держите телефон ровно и коснитесь растения на экране, чтобы навести резкость.",
     useAnyway: "Всё равно использовать",
     takeAnother: "Сфотографировать ещё раз",
     resultsLink: "Результаты",
-    eyebrow: "Здоровье растений и обрезка",
-    heroTitle: "Знайте, когда обрезать, а когда подождать.",
+    eyebrow: "Осенняя проверка сада",
+    heroTitle: "Что сделать с растениями до зимы.",
     heroLead: "Сфотографируйте растение. Получите понятный ответ об обрезке с учётом его вида и погоды в вашем месте.",
     howTitle: "Как это работает",
     s1t: "Сфотографируйте",
@@ -86,14 +88,15 @@ const UI = {
   },
   ky: {
     chatTitle: "Бул өсүмдүк жөнүндө суроо", chatPlaceholder: "Мисалы: азыр кесип койсом болобу?", chatSend: "Суроо", chatThinking: "Ойлонуп жатам…", chatNote: "ЖИ жооп берет. Ал жаңылышы мүмкүн; чачуудан мурун бакча дүкөнүнөн сураңыз.",
+    edition: "Күзгү басылыш", winterTitle: "Кышка чейин", winterTips: ["Азыктандырбаңыз: азыр жер семирткич жумшак жаңы өсүндү чыгарат, аны үшүк өлтүрөт.", "Гортензиянын соолуган гүлдөрүн кышка калтырыңыз: алар бүчүрлөрдү коргойт.", "Мульча салыңыз: тамырдын үстүнө 5–8 см кургак жалбырак же компост төгүңүз.", "Жаш өсүмдүктөр (3 жашка чейин): үшүк түндөрдө жаап коюңуз.", "Тактуу же көгөргөн жалбырактарды жыйнап, компостко эмес, таштандыга ыргытыңыз."],
     why: "Эмне үчүн мындай жооп", rowPlant: "Өсүмдүк", rowKind: "Түрү", rowAge: "Жашы", change: "Өзгөртүү",
     tooDark: "Сүрөт өтө караңгы. Терезенин жанында же күндүзгү жарыкта кайра тартып көрүңүз.",
     tooBlurry: "Сүрөт даана эмес. Телефонду кыймылдатпай кармап, фокус алуу үчүн экрандагы өсүмдүккө тийиңиз.",
     useAnyway: "Баары бир колдонуу",
     takeAnother: "Дагы бир сүрөт тартуу",
     resultsLink: "Жыйынтыктар",
-    eyebrow: "Өсүмдүктүн ден соолугу жана кыркуу",
-    heroTitle: "Качан кыркууну, качан күтүүнү билиңиз.",
+    eyebrow: "Күзгү бак текшерүү",
+    heroTitle: "Кышка чейин өсүмдүктөр менен эмне кылуу керек.",
     heroLead: "Өсүмдүктү сүрөткө тартыңыз. Анын көрүнүшүнө жана жериңиздеги аба ырайына жараша так жооп алыңыз.",
     howTitle: "Бул кантип иштейт",
     s1t: "Сүрөткө тартыңыз",
@@ -371,6 +374,10 @@ function show(d) {
   $("verdictIcon").textContent = { yes: "✓", light: "~", no: "✕" }[d.trim_now];
   $("headline").textContent = d.headline;
   $("howFar").textContent = d.how_far;
+  // Before winter: only in autumn, and the dried-heads tip only for hydrangeas.
+  const tips = tr().winterTips.filter((_, i) => i !== 1 || d.plant.key === "hydrangea");
+  $("winterList").replaceChildren(...tips.map((t) => Object.assign(document.createElement("li"), { textContent: t })));
+  $("winterCard").hidden = d.season !== "autumn";
   $("chatLog").replaceChildren(); chatLog.length = 0; // a new answer starts a new conversation
   $("cutPic").hidden = !d.diagram;
   if (d.diagram) $("cutPic").src = d.diagram;
