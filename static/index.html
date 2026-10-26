@@ -93,6 +93,16 @@
         <img id="cutPic" class="cutpic" alt="" hidden>
       </div>
 
+      <section class="panel chat">
+        <h3 data-i18n="chatTitle">Ask about this plant</h3>
+        <ul id="chatLog" aria-live="polite"></ul>
+        <form id="chatForm">
+          <input id="chatInput" type="text" maxlength="500" autocomplete="off" data-i18n-placeholder="chatPlaceholder">
+          <button id="chatSend" type="submit" data-i18n="chatSend">Ask</button>
+        </form>
+        <p class="hint" data-i18n="chatNote"></p>
+      </section>
+
       <details class="panel why">
         <summary data-i18n="why">Why this answer</summary>
         <p id="seen" class="seen"></p>

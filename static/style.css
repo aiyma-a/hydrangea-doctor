@@ -123,3 +123,13 @@ body.working main { padding-top:20px; }
 .arow > .grid button small { display:block; font-weight:400; font-size:.8rem; color:var(--muted); margin-top:2px; }
 
 .cutpic { display: block; width: 100%; max-width: 360px; margin: 10px auto 0; border-radius: 14px; }
+
+.chat h3 { margin: 0 0 8px; font-size: 1.05rem; }
+#chatLog { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+#chatLog li { padding: 10px 14px; border-radius: 16px; max-width: 90%; line-height: 1.4; white-space: pre-wrap; }
+#chatLog li.me { align-self: flex-end; background: #dcedc8; }
+#chatLog li.ai { align-self: flex-start; background: #fff; border: 1px solid #e3e0d6; }
+#chatForm { display: flex; gap: 8px; }
+#chatInput { flex: 1; min-width: 0; font-size: 1rem; padding: 12px 14px; border: 2px solid #cfd8c4; border-radius: 12px; }
+#chatSend { font-size: 1rem; font-weight: 700; padding: 0 18px; border: 0; border-radius: 12px; background: #1f3a2e; color: #fff; }
+#chatSend:disabled { opacity: .5; }

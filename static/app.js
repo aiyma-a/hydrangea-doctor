@@ -11,6 +11,7 @@ const AGES = [["young", 1], ["middle", 4], ["old", 10]];
 // Screen texts. The advice itself is translated on the server (hydrangea/i18n.py).
 const UI = {
   en: {
+    chatTitle: "Ask about this plant", chatPlaceholder: "For example: can I cut it now?", chatSend: "Ask", chatThinking: "Thinking…", chatNote: "An AI answers. It can be wrong; ask a garden shop before using any spray.",
     why: "Why this answer", rowPlant: "Plant", rowKind: "Kind", rowAge: "Age", change: "Change",
     tooDark: "This photo is too dark. Try again near a window or in daylight.",
     tooBlurry: "This photo is blurry. Hold the phone steady and tap the plant on the screen to focus.",
@@ -47,6 +48,7 @@ const UI = {
     offline: "No internet. Please connect and try again.", failed: "Something went wrong. Please try again.",
   },
   ru: {
+    chatTitle: "Спросить про это растение", chatPlaceholder: "Например: можно ли обрезать сейчас?", chatSend: "Спросить", chatThinking: "Думаю…", chatNote: "Отвечает ИИ. Он может ошибаться; перед любым опрыскиванием спросите в садовом магазине.",
     why: "Почему такой ответ", rowPlant: "Растение", rowKind: "Вид", rowAge: "Возраст", change: "Изменить",
     tooDark: "Фото слишком тёмное. Попробуйте у окна или при дневном свете.",
     tooBlurry: "Фото размытое. Держите телефон ровно и коснитесь растения на экране, чтобы навести резкость.",
@@ -83,6 +85,7 @@ const UI = {
     offline: "Нет интернета. Подключитесь и попробуйте снова.", failed: "Что-то пошло не так. Попробуйте ещё раз.",
   },
   ky: {
+    chatTitle: "Бул өсүмдүк жөнүндө суроо", chatPlaceholder: "Мисалы: азыр кесип койсом болобу?", chatSend: "Суроо", chatThinking: "Ойлонуп жатам…", chatNote: "ЖИ жооп берет. Ал жаңылышы мүмкүн; чачуудан мурун бакча дүкөнүнөн сураңыз.",
     why: "Эмне үчүн мындай жооп", rowPlant: "Өсүмдүк", rowKind: "Түрү", rowAge: "Жашы", change: "Өзгөртүү",
     tooDark: "Сүрөт өтө караңгы. Терезенин жанында же күндүзгү жарыкта кайра тартып көрүңүз.",
     tooBlurry: "Сүрөт даана эмес. Телефонду кыймылдатпай кармап, фокус алуу үчүн экрандагы өсүмдүккө тийиңиз.",
@@ -136,6 +139,7 @@ const tr = () => UI[lang];
 async function setLang(l) {
   lang = l; store.lang = l; save(); document.documentElement.lang = l; document.title = tr().title;
   document.querySelectorAll("[data-i18n]").forEach((el) => (el.textContent = tr()[el.dataset.i18n]));
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => (el.placeholder = tr()[el.dataset.i18nPlaceholder]));
   document.querySelectorAll("#langs button").forEach((b) => b.classList.toggle("on", b.dataset.lang === l));
   const [plants, species] = await Promise.all([
     fetch(API + `api/plants?lang=${l}`).then((r) => r.json()), fetch(API + `api/species?lang=${l}`).then((r) => r.json())]);
@@ -337,6 +341,7 @@ function show(d) {
   $("verdictIcon").textContent = { yes: "✓", light: "~", no: "✕" }[d.trim_now];
   $("headline").textContent = d.headline;
   $("howFar").textContent = d.how_far;
+  $("chatLog").replaceChildren(); chatLog.length = 0; // a new answer starts a new conversation
   $("cutPic").hidden = !d.diagram;
   if (d.diagram) $("cutPic").src = d.diagram;
   $("speak").hidden = !("speechSynthesis" in window);
@@ -381,3 +386,34 @@ $("again").onclick = reset;
   else if (store.location === "yes") getLocation();
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 })();
+
+
+// ---------- chat: ask the AI about the plant just checked ----------
+const chatLog = []; // {role: "user" | "model", text}
+function chatContext() {
+  if (!last) return {};
+  return { plant: last.plant.text, kind: store.species && speciesNames[store.species] ? speciesNames[store.species].split(" – ")[0] : "",
+    health: last.health.text, stage: last.stage.text, answer: tr().answer[last.trim_now], headline: last.headline, how_far: last.how_far,
+    weather: last.weather || "", month: new Date().toLocaleString("en", { month: "long" }) };
+}
+function addChatBubble(role, text) {
+  const li = Object.assign(document.createElement("li"), { textContent: text, className: role === "user" ? "me" : "ai" });
+  $("chatLog").append(li); li.scrollIntoView({ behavior: "smooth", block: "nearest" }); return li;
+}
+$("chatForm").onsubmit = async (e) => {
+  e.preventDefault();
+  const q = $("chatInput").value.trim();
+  if (!q || $("chatSend").disabled) return;
+  $("chatInput").value = ""; $("chatSend").disabled = true;
+  addChatBubble("user", q);
+  const wait = addChatBubble("model", tr().chatThinking);
+  try {
+    const res = await fetch(API + "api/chat", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: q, context: chatContext(), history: chatLog.slice(-6), lang }) });
+    const data = await res.json();
+    const text = res.ok ? data.reply : data.detail || tr().failed;
+    wait.textContent = text;
+    if (res.ok) chatLog.push({ role: "user", text: q }, { role: "model", text });
+  } catch { wait.textContent = navigator.onLine ? tr().failed : tr().offline; }
+  $("chatSend").disabled = false;
+};

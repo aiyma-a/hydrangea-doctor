@@ -83,6 +83,9 @@ MESSAGES: dict[str, dict[str, str]] = {
         "err_not_photo": "One of the files isn't a photo I can read.",
         "err_count": "Please send between 1 and {max} photos.",
         "err_busy": "The app is still waking up. Please try again in a moment.",
+        "err_chat": "The chat is not available right now. Please try again later.",
+        "err_chat_limit": "That is a lot of questions for now. Please try again in an hour.",
+        "err_question": "Please type a question (up to 500 characters).",
         "err_no_plant": "I don't see a plant in this photo. Please photograph a leaf, or the whole plant.",
     },
     "ru": {
@@ -149,6 +152,9 @@ MESSAGES: dict[str, dict[str, str]] = {
         "err_not_photo": "Один из файлов не удалось прочитать как фото.",
         "err_count": "Отправьте от 1 до {max} фото.",
         "err_busy": "Приложение ещё просыпается. Попробуйте ещё раз через минуту.",
+        "err_chat": "Чат сейчас недоступен. Попробуйте позже.",
+        "err_chat_limit": "Пока слишком много вопросов. Попробуйте через час.",
+        "err_question": "Напишите вопрос (до 500 символов).",
         "err_no_plant": "Я не вижу на фото растения. Сфотографируйте лист или растение целиком.",
     },
     "ky": {
@@ -215,6 +221,9 @@ MESSAGES: dict[str, dict[str, str]] = {
         "err_not_photo": "Файлдардын бири сүрөт катары окулган жок.",
         "err_count": "1ден {max}ге чейин сүрөт жөнөтүңүз.",
         "err_busy": "Колдонмо дагы эле ойгонуп жатат. Бир аздан кийин кайра аракет кылыңыз.",
+        "err_chat": "Чат азыр жеткиликсиз. Кийинчерээк кайра аракет кылыңыз.",
+        "err_chat_limit": "Азырынча суроолор өтө көп. Бир сааттан кийин кайра аракет кылыңыз.",
+        "err_question": "Суроону жазыңыз (500 белгиге чейин).",
         "err_no_plant": "Сүрөттө өсүмдүк көрүнбөйт. Жалбырактын же өсүмдүктүн толугу менен сүрөтүн тартыңыз.",
     },
 }

@@ -10,13 +10,13 @@ import logging
 import threading
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, File, Form, UploadFile
+from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, UnidentifiedImageError
 
-from hydrangea import pruning, weather
+from hydrangea import chat, pruning, weather
 from hydrangea.config import PLANTS
 from hydrangea.i18n import LANGS, M, t
 
@@ -153,6 +153,28 @@ async def analyze(
         **{task: task_json(r[task]) for task in ("health", "stage")},
         "photos": [{task: task_json(photo[task]) for task in ("health", "stage")} for photo in r["photos"]],
     }
+
+
+@app.post("/api/chat")
+async def chat_endpoint(request: Request):
+    try:
+        body = await request.json()
+    except ValueError:
+        body = None
+    body = body if isinstance(body, dict) else {}
+    lang = body.get("lang") if body.get("lang") in LANGS else "en"
+    question = body.get("question")
+    if not isinstance(question, str) or not question.strip() or len(question) > chat.MAX_QUESTION:
+        return error(400, "err_question", lang)
+    ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "")).split(",")[0].strip()
+    try:
+        reply = await asyncio.to_thread(chat.ask, question.strip(), body.get("context"), body.get("history"), lang, ip)
+    except chat.RateLimited:
+        return error(429, "err_chat_limit", lang)
+    except chat.ChatUnavailable as e:
+        log.warning("chat failed: %s", e)
+        return error(503, "err_chat", lang)
+    return {"reply": reply}
 
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
