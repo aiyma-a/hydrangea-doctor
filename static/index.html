@@ -54,6 +54,11 @@
         <p class="hint" data-i18n="tip">Tip: a close-up of one leaf, or the whole plant.</p>
       </div>
     </section>
+    <div id="cam" class="cam" hidden>
+      <video id="camVideo" playsinline autoplay muted></video>
+      <button id="camClose" class="cam-close" type="button" aria-label="Close">✕</button>
+      <button id="camShoot" class="cam-shoot" type="button" aria-label="Take photo"></button>
+    </div>
     <input id="camera" type="file" accept="image/*" capture="environment" hidden>
     <input id="gallery" type="file" accept="image/*" multiple hidden>
 

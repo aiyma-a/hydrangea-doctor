@@ -162,6 +162,34 @@ $("locNo").onclick = () => { store.location = "no"; save(); $("locAsk").hidden =
 // ---------- photos ----------
 for (const id of ["camera", "gallery"]) $(id).onchange = (e) => { addPhotos([...e.target.files]); e.target.value = ""; };
 
+// ---------- live camera ----------
+// A file input with capture="environment" often opens a menu or the gallery (especially from the home-screen icon).
+// So open the camera ourselves; if that is not possible (no permission, old browser) fall back to the file input.
+let camStream = null;
+function closeCam() {
+  if (camStream) camStream.getTracks().forEach((t) => t.stop());
+  camStream = null; $("camVideo").srcObject = null; $("cam").hidden = true;
+}
+async function openCam() {
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1440 } }, audio: false });
+  } catch { $("camera").click(); return; }
+  $("camVideo").srcObject = camStream; $("cam").hidden = false;
+  $("camVideo").play().catch(() => {});
+}
+document.querySelectorAll('label[for="camera"]').forEach((l) => l.addEventListener("click", (e) => {
+  if (!navigator.mediaDevices?.getUserMedia) return; // the label opens the file input as before
+  e.preventDefault(); openCam();
+}));
+$("camClose").onclick = closeCam;
+$("camShoot").onclick = () => {
+  const v = $("camVideo");
+  if (!v.videoWidth) return;
+  const c = Object.assign(document.createElement("canvas"), { width: v.videoWidth, height: v.videoHeight });
+  c.getContext("2d").drawImage(v, 0, 0);
+  c.toBlob((blob) => { closeCam(); if (blob) addPhotos([new File([blob], `photo-${Date.now()}.jpg`, { type: "image/jpeg" })]); }, "image/jpeg", 0.92);
+};
+
 // A quick look at brightness and sharpness on a small copy, so a bad photo gets a friendly hint
 // before it is sent. Thresholds were checked on 111 real plant photos (none flagged).
 const DARK_BELOW = 40, BLUR_BELOW = 100;
