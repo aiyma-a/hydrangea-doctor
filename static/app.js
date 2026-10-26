@@ -237,10 +237,13 @@ function aboutRow(id, label, value, choices) {
     head.append(c);
   }
   row.append(head);
+  if (editing === id) row.dataset.editing = "1";
   if (open) {
     const g = Object.assign(document.createElement("div"), { className: "grid" });
     g.append(...choices.map(([v, text, on]) => {
-      const b = Object.assign(document.createElement("button"), { textContent: text });
+      const [name, hint] = text.split(" – "); // "Panicle – cone-shaped": name big, hint small
+      const b = Object.assign(document.createElement("button"), { textContent: name });
+      if (hint) b.append(Object.assign(document.createElement("small"), { textContent: hint }));
       b.classList.toggle("on", on);
       b.onclick = () => { editing = null; pick(id, v); };
       return b;
@@ -261,15 +264,18 @@ function renderAbout() {
   if (last) rows.push(aboutRow("plant", tr().rowPlant, known ? last.plant.text : null,
     Object.entries(plantNames).map(([k, v]) => [k, v, k === key])));
   if (!last || key === "hydrangea" || key === "unknown")
-    rows.push(aboutRow("species", tr().rowKind, store.species ? speciesNames[store.species] : null,
+    rows.push(aboutRow("species", tr().rowKind, store.species ? speciesNames[store.species].split(" – ")[0] : null,
       Object.entries(speciesNames).map(([k, v]) => [k, v, store.species === k])));
   if (known) {
     const years = store.plants[key]?.age, askAge = last.trim_now !== "no" || years;
     if (askAge) rows.push(aboutRow("age", tr().rowAge, years ? tr().ages[AGES.find(([, y]) => y === years)?.[0]] : null,
       AGES.map(([k, y]) => [y, tr().ages[k], years === y])));
   }
-  $("about-plant").hidden = photos.length === 0 || rows.length === 0;
-  $("about-plant").replaceChildren(...rows);
+  // One open question at a time: the first row without an answer; later ones wait their turn.
+  const firstOpen = rows.findIndex((r) => r.querySelector(".grid") && !r.dataset.editing);
+  const shown = rows.filter((r, i) => !r.querySelector(".grid") || r.dataset.editing || i === firstOpen);
+  $("about-plant").hidden = photos.length === 0 || shown.length === 0;
+  $("about-plant").replaceChildren(...shown);
 }
 
 // Shrink each photo on the phone before upload: faster on mobile data; the model only needs ~224px.

@@ -119,3 +119,5 @@ body.working main { padding-top:20px; }
 .why .seen { font-size:.95rem; color:var(--muted); margin:8px 0; }
 #result > .primary { margin-top:4px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 #again { display:block; margin:0 auto; }
+.arow > .grid button { font-size:.95rem; }
+.arow > .grid button small { display:block; font-weight:400; font-size:.8rem; color:var(--muted); margin-top:2px; }
