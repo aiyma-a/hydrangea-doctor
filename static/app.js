@@ -15,6 +15,7 @@ const UI = {
     edition: "Fall edition", winterTitle: "Before winter", winterTips: ["Stop feeding: fertiliser now pushes soft new growth that frost kills.", "Leave dried hydrangea flower heads on for winter. They protect the buds.", "Mulch: spread 5–8 cm of dry leaves or compost over the roots.", "Young plants (under 3 years): cover them on freezing nights.", "Rake up leaves with spots or mould and put them in the bin, not the compost."],
     kh_title: "Let's find out which kind it is", kh_q1: "What do the flower heads look like?", kh_cone: "Cone-shaped, pointed", kh_round: "Round balls", kh_unsure: "Not sure", kh_q2cone: "Are the leaves lobed, shaped like oak leaves?", kh_lobed: "Yes, like oak leaves", kh_notlobed: "No, plain oval leaves", kh_q2round: "What colour are the flowers?", kh_colour: "Blue, pink or purple", kh_white: "White or pale green", kh_msg: "No problem. Take a close photo of one flower head and one leaf, or ask at a garden shop. Until then the app gives only safe advice.", kh_close: "OK", kh_back: "Back",
     bcTitle: "Before you cut", bcText: "This big trim is only for panicle and smooth hydrangeas, which flower on this year's stems. If your plant had round blue or pink balls last summer, do not cut it back now.", bcBtn: "I'm not sure of the kind",
+    plantOther: "Other / not in the list",
     why: "Why this answer", rowPlant: "Plant", rowKind: "Kind", rowAge: "Age", change: "Change",
     tooDark: "This photo is too dark. Try again near a window or in daylight.",
     tooBlurry: "This photo is blurry. Hold the phone steady and tap the plant on the screen to focus.",
@@ -55,6 +56,7 @@ const UI = {
     edition: "Осеннее издание", winterTitle: "Перед зимой", winterTips: ["Не подкармливайте: удобрения сейчас вызывают нежный рост, который убьёт мороз.", "Сухие соцветия гортензии оставьте на зиму: они защищают почки.", "Замульчируйте: насыпьте на корни 5–8 см сухих листьев или компоста.", "Молодые растения (младше 3 лет): укрывайте на морозные ночи.", "Листья с пятнами или плесенью соберите и выбросьте, а не в компост."],
     kh_title: "Давайте определим вид", kh_q1: "Как выглядят соцветия?", kh_cone: "Конусом, заострённые", kh_round: "Круглые шары", kh_unsure: "Не уверена", kh_q2cone: "Листья лопастные, как у дуба?", kh_lobed: "Да, как дубовые", kh_notlobed: "Нет, простые овальные", kh_q2round: "Какого цвета цветы?", kh_colour: "Голубые, розовые или фиолетовые", kh_white: "Белые или светло-зелёные", kh_msg: "Ничего страшного. Сфотографируйте крупно одно соцветие и один лист или спросите в садовом магазине. Пока приложение даёт только безопасные советы.", kh_close: "Понятно", kh_back: "Назад",
     bcTitle: "Прежде чем резать", bcText: "Такая сильная обрезка подходит только метельчатой и древовидной гортензии: они цветут на побегах этого года. Если летом у вас были круглые голубые или розовые шары, сейчас не обрезайте.", bcBtn: "Я не уверена в виде",
+    plantOther: "Другое / нет в списке",
     why: "Почему такой ответ", rowPlant: "Растение", rowKind: "Вид", rowAge: "Возраст", change: "Изменить",
     tooDark: "Фото слишком тёмное. Попробуйте у окна или при дневном свете.",
     tooBlurry: "Фото размытое. Держите телефон ровно и коснитесь растения на экране, чтобы навести резкость.",
@@ -95,6 +97,7 @@ const UI = {
     edition: "Күзгү басылыш", winterTitle: "Кышка чейин", winterTips: ["Азыктандырбаңыз: азыр жер семирткич жумшак жаңы өсүндү чыгарат, аны үшүк өлтүрөт.", "Гортензиянын соолуган гүлдөрүн кышка калтырыңыз: алар бүчүрлөрдү коргойт.", "Мульча салыңыз: тамырдын үстүнө 5–8 см кургак жалбырак же компост төгүңүз.", "Жаш өсүмдүктөр (3 жашка чейин): үшүк түндөрдө жаап коюңуз.", "Тактуу же көгөргөн жалбырактарды жыйнап, компостко эмес, таштандыга ыргытыңыз."],
     kh_title: "Кайсы түр экенин аныктайлы", kh_q1: "Гүл топтомдору кандай көрүнөт?", kh_cone: "Конус сымал, учтуу", kh_round: "Тегерек шар сымал", kh_unsure: "Так билбейм", kh_q2cone: "Жалбырактары эмендин жалбырагындай бөлүктүүбү?", kh_lobed: "Ооба, эмен сыяктуу", kh_notlobed: "Жок, жөнөкөй сүйрү", kh_q2round: "Гүлдөрү кандай түстө?", kh_colour: "Көк, кызгылт же кызыл-көк", kh_white: "Ак же ачык жашыл", kh_msg: "Эч нерсе эмес. Бир гүл топтомун жана бир жалбырагын жакындан сүрөткө тартыңыз же бакча дүкөнүнөн сураңыз. Ага чейин колдонмо коопсуз кеңештерди гана берет.", kh_close: "Түшүнүктүү", kh_back: "Артка",
     bcTitle: "Кесүүдөн мурун", bcText: "Мындай катуу кесүү метелка жана жылмакай гортензияга гана туура келет: алар быйылкы бутактарда гүлдөйт. Жайында тегерек көк же кызгылт шарлар болсо, азыр кеспеңиз.", bcBtn: "Түрүн так билбейм",
+    plantOther: "Башка / тизмеде жок",
     why: "Эмне үчүн мындай жооп", rowPlant: "Өсүмдүк", rowKind: "Түрү", rowAge: "Жашы", change: "Өзгөртүү",
     tooDark: "Сүрөт өтө караңгы. Терезенин жанында же күндүзгү жарыкта кайра тартып көрүңүз.",
     tooBlurry: "Сүрөт даана эмес. Телефонду кыймылдатпай кармап, фокус алуу үчүн экрандагы өсүмдүккө тийиңиз.",
@@ -335,8 +338,8 @@ const needsTreatment = () => last && !last.health.unsure && ["wilting", "leaf_sp
 const stepsDone = () => !!choice.plant && (choice.plant !== "hydrangea" || !!choice.species || needsTreatment());
 function renderAbout() {
   const rows = [];
-  if (photos.length) rows.push(aboutRow("plant", tr().rowPlant, choice.plant ? plantNames[choice.plant] : null,
-    Object.entries(plantNames).map(([k, v]) => [k, v, choice.plant === k])));
+  if (photos.length) rows.push(aboutRow("plant", tr().rowPlant, choice.plant ? (choice.plant === "unknown" ? tr().plantOther : plantNames[choice.plant]) : null,
+    [...Object.entries(plantNames), ["unknown", tr().plantOther]].map(([k, v]) => [k, v, choice.plant === k])));
   if (choice.plant === "hydrangea" && !needsTreatment()) {
     rows.push(aboutRow("species", tr().rowKind, choice.species ? speciesNames[choice.species].split(" – ")[0] : null,
       Object.entries(speciesNames).map(([k, v]) => [k, v, choice.species === k])));
@@ -353,6 +356,7 @@ function renderAbout() {
   $("about-plant").replaceChildren(...shown);
   // The answer appears only after the steps are done.
   $("result").hidden = !(last && !analysing && stepsDone());
+  if (analysing && stepsDone()) $("loading").hidden = false;
 }
 
 // Shrink each photo on the phone before upload: faster on mobile data; the model only needs ~224px.
@@ -378,7 +382,7 @@ async function analyse() {
   analysing = true;
   stopSpeaking();
   for (const s of ["result", "error", "notice"]) $(s).hidden = true;
-  $("loading").hidden = false; $("slow").hidden = true;
+  $("loading").hidden = !stepsDone(); $("slow").hidden = true; // no spinner while the user still has questions to tap
   const slowTimer = setTimeout(() => ($("slow").hidden = false), 8000);
   try {
     const form = new FormData();
