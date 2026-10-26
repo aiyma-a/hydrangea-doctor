@@ -11,6 +11,13 @@ from .embed import embed_texts
 LOGIT_SCALE = 100.0
 
 
+# The app is mainly used on hydrangeas, and zero-shot recognised only 31% of 83 real hydrangea photos
+# (bushes in autumn were called rose, raspberry, grape). Multiplying hydrangea's odds by this raised it to
+# 71% while other plants stayed 73% -> 69% right on 78 Commons photos (x8: 61% / 72%). Wrong guesses stay
+# one tap away ("Change").
+HYDRANGEA_BIAS = 16.0
+
+
 @lru_cache(maxsize=None)
 def label_embeddings(task: str, plant: str = "hydrangea") -> tuple[list[str], np.ndarray]:
     labels = list(TASKS[task])
@@ -31,7 +38,10 @@ def softmax(x: np.ndarray) -> np.ndarray:
 def predict_proba(task: str, image_embeddings: np.ndarray, plant: str = "hydrangea") -> tuple[list[str], np.ndarray]:
     """Returns (labels, probabilities of shape (n_images, n_labels))."""
     labels, text = label_embeddings(task, plant)
-    return labels, softmax(LOGIT_SCALE * image_embeddings @ text.T)
+    logits = LOGIT_SCALE * image_embeddings @ text.T
+    if task == "plant":
+        logits[:, labels.index("hydrangea")] += np.log(HYDRANGEA_BIAS)
+    return labels, softmax(logits)
 
 
 # "Is there a plant in this photo at all?" Compare the photo to plant sentences and to

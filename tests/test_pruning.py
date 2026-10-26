@@ -188,3 +188,14 @@ def test_autumn_does_not_override_healthy_and_is_not_a_problem():
     labels = ("healthy", "leaf_spot", "autumn")
     assert combine_health([_tr("autumn", 0.8, labels), _tr("leaf_spot", 0.4, labels)]).label == "autumn"
     assert combine_health([_tr("autumn", 0.8, labels), _tr("leaf_spot", 0.7, labels)]).label == "leaf_spot"
+
+
+def test_plant_guess_leans_towards_hydrangea():
+    import numpy as np
+    from hydrangea import zeroshot
+    labels, text = zeroshot.label_embeddings("plant")
+    rose = text[labels.index("rose")][None]  # a photo that is exactly "rose"
+    plain = zeroshot.softmax(zeroshot.LOGIT_SCALE * rose @ text.T)
+    _, biased = zeroshot.predict_proba("plant", rose)
+    assert biased[0, labels.index("hydrangea")] > plain[0, labels.index("hydrangea")]
+    assert labels[int(biased.argmax())] == "rose"  # the lean must not override a clear answer
