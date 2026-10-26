@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 190" role="img"><style>.s{stroke:#4f7d3a;stroke-width:5;stroke-linecap:round;fill:none}.g{stroke:#c9c2b0;stroke-width:5;stroke-linecap:round;fill:none}.b{fill:#7cb342}.c{stroke:#e53935;stroke-width:3;stroke-dasharray:6 4}.t{fill:#e53935;font:700 13px sans-serif}.l{fill:#5d4a3a;font:600 13px sans-serif}.k{fill:#8d6e63}</style><rect width="320" height="190" rx="14" fill="#f3f8ec"/>
+<rect x="0" y="165" width="320" height="25" fill="#8d6e63" opacity=".35"/>
+<path class="s" d="M50 168V30M75 168L70 24M100 168L108 30M125 168V36"/>
+<line class="c" x1="30" y1="120" x2="145" y2="120"/><text class="t" x="34" y="112">✂</text>
+<g transform="translate(160 0)"><path class="s" d="M60 168V122M85 168L83 120M110 168L112 124M135 168V126"/>
+<circle class="b" cx="56" cy="122" r="5"/><circle class="b" cx="64" cy="122" r="5"/><circle class="b" cx="108" cy="124" r="5"/><circle class="b" cx="116" cy="124" r="5"/></g>
+<path d="M150 80h20m-7-7l7 7-7 7" fill="none" stroke="#5d4a3a" stroke-width="3" stroke-linecap="round"/>
+</svg>

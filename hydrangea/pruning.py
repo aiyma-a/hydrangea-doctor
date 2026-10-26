@@ -30,6 +30,12 @@ OLD_YEARS = 6  # older shrubs benefit from renewal pruning
 RENEWAL_SHRUBS = {"hydrangea", "lilac", "currant"}  # multi-stem shrubs where you cut old stems at the ground
 
 
+# Sketch (static/cuts/*.svg, no words so it works in every language) shown under the "how far" sentence.
+DIAGRAMS = {"panicle_how": "cut_third", "smooth_how": "cut_low", "dead_wood_how": "dead_wood",
+            "after_flowering_how": "cut_above_bud", "light_deadhead_how": "cut_above_bud",
+            "deadhead_safe_how": "cut_above_bud", "optional_tidy_how": "cut_above_bud"}
+
+
 @dataclass
 class Advice:
     trim_now: str  # "yes" | "light" | "no"
@@ -44,6 +50,7 @@ class Advice:
             "headline": " ".join(m.render(lang) for m in self.headline),
             "how_far": " ".join(m.render(lang) for m in self.how_far),
             "notes": [m.render(lang) for m in self.notes],
+            "diagram": next((f"cuts/{DIAGRAMS[m.key]}.svg" for m in self.how_far if m.key in DIAGRAMS), None),
         }
 
 

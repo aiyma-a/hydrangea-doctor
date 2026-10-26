@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 190" role="img"><style>.s{stroke:#4f7d3a;stroke-width:5;stroke-linecap:round;fill:none}.g{stroke:#c9c2b0;stroke-width:5;stroke-linecap:round;fill:none}.b{fill:#7cb342}.c{stroke:#e53935;stroke-width:3;stroke-dasharray:6 4}.t{fill:#e53935;font:700 13px sans-serif}.l{fill:#5d4a3a;font:600 13px sans-serif}.k{fill:#8d6e63}</style><rect width="320" height="190" rx="14" fill="#f3f8ec"/>
+<rect x="0" y="165" width="320" height="25" fill="#8d6e63" opacity=".35"/>
+<g><path class="s" d="M60 168V30M85 168L80 40M110 168L118 34M135 168V46"/>
+<path class="g" d="M60 30V8M80 40V16M118 34V10M135 46V22" opacity=".0"/>
+<line class="c" x1="40" y1="78" x2="155" y2="78"/><text class="t" x="44" y="70">✂ ⅓</text>
+<circle class="b" cx="60" cy="80" r="5"/><circle class="b" cx="85" cy="82" r="0"/><circle class="b" cx="110" cy="80" r="0"/></g>
+<g transform="translate(160 0)"><path class="s" d="M60 168V78M85 168L82 82M110 168L113 80M135 168V82"/>
+<circle class="b" cx="56" cy="80" r="5"/><circle class="b" cx="64" cy="80" r="5"/><circle class="b" cx="108" cy="82" r="5"/><circle class="b" cx="116" cy="82" r="5"/><circle class="b" cx="132" cy="84" r="5"/><circle class="b" cx="140" cy="84" r="5"/></g>
+<path d="M150 100h20m-7-7l7 7-7 7" fill="none" stroke="#5d4a3a" stroke-width="3" stroke-linecap="round"/>
+</svg>

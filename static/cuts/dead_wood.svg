@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 190" role="img"><style>.s{stroke:#4f7d3a;stroke-width:5;stroke-linecap:round;fill:none}.g{stroke:#c9c2b0;stroke-width:5;stroke-linecap:round;fill:none}.b{fill:#7cb342}.c{stroke:#e53935;stroke-width:3;stroke-dasharray:6 4}.t{fill:#e53935;font:700 13px sans-serif}.l{fill:#5d4a3a;font:600 13px sans-serif}.k{fill:#8d6e63}</style><rect width="320" height="190" rx="14" fill="#f3f8ec"/>
+<rect x="0" y="165" width="320" height="25" fill="#8d6e63" opacity=".35"/>
+<path class="s" d="M90 168V40"/><circle class="b" cx="86" cy="60" r="5"/><circle class="b" cx="94" cy="60" r="5"/><circle class="b" cx="86" cy="100" r="5"/><circle class="b" cx="94" cy="100" r="5"/>
+<path class="g" d="M200 168V40"/>
+<line class="c" x1="170" y1="168" x2="230" y2="168"/><text class="t" x="236" y="164">✂</text>
+<text class="l" x="76" y="30" font-size="22">✓</text><text class="t" x="190" y="30" font-size="22">✕</text>
+</svg>

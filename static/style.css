@@ -121,3 +121,5 @@ body.working main { padding-top:20px; }
 #again { display:block; margin:0 auto; }
 .arow > .grid button { font-size:.95rem; }
 .arow > .grid button small { display:block; font-weight:400; font-size:.8rem; color:var(--muted); margin-top:2px; }
+
+.cutpic { display: block; width: 100%; max-width: 360px; margin: 10px auto 0; border-radius: 14px; }

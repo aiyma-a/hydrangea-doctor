@@ -337,6 +337,8 @@ function show(d) {
   $("verdictIcon").textContent = { yes: "✓", light: "~", no: "✕" }[d.trim_now];
   $("headline").textContent = d.headline;
   $("howFar").textContent = d.how_far;
+  $("cutPic").hidden = !d.diagram;
+  if (d.diagram) $("cutPic").src = d.diagram;
   $("speak").hidden = !("speechSynthesis" in window);
 
   // Details, folded away

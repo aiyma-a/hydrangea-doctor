@@ -199,3 +199,9 @@ def test_plant_guess_leans_towards_hydrangea():
     _, biased = zeroshot.predict_proba("plant", rose)
     assert biased[0, labels.index("hydrangea")] > plain[0, labels.index("hydrangea")]
     assert labels[int(biased.argmax())] == "rose"  # the lean must not override a clear answer
+
+
+def test_cut_advice_has_a_sketch():
+    a = advise("healthy", "dormant", "panicle", 2, "north", None, None, None, "hydrangea").render("en")
+    assert a["diagram"] == "cuts/cut_third.svg"
+    assert advise("wilting", "unknown", "panicle", 7, "north", None, None, None, "hydrangea").render("en")["diagram"] is None

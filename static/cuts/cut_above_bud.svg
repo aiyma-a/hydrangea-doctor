@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 190" role="img"><style>.s{stroke:#4f7d3a;stroke-width:6;stroke-linecap:round;fill:none}.c{stroke:#e53935;stroke-width:3;stroke-dasharray:6 4}.t{fill:#e53935;font:700 18px sans-serif}</style>
+<rect width="320" height="190" rx="14" fill="#f3f8ec"/>
+<path class="s" d="M160 185V60"/>
+<path d="M160 125q-40-8-52-38q36-2 52 38z" fill="#7cb342"/><path d="M160 125q40-8 52-38q-36-2-52 38z" fill="#7cb342"/>
+<path d="M160 60V20" stroke="#c9c2b0" stroke-width="6" stroke-linecap="round"/>
+<ellipse cx="160" cy="16" rx="30" ry="12" fill="#e8d5b5"/>
+<line class="c" x1="105" y1="76" x2="215" y2="76"/><text class="t" x="224" y="82">✂</text>
+</svg>

@@ -94,13 +94,15 @@ TASKS = {
         "fading_blooms": [
             "a {plant} with faded brown dried flowers",
             "spent wilted {plant} flowers turning brown",
+            "a whole {plant} bush in autumn with yellow leaves and dry faded flower heads",
+            "a {plant} bush with leaves turning yellow in autumn after flowering",
         ],
         "fruiting": [
             "a {plant} with ripe fruit or berries",
             "a {plant} branch with fruit hanging",
         ],
         "dormant": [
-            "a dormant {plant} with bare woody stems in winter",
+            "a dormant {plant} with bare woody stems in winter, no leaves at all",
             "a leafless {plant} with bare branches",
         ],
     },
