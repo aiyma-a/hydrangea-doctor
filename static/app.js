@@ -14,6 +14,7 @@ const UI = {
     chatTitle: "Ask about this plant", chatPlaceholder: "For example: can I cut it now?", chatSend: "Ask", chatThinking: "Thinking…", chatNote: "An AI answers. It can be wrong; ask a garden shop before using any spray.",
     edition: "Fall edition", winterTitle: "Before winter", winterTips: ["Stop feeding: fertiliser now pushes soft new growth that frost kills.", "Leave dried hydrangea flower heads on for winter. They protect the buds.", "Mulch: spread 5–8 cm of dry leaves or compost over the roots.", "Young plants (under 3 years): cover them on freezing nights.", "Rake up leaves with spots or mould and put them in the bin, not the compost."],
     kh_title: "Let's find out which kind it is", kh_q1: "What do the flower heads look like?", kh_cone: "Cone-shaped, pointed", kh_round: "Round balls", kh_unsure: "Not sure", kh_q2cone: "Are the leaves lobed, shaped like oak leaves?", kh_lobed: "Yes, like oak leaves", kh_notlobed: "No, plain oval leaves", kh_q2round: "What colour are the flowers?", kh_colour: "Blue, pink or purple", kh_white: "White or pale green", kh_msg: "No problem. Take a close photo of one flower head and one leaf, or ask at a garden shop. Until then the app gives only safe advice.", kh_close: "OK", kh_back: "Back",
+    bcTitle: "Before you cut", bcText: "This big trim is only for panicle and smooth hydrangeas, which flower on this year's stems. If your plant had round blue or pink balls last summer, do not cut it back now.", bcBtn: "I'm not sure of the kind",
     why: "Why this answer", rowPlant: "Plant", rowKind: "Kind", rowAge: "Age", change: "Change",
     tooDark: "This photo is too dark. Try again near a window or in daylight.",
     tooBlurry: "This photo is blurry. Hold the phone steady and tap the plant on the screen to focus.",
@@ -53,6 +54,7 @@ const UI = {
     chatTitle: "Спросить про это растение", chatPlaceholder: "Например: можно ли обрезать сейчас?", chatSend: "Спросить", chatThinking: "Думаю…", chatNote: "Отвечает ИИ. Он может ошибаться; перед любым опрыскиванием спросите в садовом магазине.",
     edition: "Осеннее издание", winterTitle: "Перед зимой", winterTips: ["Не подкармливайте: удобрения сейчас вызывают нежный рост, который убьёт мороз.", "Сухие соцветия гортензии оставьте на зиму: они защищают почки.", "Замульчируйте: насыпьте на корни 5–8 см сухих листьев или компоста.", "Молодые растения (младше 3 лет): укрывайте на морозные ночи.", "Листья с пятнами или плесенью соберите и выбросьте, а не в компост."],
     kh_title: "Давайте определим вид", kh_q1: "Как выглядят соцветия?", kh_cone: "Конусом, заострённые", kh_round: "Круглые шары", kh_unsure: "Не уверена", kh_q2cone: "Листья лопастные, как у дуба?", kh_lobed: "Да, как дубовые", kh_notlobed: "Нет, простые овальные", kh_q2round: "Какого цвета цветы?", kh_colour: "Голубые, розовые или фиолетовые", kh_white: "Белые или светло-зелёные", kh_msg: "Ничего страшного. Сфотографируйте крупно одно соцветие и один лист или спросите в садовом магазине. Пока приложение даёт только безопасные советы.", kh_close: "Понятно", kh_back: "Назад",
+    bcTitle: "Прежде чем резать", bcText: "Такая сильная обрезка подходит только метельчатой и древовидной гортензии: они цветут на побегах этого года. Если летом у вас были круглые голубые или розовые шары, сейчас не обрезайте.", bcBtn: "Я не уверена в виде",
     why: "Почему такой ответ", rowPlant: "Растение", rowKind: "Вид", rowAge: "Возраст", change: "Изменить",
     tooDark: "Фото слишком тёмное. Попробуйте у окна или при дневном свете.",
     tooBlurry: "Фото размытое. Держите телефон ровно и коснитесь растения на экране, чтобы навести резкость.",
@@ -92,6 +94,7 @@ const UI = {
     chatTitle: "Бул өсүмдүк жөнүндө суроо", chatPlaceholder: "Мисалы: азыр кесип койсом болобу?", chatSend: "Суроо", chatThinking: "Ойлонуп жатам…", chatNote: "ЖИ жооп берет. Ал жаңылышы мүмкүн; чачуудан мурун бакча дүкөнүнөн сураңыз.",
     edition: "Күзгү басылыш", winterTitle: "Кышка чейин", winterTips: ["Азыктандырбаңыз: азыр жер семирткич жумшак жаңы өсүндү чыгарат, аны үшүк өлтүрөт.", "Гортензиянын соолуган гүлдөрүн кышка калтырыңыз: алар бүчүрлөрдү коргойт.", "Мульча салыңыз: тамырдын үстүнө 5–8 см кургак жалбырак же компост төгүңүз.", "Жаш өсүмдүктөр (3 жашка чейин): үшүк түндөрдө жаап коюңуз.", "Тактуу же көгөргөн жалбырактарды жыйнап, компостко эмес, таштандыга ыргытыңыз."],
     kh_title: "Кайсы түр экенин аныктайлы", kh_q1: "Гүл топтомдору кандай көрүнөт?", kh_cone: "Конус сымал, учтуу", kh_round: "Тегерек шар сымал", kh_unsure: "Так билбейм", kh_q2cone: "Жалбырактары эмендин жалбырагындай бөлүктүүбү?", kh_lobed: "Ооба, эмен сыяктуу", kh_notlobed: "Жок, жөнөкөй сүйрү", kh_q2round: "Гүлдөрү кандай түстө?", kh_colour: "Көк, кызгылт же кызыл-көк", kh_white: "Ак же ачык жашыл", kh_msg: "Эч нерсе эмес. Бир гүл топтомун жана бир жалбырагын жакындан сүрөткө тартыңыз же бакча дүкөнүнөн сураңыз. Ага чейин колдонмо коопсуз кеңештерди гана берет.", kh_close: "Түшүнүктүү", kh_back: "Артка",
+    bcTitle: "Кесүүдөн мурун", bcText: "Мындай катуу кесүү метелка жана жылмакай гортензияга гана туура келет: алар быйылкы бутактарда гүлдөйт. Жайында тегерек көк же кызгылт шарлар болсо, азыр кеспеңиз.", bcBtn: "Түрүн так билбейм",
     why: "Эмне үчүн мындай жооп", rowPlant: "Өсүмдүк", rowKind: "Түрү", rowAge: "Жашы", change: "Өзгөртүү",
     tooDark: "Сүрөт өтө караңгы. Терезенин жанында же күндүзгү жарыкта кайра тартып көрүңүз.",
     tooBlurry: "Сүрөт даана эмес. Телефонду кыймылдатпай кармап, фокус алуу үчүн экрандагы өсүмдүккө тийиңиз.",
@@ -135,7 +138,10 @@ const save = () => localStorage.setItem(STORE, JSON.stringify(store));
 store.plants ||= {};
 let lang = store.lang || ({ ru: "ru", ky: "ky" }[navigator.language.slice(0, 2)] ?? "ru");
 let photos = []; // [{file, url}]
-let plant = "auto"; // what we send; becomes the confirmed/chosen plant
+// Nothing is picked for the user: every answer below comes from a tap in THIS check (not from the photo, not remembered).
+const blankChoice = () => ({ plant: null, species: null, age: null });
+let choice = blankChoice();
+let analysing = false;
 let coords = null;
 let plantNames = {}, speciesNames = {};
 let last = null; // last server answer
@@ -292,7 +298,7 @@ function aboutRow(id, label, value, choices) {
 }
 // "I don't know" the kind: two plain questions instead of a dead end. (A photo-based guess was tested and was
 // right on only 10 of 41 garden photos, so it is not used.)
-let kindStep = store.species === "unknown" ? "q1" : null; // null = not helping | "q1" | "cone" | "round" | "unsure"
+let kindStep = null; // null = not helping | "q1" | "cone" | "round" | "unsure"
 function kindHelper() {
   const row = Object.assign(document.createElement("div"), { className: "arow helper" });
   const t = tr();
@@ -319,33 +325,34 @@ function kindHelper() {
   return row;
 }
 function pick(id, v) {
-  if (id === "plant") plant = v;
-  else if (id === "species") { store.species = v; kindStep = v === "unknown" ? "q1" : null; save(); }
-  else { store.plants[last.plant.key] = { ...store.plants[last.plant.key], age: v }; save(); plant = last.plant.key; }
-  renderAbout(); analyse();
+  if (id === "plant") { if (choice.plant !== v) choice = { plant: v, species: null, age: null }; kindStep = null; }
+  else if (id === "species") { choice.species = v; kindStep = v === "unknown" ? "q1" : null; }
+  else choice.age = v;
+  analyse(); renderAbout();
 }
+// Sick or wilting plants get the same answer for every kind, so the kind is not asked then.
+const needsTreatment = () => last && !last.health.unsure && ["wilting", "leaf_spot", "powdery_mildew"].includes(last.health.label);
+const stepsDone = () => !!choice.plant && (choice.plant !== "hydrangea" || !!choice.species || needsTreatment());
 function renderAbout() {
-  const key = last?.plant.key, known = key && key !== "unknown";
   const rows = [];
-  if (last) rows.push(aboutRow("plant", tr().rowPlant, known ? last.plant.text : null,
-    Object.entries(plantNames).map(([k, v]) => [k, v, k === key])));
-  // The kind only changes advice for a healthy-looking plant; sick or wilting plants get the same answer for every kind.
-  const needsTreatment = last && !last.health.unsure && ["wilting", "leaf_spot", "powdery_mildew"].includes(last.health.label);
-  if (!last || ((key === "hydrangea" || key === "unknown") && !needsTreatment)) {
-    rows.push(aboutRow("species", tr().rowKind, store.species ? speciesNames[store.species].split(" – ")[0] : null,
-      Object.entries(speciesNames).map(([k, v]) => [k, v, store.species === k])));
-    if (last && store.species === "unknown" && kindStep) rows.push(kindHelper());
+  if (photos.length) rows.push(aboutRow("plant", tr().rowPlant, choice.plant ? plantNames[choice.plant] : null,
+    Object.entries(plantNames).map(([k, v]) => [k, v, choice.plant === k])));
+  if (choice.plant === "hydrangea" && !needsTreatment()) {
+    rows.push(aboutRow("species", tr().rowKind, choice.species ? speciesNames[choice.species].split(" – ")[0] : null,
+      Object.entries(speciesNames).map(([k, v]) => [k, v, choice.species === k])));
+    if (choice.species === "unknown" && kindStep) rows.push(kindHelper());
   }
-  if (known) {
-    const years = store.plants[key]?.age, askAge = last.trim_now === "yes" || years; // age only changes a "yes" (younger plants get a lighter cut)
-    if (askAge) rows.push(aboutRow("age", tr().rowAge, years ? tr().ages[AGES.find(([, y]) => y === years)?.[0]] : null,
-      AGES.map(([k, y]) => [y, tr().ages[k], years === y])));
-  }
+  // Age only changes a "yes" (younger plants get a lighter cut), so ask it once the answer is a "yes".
+  if (last && stepsDone() && (last.trim_now === "yes" || choice.age))
+    rows.push(aboutRow("age", tr().rowAge, choice.age ? tr().ages[AGES.find(([, y]) => y === choice.age)?.[0]] : null,
+      AGES.map(([k, y]) => [y, tr().ages[k], choice.age === y])));
   // One open question at a time: the first row without an answer; later ones wait their turn.
   const firstOpen = rows.findIndex((r) => r.querySelector(".grid") && !r.dataset.editing);
   const shown = rows.filter((r, i) => !r.querySelector(".grid") || r.dataset.editing || i === firstOpen);
   $("about-plant").hidden = photos.length === 0 || shown.length === 0;
   $("about-plant").replaceChildren(...shown);
+  // The answer appears only after the steps are done.
+  $("result").hidden = !(last && !analysing && stepsDone());
 }
 
 // Shrink each photo on the phone before upload: faster on mobile data; the model only needs ~224px.
@@ -368,6 +375,7 @@ function shrink(file, maxSide = 1024) {
 let requestId = 0;
 async function analyse() {
   const id = ++requestId;
+  analysing = true;
   stopSpeaking();
   for (const s of ["result", "error", "notice"]) $(s).hidden = true;
   $("loading").hidden = false; $("slow").hidden = true;
@@ -375,11 +383,10 @@ async function analyse() {
   try {
     const form = new FormData();
     for (const [i, p] of photos.entries()) form.append("photos", await shrink(p.file), `photo${i}.jpg`);
-    form.append("plant", plant);
+    form.append("plant", choice.plant || "unknown");
     form.append("lang", lang);
-    form.append("species", store.species || "unknown");
-    form.append("ages", JSON.stringify(Object.fromEntries(
-      Object.entries(store.plants).filter(([, v]) => v.age).map(([k, v]) => [k, v.age]))));
+    form.append("species", choice.species || "unknown");
+    form.append("ages", JSON.stringify(choice.plant && choice.age ? { [choice.plant]: choice.age } : {}));
     if (coords) { form.append("lat", coords.lat); form.append("lon", coords.lon); }
     const res = await fetch(API + "api/analyze", { method: "POST", body: form });
     const data = await res.json().catch(() => ({}));
@@ -392,7 +399,7 @@ async function analyse() {
     if (id === requestId) showError(navigator.onLine ? e.message || tr().failed : tr().offline);
   } finally {
     clearTimeout(slowTimer);
-    if (id === requestId) $("loading").hidden = true;
+    if (id === requestId) { $("loading").hidden = true; analysing = false; renderAbout(); }
   }
 }
 
@@ -421,9 +428,11 @@ function show(d) {
   $("weather").textContent = d.weather ? d.weather : "";
   $("seen").textContent = `${tr().health}: ${d.health.text} (${certainty(d.health.confidence)}) · ${tr().stage}: ${d.stage.text} (${certainty(d.stage.confidence)})`;
 
-  renderAbout();
-  $("result").hidden = false;
-  $("answerCard").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  // "Before you cut": the big trim is only right for panicle and smooth hydrangeas.
+  $("bcTitle").textContent = tr().bcTitle; $("bcText").textContent = tr().bcText; $("bcBtn").textContent = tr().bcBtn;
+  $("beforeCut").hidden = !(d.diagram && /cut_(third|low)/.test(d.diagram));
+  analysing = false; renderAbout();
+  if (!$("result").hidden) $("answerCard").scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 // ---------- read aloud ----------
@@ -442,7 +451,7 @@ $("speak").onclick = () => {
 // ---------- start over ----------
 function reset() {
   stopSpeaking();
-  photos.forEach((p) => URL.revokeObjectURL(p.url)); photos = []; plant = "auto"; last = null; editing = null; requestId++;
+  photos.forEach((p) => URL.revokeObjectURL(p.url)); photos = []; choice = blankChoice(); kindStep = null; analysing = false; last = null; editing = null; requestId++;
   for (const s of ["result", "error", "loading", "notice"]) $(s).hidden = true;
   renderThumbs(); window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -462,7 +471,7 @@ $("again").onclick = reset;
 const chatLog = []; // {role: "user" | "model", text}
 function chatContext() {
   if (!last) return {};
-  return { plant: last.plant.text, kind: store.species && speciesNames[store.species] ? speciesNames[store.species].split(" – ")[0] : "",
+  return { plant: last.plant.text, kind: choice.species && speciesNames[choice.species] ? speciesNames[choice.species].split(" – ")[0] : "",
     health: last.health.text, stage: last.stage.text, answer: tr().answer[last.trim_now], headline: last.headline, how_far: last.how_far,
     weather: last.weather || "", month: new Date().toLocaleString("en", { month: "long" }) };
 }
@@ -470,6 +479,7 @@ function addChatBubble(role, text) {
   const li = Object.assign(document.createElement("li"), { textContent: text, className: role === "user" ? "me" : "ai" });
   $("chatLog").append(li); li.scrollIntoView({ behavior: "smooth", block: "nearest" }); return li;
 }
+$("bcBtn").onclick = () => { choice.species = "unknown"; kindStep = "q1"; analyse(); renderAbout(); $("about-plant").scrollIntoView({ behavior: "smooth", block: "start" }); };
 $("chatForm").onsubmit = async (e) => {
   e.preventDefault();
   const q = $("chatInput").value.trim();

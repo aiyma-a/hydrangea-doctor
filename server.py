@@ -105,7 +105,7 @@ async def analyze(
     lang: str = Form("en"),
 ):
     lang = lang if lang in LANGS else "en"
-    if species not in pruning.SPECIES or (plant != "auto" and plant not in PLANTS):
+    if species not in pruning.SPECIES or (plant not in ("auto", "unknown") and plant not in PLANTS):
         return error(400, "err_type", lang)
     if not 1 <= len(photos) <= MAX_PHOTOS:
         return error(400, "err_count", lang, max=MAX_PHOTOS)

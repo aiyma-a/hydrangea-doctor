@@ -157,3 +157,7 @@ body { background:linear-gradient(180deg, #fdf6e8 0, var(--paper) 280px); }
 .helper { background:#fff8e8; border-radius:12px; padding:14px; margin-top:10px; border-left:6px solid #e0a030; }
 .helper .kh-title { display:block; color:var(--rust); margin-bottom:6px; }
 .helper .kh-q { margin:0 0 8px; font-weight:600; }
+
+.beforecut { border-left:8px solid var(--rust); background:#fff4ea; }
+.beforecut h3 { margin:0 0 6px; color:var(--rust); font-size:1.15rem; }
+.beforecut p { margin:0 0 12px; }
