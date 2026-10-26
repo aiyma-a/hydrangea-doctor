@@ -17,6 +17,7 @@ const UI = {
     bcTitle: "Before you cut", bcText: "This big trim is only for panicle and smooth hydrangeas, which flower on this year's stems. If your plant had round blue or pink balls last summer, do not cut it back now.", bcBtn: "I'm not sure of the kind",
     plantOther: "Other / not in the list",
     idBtn: "Not sure? Identify the plant with AI", idNote: "Your photos are sent to Google's AI for this. The answer can be wrong.", idLoading: "Looking at your photos…", idGuess: "The AI thinks this is:", idSure_high: "fairly sure", idSure_medium: "not very sure", idSure_low: "a weak guess", idYes: "Yes, that is right", idNo: "No, I'll choose myself", idNone: "The AI could not tell what this plant is. Try a close photo of a leaf or flower, or pick from the list.", idFail: "The AI could not look at the photos now. Please pick from the list.", idNotInList: "This plant is not in the list, so the app will give only safe advice. You can ask the chat below about it.",
+    idAsk: "Ask the chat about it", idAskText: "What should I do with my {name}?",
     why: "Why this answer", rowPlant: "Plant", rowKind: "Kind", rowAge: "Age", change: "Change",
     tooDark: "This photo is too dark. Try again near a window or in daylight.",
     tooBlurry: "This photo is blurry. Hold the phone steady and tap the plant on the screen to focus.",
@@ -209,12 +210,24 @@ $("camShoot").onclick = () => {
 // A quick look at brightness and sharpness on a small copy, so a bad photo gets a friendly hint
 // before it is sent. Thresholds were checked on 111 real plant photos (none flagged).
 const DARK_BELOW = 40, BLUR_BELOW = 100;
+// Decode a phone photo (12 MP+) directly at a small size: much faster than loading it in full.
+async function decodeSmall(file, maxSide) {
+  try {
+    const full = await createImageBitmap(file, { imageOrientation: "from-image" }); // cheap: only reads the size lazily in most browsers
+    const k = Math.min(1, maxSide / Math.max(full.width, full.height));
+    if (k === 1) return full;
+    const small = await createImageBitmap(file, { imageOrientation: "from-image", resizeWidth: Math.round(full.width * k), resizeHeight: Math.round(full.height * k), resizeQuality: "medium" });
+    full.close(); return small;
+  } catch {
+    return new Promise((ok, no) => { const i = new Image(); i.onload = () => { i.close = () => URL.revokeObjectURL(i.src); ok(i); }; i.onerror = no; i.src = URL.createObjectURL(file); });
+  }
+}
 async function photoProblem(file) {
   try {
-    const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = URL.createObjectURL(file); });
+    const img = await decodeSmall(file, 256);
     const k = 256 / Math.max(img.width, img.height), w = Math.max(3, Math.round(img.width * k)), h = Math.max(3, Math.round(img.height * k));
     const c = Object.assign(document.createElement("canvas"), { width: w, height: h });
-    const ctx = c.getContext("2d", { willReadFrequently: true }); ctx.drawImage(img, 0, 0, w, h); URL.revokeObjectURL(img.src);
+    const ctx = c.getContext("2d", { willReadFrequently: true }); ctx.drawImage(img, 0, 0, w, h); img.close?.();
     const d = ctx.getImageData(0, 0, w, h).data, g = new Float32Array(w * h);
     let sum = 0;
     for (let i = 0; i < g.length; i++) { g[i] = 0.299 * d[4 * i] + 0.587 * d[4 * i + 1] + 0.114 * d[4 * i + 2]; sum += g[i]; }
@@ -245,7 +258,7 @@ async function addPhotos(files) {
 function acceptPhotos(files) {
   for (const file of files) {
     if (photos.length >= MAX_PHOTOS) { showError(tr().tooMany); break; }
-    photos.push({ file, url: URL.createObjectURL(file) });
+    const added = { file, url: URL.createObjectURL(file) }; smallOf(added).catch(() => {}); photos.push(added); // start shrinking right away
   }
   renderThumbs();
   analyse(); // no "Check" button: the answer comes by itself
@@ -329,7 +342,7 @@ function kindHelper() {
   return row;
 }
 function pick(id, v) {
-  if (id === "plant") { if (choice.plant !== v) choice = { plant: v, species: null, age: null }; kindStep = null; }
+  if (id === "plant") { if (choice.plant !== v) choice = { plant: v, species: null, age: null }; kindStep = null; ident = null; if (v !== "unknown") aiName = ""; }
   else if (id === "species") { choice.species = v; kindStep = v === "unknown" ? "q1" : null; }
   else choice.age = v;
   analyse(); renderAbout();
@@ -345,7 +358,7 @@ async function identifyPlant() {
   const mine = ident;
   try {
     const form = new FormData();
-    for (const [i, p] of photos.slice(0, 3).entries()) form.append("photos", await shrink(p.file), `photo${i}.jpg`);
+    for (const [i, p] of photos.slice(0, 3).entries()) form.append("photos", await smallOf(p), `photo${i}.jpg`);
     form.append("lang", lang);
     const res = await fetch(API + "api/identify", { method: "POST", body: form });
     const data = await res.json().catch(() => ({}));
@@ -354,7 +367,7 @@ async function identifyPlant() {
   } catch { if (ident === mine) ident = "fail"; }
   renderAbout();
 }
-function identifyBlock() {
+function identifyBlock(other = false) {
   const box = Object.assign(document.createElement("div"), { className: "ident" });
   const t = tr();
   const text = (cls, str) => Object.assign(document.createElement("p"), { className: cls, textContent: str });
@@ -370,8 +383,15 @@ function identifyBlock() {
     const label = ident.key ? plantNames[ident.key] : ident.name;
     box.append(text("hint", `${t.idGuess} (${t["idSure_" + ident.confidence]})`), text("idname", label));
     if (!ident.key) box.append(text("hint", t.idNotInList));
+    if (other && !ident.key) { // "Other" is already chosen: remember the name for the chat and offer to ask about it
+      aiName = ident.name;
+      const ask = Object.assign(document.createElement("button"), { className: "primary", type: "button", textContent: t.idAsk });
+      ask.onclick = () => { $("chatInput").value = t.idAskText.replace("{name}", ident.name); $("chat").scrollIntoView({ behavior: "smooth", block: "start" }); $("chatInput").focus(); };
+      box.append(ask);
+      return box;
+    }
     const yes = Object.assign(document.createElement("button"), { className: "primary", type: "button", textContent: t.idYes });
-    yes.onclick = () => { const g = ident; ident = null; aiName = g.key ? "" : g.name; pick("plant", g.key || "unknown"); };
+    yes.onclick = () => { const g = ident; aiName = g.key ? "" : g.name; ident = null; pick("plant", g.key || "unknown"); };
     const no = Object.assign(document.createElement("button"), { className: "secondary", type: "button", textContent: t.idNo });
     no.onclick = () => { ident = "none"; renderAbout(); };
     box.append(Object.assign(document.createElement("div"), { className: "row" }), yes, no);
@@ -385,6 +405,7 @@ function renderAbout() {
   if (photos.length) rows.push(aboutRow("plant", tr().rowPlant, choice.plant ? (choice.plant === "unknown" ? tr().plantOther : plantNames[choice.plant]) : null,
     [...Object.entries(plantNames), ["unknown", tr().plantOther]].map(([k, v]) => [k, v, choice.plant === k])));
   if (rows.length && !choice.plant && !rows[0].dataset.editing) rows[0].insertBefore(identifyBlock(), rows[0].querySelector(".grid"));
+  else if (rows.length && choice.plant === "unknown" && !rows[0].dataset.editing) rows[0].append(identifyBlock(true));
   if (choice.plant === "hydrangea" && !needsTreatment()) {
     rows.push(aboutRow("species", tr().rowKind, choice.species ? speciesNames[choice.species].split(" – ")[0] : null,
       Object.entries(speciesNames).map(([k, v]) => [k, v, choice.species === k])));
@@ -405,20 +426,15 @@ function renderAbout() {
 }
 
 // Shrink each photo on the phone before upload: faster on mobile data; the model only needs ~224px.
-function shrink(file, maxSide = 1024) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      const k = Math.min(1, maxSide / Math.max(img.width, img.height));
-      const c = Object.assign(document.createElement("canvas"), { width: img.width * k, height: img.height * k });
-      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-      c.toBlob((b) => (b ? resolve(b) : reject(new Error(tr().failed))), "image/jpeg", 0.85);
-      URL.revokeObjectURL(img.src);
-    };
-    img.onerror = () => reject(new Error(tr().failed));
-    img.src = URL.createObjectURL(file);
-  });
+async function shrink(file, maxSide = 1024) {
+  const img = await decodeSmall(file, maxSide).catch(() => { throw new Error(tr().failed); });
+  const k = Math.min(1, maxSide / Math.max(img.width, img.height));
+  const c = Object.assign(document.createElement("canvas"), { width: Math.round(img.width * k), height: Math.round(img.height * k) });
+  c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); img.close?.();
+  return new Promise((resolve, reject) => c.toBlob((b) => (b ? resolve(b) : reject(new Error(tr().failed))), "image/jpeg", 0.85));
 }
+// Each photo is shrunk once and reused for every check, identify call and re-check.
+const smallOf = (p) => (p.small ||= shrink(p.file));
 
 // ---------- ask the server ----------
 let requestId = 0;
@@ -431,7 +447,7 @@ async function analyse() {
   const slowTimer = setTimeout(() => ($("slow").hidden = false), 8000);
   try {
     const form = new FormData();
-    for (const [i, p] of photos.entries()) form.append("photos", await shrink(p.file), `photo${i}.jpg`);
+    for (const [i, p] of photos.entries()) form.append("photos", await smallOf(p), `photo${i}.jpg`);
     form.append("plant", choice.plant || "unknown");
     form.append("lang", lang);
     form.append("species", choice.species || "unknown");

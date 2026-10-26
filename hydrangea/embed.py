@@ -3,6 +3,8 @@
 Computing an embedding takes ~0.1s per image on CPU, so we cache them on disk:
 re-running training after adding 5 photos only embeds those 5.
 """
+import hashlib
+from collections import OrderedDict
 from functools import lru_cache
 from pathlib import Path
 
@@ -41,17 +43,32 @@ def open_image(path_or_image) -> Image.Image:
     return ImageOps.exif_transpose(img).convert("RGB")
 
 
+_recent: "OrderedDict[str, np.ndarray]" = OrderedDict()  # the app re-checks the same photos after every tap
+_RECENT_MAX = 64
+
+
+def _photo_key(img: Image.Image) -> str:
+    return hashlib.sha1(img.tobytes() + str(img.size).encode()).hexdigest()
+
+
 @torch.no_grad()
 def embed_images(images: list, batch_size: int = 16) -> np.ndarray:
     """images: paths or PIL images -> array of shape (n, 512), each row length 1."""
     model, processor = _model()
-    out = []
-    for i in range(0, len(images), batch_size):
-        batch = [open_image(x) for x in images[i : i + batch_size]]
-        inputs = processor(images=batch, return_tensors="pt")
-        feats = _features(model.get_image_features(**inputs))
-        out.append(torch.nn.functional.normalize(feats, dim=-1).numpy())
-    return np.concatenate(out) if out else np.zeros((0, 512), dtype=np.float32)
+    opened = [open_image(x) for x in images]
+    keys = [_photo_key(x) for x in opened]
+    todo = [i for i, k in enumerate(keys) if k not in _recent]
+    for start in range(0, len(todo), batch_size):
+        idx = todo[start : start + batch_size]
+        inputs = processor(images=[opened[i] for i in idx], return_tensors="pt")
+        feats = torch.nn.functional.normalize(_features(model.get_image_features(**inputs)), dim=-1).numpy()
+        for i, f in zip(idx, feats):
+            _recent[keys[i]] = f
+    for k in keys:
+        _recent.move_to_end(k)
+    while len(_recent) > _RECENT_MAX:
+        _recent.popitem(last=False)
+    return np.stack([_recent[k] for k in keys]) if keys else np.zeros((0, 512), dtype=np.float32)
 
 
 @torch.no_grad()

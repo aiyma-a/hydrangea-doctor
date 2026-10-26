@@ -4,6 +4,7 @@ We only need a few facts for trimming advice:
   - Is frost coming in the next 14 days?  (fresh cuts and new shoots get damaged)
   - Was it hot and dry in the last 7 days? (wilting is probably thirst)
 """
+import time
 import json
 import urllib.parse
 import urllib.request
@@ -67,11 +68,22 @@ def fetch(place: str) -> Weather:
     return fetch_coords(lat, lon, name)
 
 
+_coords_cache: dict = {}  # (lat, lon rounded to ~1 km) -> (time, raw reply): the app re-asks after every tap
+_COORDS_TTL_S = 900
+
+
 def fetch_coords(lat: float, lon: float, name: str | Msg = M("your_location")) -> Weather:
     """Weather for exact coordinates, e.g. from the phone's GPS."""
+    key, now = (round(lat, 2), round(lon, 2)), time.time()
+    hit = _coords_cache.get(key)
+    if hit and now - hit[0] < _COORDS_TTL_S:
+        return summarize(hit[1], name, lat)
     res = _get("https://api.open-meteo.com/v1/forecast", {
         "latitude": lat, "longitude": lon, "timezone": "auto",
         "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum",
         "past_days": 7, "forecast_days": 14,
     })
+    _coords_cache[key] = (now, res["daily"])
+    if len(_coords_cache) > 200:
+        _coords_cache.pop(next(iter(_coords_cache)))
     return summarize(res["daily"], name, lat)
