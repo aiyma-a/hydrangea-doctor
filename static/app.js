@@ -295,11 +295,13 @@ function renderAbout() {
   const rows = [];
   if (last) rows.push(aboutRow("plant", tr().rowPlant, known ? last.plant.text : null,
     Object.entries(plantNames).map(([k, v]) => [k, v, k === key])));
-  if (!last || key === "hydrangea" || key === "unknown")
+  // The kind only changes advice for a healthy-looking plant; sick or wilting plants get the same answer for every kind.
+  const needsTreatment = last && !last.health.unsure && ["wilting", "leaf_spot", "powdery_mildew"].includes(last.health.label);
+  if (!last || ((key === "hydrangea" || key === "unknown") && !needsTreatment))
     rows.push(aboutRow("species", tr().rowKind, store.species ? speciesNames[store.species].split(" – ")[0] : null,
       Object.entries(speciesNames).map(([k, v]) => [k, v, store.species === k])));
   if (known) {
-    const years = store.plants[key]?.age, askAge = last.trim_now !== "no" || years;
+    const years = store.plants[key]?.age, askAge = last.trim_now === "yes" || years; // age only changes a "yes" (younger plants get a lighter cut)
     if (askAge) rows.push(aboutRow("age", tr().rowAge, years ? tr().ages[AGES.find(([, y]) => y === years)?.[0]] : null,
       AGES.map(([k, y]) => [y, tr().ages[k], years === y])));
   }
