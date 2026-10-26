@@ -153,3 +153,7 @@ body { background:linear-gradient(180deg, #fdf6e8 0, var(--paper) 280px); }
 
 /* Yes / No side by side: same height, same text size */
 .row > .primary, .row > .secondary { width:0; border:1.5px solid var(--forest); margin-bottom:0; min-height:60px; font-size:1.1rem; display:flex; align-items:center; justify-content:center; }
+
+.helper { background:#fff8e8; border-radius:12px; padding:14px; margin-top:10px; border-left:6px solid #e0a030; }
+.helper .kh-title { display:block; color:var(--rust); margin-bottom:6px; }
+.helper .kh-q { margin:0 0 8px; font-weight:600; }
