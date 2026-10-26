@@ -155,6 +155,35 @@ async def analyze(
     }
 
 
+@app.post("/api/identify")
+async def identify_endpoint(request: Request, photos: list[UploadFile] = File(...), lang: str = Form("en")):
+    lang = lang if lang in LANGS else "en"
+    if not 1 <= len(photos) <= chat.MAX_ID_PHOTOS:
+        return error(400, "err_count", lang, max=chat.MAX_ID_PHOTOS)
+    jpegs = []
+    for photo in photos:
+        data = await photo.read(MAX_UPLOAD_BYTES + 1)
+        try:
+            image = Image.open(io.BytesIO(data))
+            image.load()
+        except (UnidentifiedImageError, OSError):
+            return error(400, "err_not_photo", lang)
+        image = image.convert("RGB")
+        image.thumbnail((1024, 1024))
+        out = io.BytesIO()
+        image.save(out, "JPEG", quality=85)
+        jpegs.append(out.getvalue())
+    ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "")).split(",")[0].strip()
+    candidates = {k: t(f"plant.{k}", "en") for k in PLANTS}
+    try:
+        return await asyncio.to_thread(chat.identify, jpegs, lang, candidates, ip)
+    except chat.RateLimited:
+        return error(429, "err_chat_limit", lang)
+    except chat.ChatUnavailable as e:
+        log.warning("identify failed: %s", e)
+        return error(503, "err_chat", lang)
+
+
 @app.post("/api/chat")
 async def chat_endpoint(request: Request):
     try:

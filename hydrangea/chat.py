@@ -90,3 +90,47 @@ def ask(question: str, context: dict, history: list, lang: str, ip: str) -> str:
         return data["candidates"][0]["content"]["parts"][0]["text"].strip()
     except (urllib.error.URLError, KeyError, IndexError, ValueError, TimeoutError) as e:
         raise ChatUnavailable(type(e).__name__) from e
+
+
+# ---------- identify a plant from photos (Gemini vision) ----------
+MAX_ID_PHOTOS = 3
+ID_SCHEMA = {"type": "OBJECT", "properties": {
+    "name": {"type": "STRING"}, "key": {"type": "STRING", "nullable": True},
+    "confidence": {"type": "STRING", "enum": ["high", "medium", "low"]}},
+    "required": ["name", "key", "confidence"]}
+
+
+def build_identify_request(jpegs: list[bytes], lang: str, candidates: dict[str, str]) -> dict:
+    import base64
+    options = ", ".join(f'"{k}" ({v})' for k, v in candidates.items())
+    prompt = (f"These photos show one garden plant. Identify it for a home gardener. Reply in {LANG_NAMES.get(lang, 'English')}.\n"
+              f'"name": the common name, with the Latin name in brackets only if you are fairly sure; "" if the photos show no plant or you cannot tell.\n'
+              f'"key": if the plant is one of these supported plants, its key, otherwise null: {options}.\n'
+              '"confidence": high, medium or low. Be honest: use low when the photos do not show enough (for example a bush in autumn without flowers or fruit).')
+    parts = [{"text": prompt}] + [{"inline_data": {"mime_type": "image/jpeg", "data": base64.b64encode(j).decode()}} for j in jpegs]
+    return {"contents": [{"role": "user", "parts": parts}],
+            "generationConfig": {"temperature": 0.2, "maxOutputTokens": 300, "responseMimeType": "application/json",
+                                 "responseSchema": ID_SCHEMA, "thinkingConfig": {"thinkingBudget": 0}}}
+
+
+def parse_identify(text: str, candidates: dict[str, str]) -> dict:
+    data = json.loads(text)
+    key = data.get("key") if data.get("key") in candidates else None
+    conf = data.get("confidence") if data.get("confidence") in ("high", "medium", "low") else "low"
+    return {"name": _clip(data.get("name"), 120).strip(), "key": key, "confidence": conf}
+
+
+def identify(jpegs: list[bytes], lang: str, candidates: dict[str, str], ip: str) -> dict:
+    key = os.environ.get("GEMINI_API_KEY")
+    if not key:
+        raise ChatUnavailable("no key")
+    if not _allow("id:" + ip, time.time()):
+        raise RateLimited("limit")
+    body = json.dumps(build_identify_request(jpegs, lang, candidates)).encode()
+    req = urllib.request.Request(URL, body, {"Content-Type": "application/json", "x-goog-api-key": key})
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            data = json.load(r)
+        return parse_identify(data["candidates"][0]["content"]["parts"][0]["text"], candidates)
+    except (urllib.error.URLError, KeyError, IndexError, ValueError, TimeoutError, AttributeError) as e:
+        raise ChatUnavailable(type(e).__name__) from e

@@ -19,3 +19,14 @@ def test_rate_limit_per_ip():
     assert not chat._allow("1.2.3.4", 1001.0)
     assert chat._allow("5.6.7.8", 1001.0)
     assert chat._allow("1.2.3.4", 1000.0 + 3601)
+
+
+def test_identify_request_and_parsing():
+    cands = {"plum": "Plum tree", "rose": "Rose"}
+    r = chat.build_identify_request([b"x", b"y"], "ru", cands)
+    parts = r["contents"][0]["parts"]
+    assert "Russian" in parts[0]["text"] and '"plum"' in parts[0]["text"] and len(parts) == 3
+    ok = chat.parse_identify('{"name": "Plum", "key": "plum", "confidence": "medium"}', cands)
+    assert ok == {"name": "Plum", "key": "plum", "confidence": "medium"}
+    odd = chat.parse_identify('{"name": "Cactus", "key": "cactus", "confidence": "sure"}', cands)
+    assert odd["key"] is None and odd["confidence"] == "low"

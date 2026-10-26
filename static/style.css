@@ -161,3 +161,6 @@ body { background:linear-gradient(180deg, #fdf6e8 0, var(--paper) 280px); }
 .beforecut { border-left:8px solid var(--rust); background:#fff4ea; }
 .beforecut h3 { margin:0 0 6px; color:var(--rust); font-size:1.15rem; }
 .beforecut p { margin:0 0 12px; }
+
+.ident { margin:6px 0 14px; padding-bottom:12px; border-bottom:1px dashed var(--line); }
+.ident .idname { font:600 1.3rem ui-serif, Georgia, serif; color:var(--forest); margin:2px 0 10px; }

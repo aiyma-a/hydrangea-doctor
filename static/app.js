@@ -16,6 +16,7 @@ const UI = {
     kh_title: "Let's find out which kind it is", kh_q1: "What do the flower heads look like?", kh_cone: "Cone-shaped, pointed", kh_round: "Round balls", kh_unsure: "Not sure", kh_q2cone: "Are the leaves lobed, shaped like oak leaves?", kh_lobed: "Yes, like oak leaves", kh_notlobed: "No, plain oval leaves", kh_q2round: "What colour are the flowers?", kh_colour: "Blue, pink or purple", kh_white: "White or pale green", kh_msg: "No problem. Take a close photo of one flower head and one leaf, or ask at a garden shop. Until then the app gives only safe advice.", kh_close: "OK", kh_back: "Back",
     bcTitle: "Before you cut", bcText: "This big trim is only for panicle and smooth hydrangeas, which flower on this year's stems. If your plant had round blue or pink balls last summer, do not cut it back now.", bcBtn: "I'm not sure of the kind",
     plantOther: "Other / not in the list",
+    idBtn: "Not sure? Identify the plant with AI", idNote: "Your photos are sent to Google's AI for this. The answer can be wrong.", idLoading: "Looking at your photos…", idGuess: "The AI thinks this is:", idSure_high: "fairly sure", idSure_medium: "not very sure", idSure_low: "a weak guess", idYes: "Yes, that is right", idNo: "No, I'll choose myself", idNone: "The AI could not tell what this plant is. Try a close photo of a leaf or flower, or pick from the list.", idFail: "The AI could not look at the photos now. Please pick from the list.", idNotInList: "This plant is not in the list, so the app will give only safe advice. You can ask the chat below about it.",
     why: "Why this answer", rowPlant: "Plant", rowKind: "Kind", rowAge: "Age", change: "Change",
     tooDark: "This photo is too dark. Try again near a window or in daylight.",
     tooBlurry: "This photo is blurry. Hold the phone steady and tap the plant on the screen to focus.",
@@ -35,7 +36,7 @@ const UI = {
     honestTitle: "What it can and cannot do",
     honest1: "It estimates the growth stage and visible health problems from a photo, and checks frost and heat before advising a cut.",
     honest2: "It is not a diagnosis. When the photo is unclear it says it is not sure and asks for a closer one. Garden-specific accuracy improves as labelled photos are added.",
-    footPrivacy: "Photos are analysed and not stored.",
+    footPrivacy: "Photos are analysed and not stored. If you tap \"Identify with AI\", they are also sent to Google's AI service.",
     title: "Hydrangea Doctor", homeTitle: "Take a photo of your plant", takePhoto: "Take a photo",
     fromGallery: "or choose from the gallery", tip: "Tip: a close-up of one leaf, or the whole plant.",
     locQuestion: "May I use your location?", locWhy: "Only to check the weather: frost and heat change the advice.",
@@ -57,7 +58,7 @@ const UI = {
     kh_title: "Давайте определим вид", kh_q1: "Как выглядят соцветия?", kh_cone: "Конусом, заострённые", kh_round: "Круглые шары", kh_unsure: "Не уверена", kh_q2cone: "Листья лопастные, как у дуба?", kh_lobed: "Да, как дубовые", kh_notlobed: "Нет, простые овальные", kh_q2round: "Какого цвета цветы?", kh_colour: "Голубые, розовые или фиолетовые", kh_white: "Белые или светло-зелёные", kh_msg: "Ничего страшного. Сфотографируйте крупно одно соцветие и один лист или спросите в садовом магазине. Пока приложение даёт только безопасные советы.", kh_close: "Понятно", kh_back: "Назад",
     bcTitle: "Прежде чем резать", bcText: "Такая сильная обрезка подходит только метельчатой и древовидной гортензии: они цветут на побегах этого года. Если летом у вас были круглые голубые или розовые шары, сейчас не обрезайте.", bcBtn: "Я не уверена в виде",
     plantOther: "Другое / нет в списке",
-    why: "Почему такой ответ", rowPlant: "Растение", rowKind: "Вид", rowAge: "Возраст", change: "Изменить",
+    idBtn: "Не знаете, что за растение? Определить с помощью ИИ", idNote: "Для этого фото отправляются в ИИ Google. Ответ может быть неверным.", idLoading: "Смотрю на фото…", idGuess: "ИИ думает, что это:", idSure_high: "довольно уверен", idSure_medium: "не очень уверен", idSure_low: "слабое предположение", idYes: "Да, верно", idNo: "Нет, выберу сама", idNone: "ИИ не смог определить растение. Сфотографируйте крупно лист или цветок или выберите из списка.", idFail: "ИИ сейчас не смог посмотреть фото. Выберите из списка.", idNotInList: "Этого растения нет в списке, поэтому приложение даст только безопасный совет. Можно спросить о нём в чате ниже.", why: "Почему такой ответ", rowPlant: "Растение", rowKind: "Вид", rowAge: "Возраст", change: "Изменить",
     tooDark: "Фото слишком тёмное. Попробуйте у окна или при дневном свете.",
     tooBlurry: "Фото размытое. Держите телефон ровно и коснитесь растения на экране, чтобы навести резкость.",
     useAnyway: "Всё равно использовать",
@@ -76,7 +77,7 @@ const UI = {
     honestTitle: "Что умеет и чего не умеет",
     honest1: "Оценивает стадию роста и видимые проблемы со здоровьем по фото и проверяет заморозки и жару перед советом об обрезке.",
     honest2: "Это не диагноз. Если фото нечёткое, приложение скажет, что не уверено, и попросит снимок ближе. Точность для вашего сада растёт по мере добавления размеченных фото.",
-    footPrivacy: "Фото анализируются и не сохраняются.",
+    footPrivacy: "Фото анализируются и не сохраняются. Если нажать «Определить с помощью ИИ», они также отправляются в ИИ-сервис Google.",
     title: "Доктор Гортензий", homeTitle: "Сфотографируйте растение", takePhoto: "Сфотографировать",
     fromGallery: "или выбрать из галереи", tip: "Совет: один лист крупным планом или всё растение целиком.",
     locQuestion: "Можно узнать ваше местоположение?", locWhy: "Только чтобы проверить погоду: заморозки и жара меняют совет.",
@@ -98,7 +99,7 @@ const UI = {
     kh_title: "Кайсы түр экенин аныктайлы", kh_q1: "Гүл топтомдору кандай көрүнөт?", kh_cone: "Конус сымал, учтуу", kh_round: "Тегерек шар сымал", kh_unsure: "Так билбейм", kh_q2cone: "Жалбырактары эмендин жалбырагындай бөлүктүүбү?", kh_lobed: "Ооба, эмен сыяктуу", kh_notlobed: "Жок, жөнөкөй сүйрү", kh_q2round: "Гүлдөрү кандай түстө?", kh_colour: "Көк, кызгылт же кызыл-көк", kh_white: "Ак же ачык жашыл", kh_msg: "Эч нерсе эмес. Бир гүл топтомун жана бир жалбырагын жакындан сүрөткө тартыңыз же бакча дүкөнүнөн сураңыз. Ага чейин колдонмо коопсуз кеңештерди гана берет.", kh_close: "Түшүнүктүү", kh_back: "Артка",
     bcTitle: "Кесүүдөн мурун", bcText: "Мындай катуу кесүү метелка жана жылмакай гортензияга гана туура келет: алар быйылкы бутактарда гүлдөйт. Жайында тегерек көк же кызгылт шарлар болсо, азыр кеспеңиз.", bcBtn: "Түрүн так билбейм",
     plantOther: "Башка / тизмеде жок",
-    why: "Эмне үчүн мындай жооп", rowPlant: "Өсүмдүк", rowKind: "Түрү", rowAge: "Жашы", change: "Өзгөртүү",
+    idBtn: "Кайсы өсүмдүк экенин билбейсизби? ЖИ менен аныктаңыз", idNote: "Ал үчүн сүрөттөр Google ЖИсине жөнөтүлөт. Жооп туура эмес болушу мүмкүн.", idLoading: "Сүрөттөрдү карап жатам…", idGuess: "ЖИ муну деп ойлойт:", idSure_high: "анчалык ишенимдүү", idSure_medium: "анча ишенимдүү эмес", idSure_low: "начар божомол", idYes: "Ооба, туура", idNo: "Жок, өзүм тандайм", idNone: "ЖИ өсүмдүктү аныктай алган жок. Жалбырагын же гүлүн жакындан тартыңыз же тизмеден тандаңыз.", idFail: "ЖИ азыр сүрөттөрдү көрө алган жок. Тизмеден тандаңыз.", idNotInList: "Бул өсүмдүк тизмеде жок, ошондуктан колдонмо коопсуз кеңеш гана берет. Төмөнкү чаттан сурасаңыз болот.", why: "Эмне үчүн мындай жооп", rowPlant: "Өсүмдүк", rowKind: "Түрү", rowAge: "Жашы", change: "Өзгөртүү",
     tooDark: "Сүрөт өтө караңгы. Терезенин жанында же күндүзгү жарыкта кайра тартып көрүңүз.",
     tooBlurry: "Сүрөт даана эмес. Телефонду кыймылдатпай кармап, фокус алуу үчүн экрандагы өсүмдүккө тийиңиз.",
     useAnyway: "Баары бир колдонуу",
@@ -117,7 +118,7 @@ const UI = {
     honestTitle: "Эмне кыла алат жана эмне кыла албайт",
     honest1: "Сүрөттөн өсүү баскычын жана көрүнгөн көйгөйлөрдү баалайт, кыркуудан мурун үшүк менен ысыкты текшерет.",
     honest2: "Бул диагноз эмес. Сүрөт даана эмес болсо, ишенбей турганын айтып, жакындан тартууну суранат. Бакчаңыз үчүн тактык белгиленген сүрөттөр кошулган сайын жакшырат.",
-    footPrivacy: "Сүрөттөр талдоодон өтөт, сакталбайт.",
+    footPrivacy: "Сүрөттөр талдоодон өтөт, сакталбайт. «ЖИ менен аныктоо» басылса, алар Google ЖИ кызматына да жөнөтүлөт.",
     title: "Гортензия Доктуру", homeTitle: "Өсүмдүгүңүздү сүрөткө тартыңыз", takePhoto: "Сүрөткө тартуу",
     fromGallery: "же галереядан тандаңыз", tip: "Кеңеш: бир жалбыракты жакындан же өсүмдүктү толугу менен.",
     locQuestion: "Жайгашкан жериңизди колдонсом болобу?", locWhy: "Аба ырайын текшерүү үчүн гана: үшүк жана ысык кеңешти өзгөртөт.",
@@ -336,10 +337,54 @@ function pick(id, v) {
 // Sick or wilting plants get the same answer for every kind, so the kind is not asked then.
 const needsTreatment = () => last && !last.health.unsure && ["wilting", "leaf_spot", "powdery_mildew"].includes(last.health.label);
 const stepsDone = () => !!choice.plant && (choice.plant !== "hydrangea" || !!choice.species || needsTreatment());
+// "Identify with AI": the photos go to the server, which asks Gemini. The user must confirm the guess.
+let ident = null; // null | "loading" | "none" | "fail" | {name, key, confidence}
+let aiName = ""; // the AI's name for the plant when it is not in our list (passed to the chat)
+async function identifyPlant() {
+  ident = "loading"; renderAbout();
+  const mine = ident;
+  try {
+    const form = new FormData();
+    for (const [i, p] of photos.slice(0, 3).entries()) form.append("photos", await shrink(p.file), `photo${i}.jpg`);
+    form.append("lang", lang);
+    const res = await fetch(API + "api/identify", { method: "POST", body: form });
+    const data = await res.json().catch(() => ({}));
+    if (ident !== mine) return; // the user moved on
+    ident = res.ok ? (data.name ? data : "none") : "fail";
+  } catch { if (ident === mine) ident = "fail"; }
+  renderAbout();
+}
+function identifyBlock() {
+  const box = Object.assign(document.createElement("div"), { className: "ident" });
+  const t = tr();
+  const text = (cls, str) => Object.assign(document.createElement("p"), { className: cls, textContent: str });
+  if (ident === null) {
+    const b = Object.assign(document.createElement("button"), { className: "secondary", type: "button", textContent: t.idBtn });
+    b.onclick = identifyPlant;
+    box.append(b, text("hint", t.idNote));
+  } else if (ident === "loading") {
+    box.append(text("hint", t.idLoading));
+  } else if (ident === "none" || ident === "fail") {
+    box.append(text("hint", ident === "none" ? t.idNone : t.idFail));
+  } else {
+    const label = ident.key ? plantNames[ident.key] : ident.name;
+    box.append(text("hint", `${t.idGuess} (${t["idSure_" + ident.confidence]})`), text("idname", label));
+    if (!ident.key) box.append(text("hint", t.idNotInList));
+    const yes = Object.assign(document.createElement("button"), { className: "primary", type: "button", textContent: t.idYes });
+    yes.onclick = () => { const g = ident; ident = null; aiName = g.key ? "" : g.name; pick("plant", g.key || "unknown"); };
+    const no = Object.assign(document.createElement("button"), { className: "secondary", type: "button", textContent: t.idNo });
+    no.onclick = () => { ident = "none"; renderAbout(); };
+    box.append(Object.assign(document.createElement("div"), { className: "row" }), yes, no);
+    box.querySelector(".row").remove();
+    yes.style.marginBottom = "10px";
+  }
+  return box;
+}
 function renderAbout() {
   const rows = [];
   if (photos.length) rows.push(aboutRow("plant", tr().rowPlant, choice.plant ? (choice.plant === "unknown" ? tr().plantOther : plantNames[choice.plant]) : null,
     [...Object.entries(plantNames), ["unknown", tr().plantOther]].map(([k, v]) => [k, v, choice.plant === k])));
+  if (rows.length && !choice.plant && !rows[0].dataset.editing) rows[0].insertBefore(identifyBlock(), rows[0].querySelector(".grid"));
   if (choice.plant === "hydrangea" && !needsTreatment()) {
     rows.push(aboutRow("species", tr().rowKind, choice.species ? speciesNames[choice.species].split(" – ")[0] : null,
       Object.entries(speciesNames).map(([k, v]) => [k, v, choice.species === k])));
@@ -455,7 +500,7 @@ $("speak").onclick = () => {
 // ---------- start over ----------
 function reset() {
   stopSpeaking();
-  photos.forEach((p) => URL.revokeObjectURL(p.url)); photos = []; choice = blankChoice(); kindStep = null; analysing = false; last = null; editing = null; requestId++;
+  photos.forEach((p) => URL.revokeObjectURL(p.url)); photos = []; choice = blankChoice(); kindStep = null; ident = null; aiName = ""; analysing = false; last = null; editing = null; requestId++;
   for (const s of ["result", "error", "loading", "notice"]) $(s).hidden = true;
   renderThumbs(); window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -475,7 +520,7 @@ $("again").onclick = reset;
 const chatLog = []; // {role: "user" | "model", text}
 function chatContext() {
   if (!last) return {};
-  return { plant: last.plant.text, kind: choice.species && speciesNames[choice.species] ? speciesNames[choice.species].split(" – ")[0] : "",
+  return { plant: aiName ? `${last.plant.text} (the AI guessed: ${aiName})` : last.plant.text, kind: choice.species && speciesNames[choice.species] ? speciesNames[choice.species].split(" – ")[0] : "",
     health: last.health.text, stage: last.stage.text, answer: tr().answer[last.trim_now], headline: last.headline, how_far: last.how_far,
     weather: last.weather || "", month: new Date().toLocaleString("en", { month: "long" }) };
 }
