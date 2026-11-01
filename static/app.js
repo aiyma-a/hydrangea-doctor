@@ -567,7 +567,7 @@ $("again").onclick = reset;
   await setLang(lang);
   if (!store.location) $("locAsk").hidden = false;
   else if (store.location === "yes") getLocation();
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js", { updateViaCache: "none" });
 })();
 
 
