@@ -380,7 +380,8 @@ function pick(id, v) {
 }
 // Sick or wilting plants get the same answer for every kind, so the kind is not asked then.
 const needsTreatment = () => last && !last.health.unsure && ["wilting", "leaf_spot", "powdery_mildew"].includes(last.health.label);
-const stepsDone = () => !!choice.plant && (choice.plant !== "hydrangea" || !!choice.species || needsTreatment());
+// Panicle and smooth hydrangeas also wait for the variety ("Not sure" counts as an answer).
+const stepsDone = () => !!choice.plant && (choice.plant !== "hydrangea" || needsTreatment() || (!!choice.species && (!VARIETIES_KINDS.includes(choice.species) || !!choice.variety)));
 // "Identify with AI": the photos go to the server, which asks Gemini. The user must confirm the guess.
 let ident = null; // null | "loading" | "none" | "fail" | {name, key, confidence}
 let aiName = ""; // the AI's name for the plant when it is not in our list (passed to the chat)
