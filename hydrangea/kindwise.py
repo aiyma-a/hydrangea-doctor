@@ -64,7 +64,7 @@ def parse(data: dict) -> dict | None:
 
 
 def identify(jpegs: list[bytes]) -> dict | None:
-    key = os.environ.get("KINDWISE_API_KEY")
+    key = os.environ.get("KINDWISE_API_KEY", "").strip()  # a stray newline in the secret breaks the HTTP header
     if not key:
         raise Unavailable("no key")
     req = urllib.request.Request(URL, json.dumps(build_request(jpegs)).encode(),
