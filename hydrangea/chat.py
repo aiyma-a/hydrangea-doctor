@@ -53,6 +53,11 @@ def _allow(ip: str, now: float) -> bool:
     return True
 
 
+def allow(key: str) -> bool:
+    """Public rate-limit check for the other AI services (same per-person and per-day caps)."""
+    return _allow(key, time.time())
+
+
 def _clip(x, n: int) -> str:
     return str(x or "")[:n]
 
@@ -60,7 +65,7 @@ def _clip(x, n: int) -> str:
 def _findings(c: dict) -> str:
     c = c if isinstance(c, dict) else {}
     lines = [f"{label}: {_clip(c.get(key), 300)}" for label, key in (
-        ("Plant", "plant"), ("Kind", "kind"), ("Health seen in photo", "health"), ("Growth stage seen", "stage"),
+        ("Plant", "plant"), ("Kind", "kind"), ("Variety", "variety"), ("Health seen in photo", "health"), ("Growth stage seen", "stage"),
         ("App's pruning answer", "answer"), ("Why", "headline"), ("How far to cut", "how_far"), ("Weather", "weather"), ("Month", "month"))
         if c.get(key)]
     return "\n".join(lines) or "(no photo checked yet)"

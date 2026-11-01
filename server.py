@@ -7,6 +7,7 @@ import asyncio
 import io
 import json
 import logging
+import os
 import threading
 from contextlib import asynccontextmanager
 
@@ -16,7 +17,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, UnidentifiedImageError
 
-from hydrangea import chat, pruning, weather
+from hydrangea import chat, kindwise, pruning, weather
 from hydrangea.config import PLANTS
 from hydrangea.i18n import LANGS, M, t
 
@@ -97,6 +98,7 @@ async def analyze(
     photos: list[UploadFile] = File(...),
     plant: str = Form("auto"),
     species: str = Form("unknown"),
+    variety: str | None = Form(None),
     age_years: float | None = Form(None),
     ages: str | None = Form(None),  # JSON {plant: years}: the age of each plant the user told us about
     height_cm: float | None = Form(None),
@@ -138,7 +140,8 @@ async def analyze(
         return error(503, "err_busy", lang)
     try:
         r = await asyncio.to_thread(_engine["analyse"], images, species, height_cm=height_cm or None, age_years=age_years or None, weather=w,
-                                    plant=plant, ages=ages_by_plant)
+                                    plant=plant, ages=ages_by_plant,
+                                    variety=variety if variety in pruning.VARIETIES else None)
     except _engine["NotAPlant"]:
         return JSONResponse({"detail": t("err_no_plant", lang), "code": "not_plant"}, status_code=422)
 
@@ -153,6 +156,19 @@ async def analyze(
         **{task: task_json(r[task]) for task in ("health", "stage")},
         "photos": [{task: task_json(photo[task]) for task in ("health", "stage")} for photo in r["photos"]],
     }
+
+
+def _identify(jpegs, lang, candidates, ip):
+    """Plant.id first (it scores species, and tells hydrangea kinds apart); Gemini for everything it cannot name."""
+    try:
+        found = kindwise.identify(jpegs) if os.environ.get("KINDWISE_API_KEY") and chat.allow("kw:" + ip) else None
+    except kindwise.Unavailable as e:
+        log.warning("plant.id failed: %s", e)
+        found = None
+    if found and found["confidence"] != "low":
+        return {"name": candidates[found["key"]], "key": found["key"], "kind": found["kind"],
+                "confidence": found["confidence"], "source": "plantid"}
+    return chat.identify(jpegs, lang, candidates, ip)
 
 
 @app.post("/api/identify")
@@ -176,7 +192,7 @@ async def identify_endpoint(request: Request, photos: list[UploadFile] = File(..
     ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "")).split(",")[0].strip()
     candidates = {k: t(f"plant.{k}", "en") for k in PLANTS}
     try:
-        return await asyncio.to_thread(chat.identify, jpegs, lang, candidates, ip)
+        return await asyncio.to_thread(_identify, jpegs, lang, candidates, ip)
     except chat.RateLimited:
         return error(429, "err_chat_limit", lang)
     except chat.ChatUnavailable as e:

@@ -18,7 +18,7 @@ const UI = {
     plantOther: "Other / not in the list",
     idBtn: "Not sure? Identify the plant with AI", idNote: "Your photos are sent to Google's AI for this. The answer can be wrong.", idLoading: "Looking at your photos…", idGuess: "The AI thinks this is:", idSure_high: "fairly sure", idSure_medium: "not very sure", idSure_low: "a weak guess", idYes: "Yes, that is right", idNo: "No, I'll choose myself", idNone: "The AI could not tell what this plant is. Try a close photo of a leaf or flower, or pick from the list.", idFail: "The AI could not look at the photos now. Please pick from the list.", idNotInList: "This plant is not in the list, so the app will give only safe advice. You can ask the chat below about it.",
     idAsk: "Ask the chat about it", idAskText: "What should I do with my {name}?",
-    why: "Why this answer", rowPlant: "Plant", rowKind: "Kind", rowAge: "Age", change: "Change",
+    why: "Why this answer", rowPlant: "Plant", rowKind: "Kind", rowVariety: "Variety", varNotSure: "Not sure", varQ: "How tall is the bush?", varSmall: "Under 1 m", varMid: "1 to 2 m", varTall: "Over 2 m", varBack: "Back", varMsg: "No problem. The advice is the same for the kind; knowing the variety only adds a size tip.", varOk: "OK", idKind: "Kind: {kind}", rowAge: "Age", change: "Change",
     tooDark: "This photo is too dark. Try again near a window or in daylight.",
     tooBlurry: "This photo is blurry. Hold the phone steady and tap the plant on the screen to focus.",
     useAnyway: "Use it anyway",
@@ -59,7 +59,7 @@ const UI = {
     kh_title: "Давайте определим вид", kh_q1: "Как выглядят соцветия?", kh_cone: "Конусом, заострённые", kh_round: "Круглые шары", kh_unsure: "Не уверена", kh_q2cone: "Листья лопастные, как у дуба?", kh_lobed: "Да, как дубовые", kh_notlobed: "Нет, простые овальные", kh_q2round: "Какого цвета цветы?", kh_colour: "Голубые, розовые или фиолетовые", kh_white: "Белые или светло-зелёные", kh_msg: "Ничего страшного. Сфотографируйте крупно одно соцветие и один лист или спросите в садовом магазине. Пока приложение даёт только безопасные советы.", kh_close: "Понятно", kh_back: "Назад",
     bcTitle: "Прежде чем резать", bcText: "Такая сильная обрезка подходит только метельчатой и древовидной гортензии: они цветут на побегах этого года. Если летом у вас были круглые голубые или розовые шары, сейчас не обрезайте.", bcBtn: "Я не уверена в виде",
     plantOther: "Другое / нет в списке",
-    idBtn: "Не знаете, что за растение? Определить с помощью ИИ", idNote: "Для этого фото отправляются в ИИ Google. Ответ может быть неверным.", idLoading: "Смотрю на фото…", idGuess: "ИИ думает, что это:", idSure_high: "довольно уверен", idSure_medium: "не очень уверен", idSure_low: "слабое предположение", idYes: "Да, верно", idNo: "Нет, выберу сама", idNone: "ИИ не смог определить растение. Сфотографируйте крупно лист или цветок или выберите из списка.", idFail: "ИИ сейчас не смог посмотреть фото. Выберите из списка.", idNotInList: "Этого растения нет в списке, поэтому приложение даст только безопасный совет. Можно спросить о нём в чате ниже.", why: "Почему такой ответ", rowPlant: "Растение", rowKind: "Вид", rowAge: "Возраст", change: "Изменить",
+    idBtn: "Не знаете, что за растение? Определить с помощью ИИ", idNote: "Для этого фото отправляются в ИИ Google. Ответ может быть неверным.", idLoading: "Смотрю на фото…", idGuess: "ИИ думает, что это:", idSure_high: "довольно уверен", idSure_medium: "не очень уверен", idSure_low: "слабое предположение", idYes: "Да, верно", idNo: "Нет, выберу сама", idNone: "ИИ не смог определить растение. Сфотографируйте крупно лист или цветок или выберите из списка.", idFail: "ИИ сейчас не смог посмотреть фото. Выберите из списка.", idNotInList: "Этого растения нет в списке, поэтому приложение даст только безопасный совет. Можно спросить о нём в чате ниже.", why: "Почему такой ответ", rowPlant: "Растение", rowKind: "Вид", rowVariety: "Сорт", varNotSure: "Не знаю", varQ: "Какой высоты куст?", varSmall: "Ниже 1 м", varMid: "От 1 до 2 м", varTall: "Выше 2 м", varBack: "Назад", varMsg: "Ничего страшного. Совет одинаков для всего вида; сорт добавляет только подсказку о размере.", varOk: "Понятно", idKind: "Вид: {kind}", rowAge: "Возраст", change: "Изменить",
     tooDark: "Фото слишком тёмное. Попробуйте у окна или при дневном свете.",
     tooBlurry: "Фото размытое. Держите телефон ровно и коснитесь растения на экране, чтобы навести резкость.",
     useAnyway: "Всё равно использовать",
@@ -100,7 +100,7 @@ const UI = {
     kh_title: "Кайсы түр экенин аныктайлы", kh_q1: "Гүл топтомдору кандай көрүнөт?", kh_cone: "Конус сымал, учтуу", kh_round: "Тегерек шар сымал", kh_unsure: "Так билбейм", kh_q2cone: "Жалбырактары эмендин жалбырагындай бөлүктүүбү?", kh_lobed: "Ооба, эмен сыяктуу", kh_notlobed: "Жок, жөнөкөй сүйрү", kh_q2round: "Гүлдөрү кандай түстө?", kh_colour: "Көк, кызгылт же кызыл-көк", kh_white: "Ак же ачык жашыл", kh_msg: "Эч нерсе эмес. Бир гүл топтомун жана бир жалбырагын жакындан сүрөткө тартыңыз же бакча дүкөнүнөн сураңыз. Ага чейин колдонмо коопсуз кеңештерди гана берет.", kh_close: "Түшүнүктүү", kh_back: "Артка",
     bcTitle: "Кесүүдөн мурун", bcText: "Мындай катуу кесүү метелка жана жылмакай гортензияга гана туура келет: алар быйылкы бутактарда гүлдөйт. Жайында тегерек көк же кызгылт шарлар болсо, азыр кеспеңиз.", bcBtn: "Түрүн так билбейм",
     plantOther: "Башка / тизмеде жок",
-    idBtn: "Кайсы өсүмдүк экенин билбейсизби? ЖИ менен аныктаңыз", idNote: "Ал үчүн сүрөттөр Google ЖИсине жөнөтүлөт. Жооп туура эмес болушу мүмкүн.", idLoading: "Сүрөттөрдү карап жатам…", idGuess: "ЖИ муну деп ойлойт:", idSure_high: "анчалык ишенимдүү", idSure_medium: "анча ишенимдүү эмес", idSure_low: "начар божомол", idYes: "Ооба, туура", idNo: "Жок, өзүм тандайм", idNone: "ЖИ өсүмдүктү аныктай алган жок. Жалбырагын же гүлүн жакындан тартыңыз же тизмеден тандаңыз.", idFail: "ЖИ азыр сүрөттөрдү көрө алган жок. Тизмеден тандаңыз.", idNotInList: "Бул өсүмдүк тизмеде жок, ошондуктан колдонмо коопсуз кеңеш гана берет. Төмөнкү чаттан сурасаңыз болот.", why: "Эмне үчүн мындай жооп", rowPlant: "Өсүмдүк", rowKind: "Түрү", rowAge: "Жашы", change: "Өзгөртүү",
+    idBtn: "Кайсы өсүмдүк экенин билбейсизби? ЖИ менен аныктаңыз", idNote: "Ал үчүн сүрөттөр Google ЖИсине жөнөтүлөт. Жооп туура эмес болушу мүмкүн.", idLoading: "Сүрөттөрдү карап жатам…", idGuess: "ЖИ муну деп ойлойт:", idSure_high: "анчалык ишенимдүү", idSure_medium: "анча ишенимдүү эмес", idSure_low: "начар божомол", idYes: "Ооба, туура", idNo: "Жок, өзүм тандайм", idNone: "ЖИ өсүмдүктү аныктай алган жок. Жалбырагын же гүлүн жакындан тартыңыз же тизмеден тандаңыз.", idFail: "ЖИ азыр сүрөттөрдү көрө алган жок. Тизмеден тандаңыз.", idNotInList: "Бул өсүмдүк тизмеде жок, ошондуктан колдонмо коопсуз кеңеш гана берет. Төмөнкү чаттан сурасаңыз болот.", why: "Эмне үчүн мындай жооп", rowPlant: "Өсүмдүк", rowKind: "Түрү", rowVariety: "Сорту", varNotSure: "Билбейм", varQ: "Бадалдын бийиктиги канча?", varSmall: "1 м ден аз", varMid: "1 ден 2 м ге чейин", varTall: "2 м ден жогору", varBack: "Артка", varMsg: "Эч нерсе эмес. Кеңеш бүт түр үчүн бирдей; сорту болгону өлчөм боюнча кеңеш кошот.", varOk: "Түшүндүм", idKind: "Түрү: {kind}", rowAge: "Жашы", change: "Өзгөртүү",
     tooDark: "Сүрөт өтө караңгы. Терезенин жанында же күндүзгү жарыкта кайра тартып көрүңүз.",
     tooBlurry: "Сүрөт даана эмес. Телефонду кыймылдатпай кармап, фокус алуу үчүн экрандагы өсүмдүккө тийиңиз.",
     useAnyway: "Баары бир колдонуу",
@@ -144,7 +144,17 @@ store.plants ||= {};
 let lang = store.lang || ({ ru: "ru", ky: "ky" }[navigator.language.slice(0, 2)] ?? "ru");
 let photos = []; // [{file, url}]
 // Nothing is picked for the user: every answer below comes from a tap in THIS check (not from the photo, not remembered).
-const blankChoice = () => ({ plant: null, species: null, age: null });
+const blankChoice = () => ({ plant: null, species: null, variety: null, age: null });
+// Garden varieties we have advice for. "sizes" is where a gardener would place the bush when asked how tall it is.
+const VARIETIES = {
+  bobo: { name: "Bobo", kind: "panicle", sizes: ["small"] },
+  limelight: { name: "Limelight", kind: "panicle", sizes: ["tall"] },
+  vanille_fraise: { name: "Vanille Fraise", kind: "panicle", sizes: ["mid", "tall"] },
+  magical_kilimanjaro: { name: "Magical Kilimanjaro", kind: "panicle", sizes: ["mid", "tall"] },
+  annabelle: { name: "Annabelle", kind: "smooth", sizes: ["mid"] },
+};
+const VARIETIES_KINDS = ["panicle", "smooth"];
+const varietiesOf = (kind) => Object.entries(VARIETIES).filter(([, v]) => v.kind === kind);
 let choice = blankChoice();
 let analysing = false;
 let coords = null;
@@ -341,9 +351,30 @@ function kindHelper() {
   }
   return row;
 }
+// "I don't know" the variety: one plain question (how tall) narrows the list; the user still taps to confirm.
+let varStep = null; // null | "q" | "small" | "mid" | "tall"
+function varietyHelper() {
+  const row = Object.assign(document.createElement("div"), { className: "arow helper" });
+  const t = tr();
+  const grid = Object.assign(document.createElement("div"), { className: "grid" });
+  const btn = (text, onclick) => { const b = Object.assign(document.createElement("button"), { textContent: text }); b.onclick = onclick; return b; };
+  if (varStep === "q") {
+    row.append(Object.assign(document.createElement("p"), { className: "kh-q", textContent: t.varQ }));
+    grid.append(btn(t.varSmall, () => { varStep = "small"; renderAbout(); }), btn(t.varMid, () => { varStep = "mid"; renderAbout(); }),
+      btn(t.varTall, () => { varStep = "tall"; renderAbout(); }));
+  } else {
+    const fits = varietiesOf(choice.species).filter(([, v]) => v.sizes.includes(varStep));
+    if (fits.length) grid.append(...fits.map(([k, v]) => btn(v.name, () => pick("variety", k))));
+    else row.append(Object.assign(document.createElement("p"), { textContent: t.varMsg }));
+    grid.append(btn(t.varBack, () => { varStep = "q"; renderAbout(); }));
+  }
+  row.append(grid);
+  return row;
+}
 function pick(id, v) {
-  if (id === "plant") { if (choice.plant !== v) choice = { plant: v, species: null, age: null }; kindStep = null; ident = null; if (v !== "unknown") aiName = ""; }
-  else if (id === "species") { choice.species = v; kindStep = v === "unknown" ? "q1" : null; }
+  if (id === "variety") { choice.variety = v; varStep = v === "unknown" ? "q" : null; analyse(); renderAbout(); return; }
+  if (id === "plant") { if (choice.plant !== v) choice = { plant: v, species: null, variety: null, age: null }; varStep = null; kindStep = null; ident = null; if (v !== "unknown") aiName = ""; }
+  else if (id === "species") { if (choice.species !== v) { choice.variety = null; varStep = null; } choice.species = v; kindStep = v === "unknown" ? "q1" : null; }
   else choice.age = v;
   analyse(); renderAbout();
 }
@@ -383,6 +414,7 @@ function identifyBlock(other = false) {
     const label = ident.key ? plantNames[ident.key] : ident.name;
     box.append(text("hint", `${t.idGuess} (${t["idSure_" + ident.confidence]})`), text("idname", label));
     if (!ident.key) box.append(text("hint", t.idNotInList));
+    if (ident.kind && speciesNames[ident.kind]) box.append(text("hint", t.idKind.replace("{kind}", speciesNames[ident.kind].split(" – ")[0])));
     if (other && !ident.key) { // "Other" is already chosen: remember the name for the chat and offer to ask about it
       aiName = ident.name;
       const ask = Object.assign(document.createElement("button"), { className: "primary", type: "button", textContent: t.idAsk });
@@ -391,7 +423,7 @@ function identifyBlock(other = false) {
       return box;
     }
     const yes = Object.assign(document.createElement("button"), { className: "primary", type: "button", textContent: t.idYes });
-    yes.onclick = () => { const g = ident; aiName = g.key ? "" : g.name; ident = null; pick("plant", g.key || "unknown"); };
+    yes.onclick = () => { const g = ident; aiName = g.key ? "" : g.name; ident = null; pick("plant", g.key || "unknown"); if (g.kind) pick("species", g.kind); };
     const no = Object.assign(document.createElement("button"), { className: "secondary", type: "button", textContent: t.idNo });
     no.onclick = () => { ident = "none"; renderAbout(); };
     box.append(Object.assign(document.createElement("div"), { className: "row" }), yes, no);
@@ -410,6 +442,11 @@ function renderAbout() {
     rows.push(aboutRow("species", tr().rowKind, choice.species ? speciesNames[choice.species].split(" – ")[0] : null,
       Object.entries(speciesNames).map(([k, v]) => [k, v, choice.species === k])));
     if (choice.species === "unknown" && kindStep) rows.push(kindHelper());
+    if (VARIETIES_KINDS.includes(choice.species)) {
+      rows.push(aboutRow("variety", tr().rowVariety, choice.variety ? (choice.variety === "unknown" ? tr().varNotSure : VARIETIES[choice.variety].name) : null,
+        [...varietiesOf(choice.species).map(([k, v]) => [k, v.name, choice.variety === k]), ["unknown", tr().varNotSure, choice.variety === "unknown"]]));
+      if (choice.variety === "unknown" && varStep) rows.push(varietyHelper());
+    }
   }
   // Age only changes a "yes" (younger plants get a lighter cut), so ask it once the answer is a "yes".
   if (last && stepsDone() && (last.trim_now === "yes" || choice.age))
@@ -451,6 +488,7 @@ async function analyse() {
     form.append("plant", choice.plant || "unknown");
     form.append("lang", lang);
     form.append("species", choice.species || "unknown");
+    if (choice.variety && choice.variety !== "unknown") form.append("variety", choice.variety);
     form.append("ages", JSON.stringify(choice.plant && choice.age ? { [choice.plant]: choice.age } : {}));
     if (coords) { form.append("lat", coords.lat); form.append("lon", coords.lon); }
     const res = await fetch(API + "api/analyze", { method: "POST", body: form });
@@ -516,7 +554,7 @@ $("speak").onclick = () => {
 // ---------- start over ----------
 function reset() {
   stopSpeaking();
-  photos.forEach((p) => URL.revokeObjectURL(p.url)); photos = []; choice = blankChoice(); kindStep = null; ident = null; aiName = ""; analysing = false; last = null; editing = null; requestId++;
+  photos.forEach((p) => URL.revokeObjectURL(p.url)); photos = []; choice = blankChoice(); varStep = null; kindStep = null; ident = null; aiName = ""; analysing = false; last = null; editing = null; requestId++;
   for (const s of ["result", "error", "loading", "notice"]) $(s).hidden = true;
   renderThumbs(); window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -537,6 +575,7 @@ const chatLog = []; // {role: "user" | "model", text}
 function chatContext() {
   if (!last) return {};
   return { plant: aiName ? `${last.plant.text} (the AI guessed: ${aiName})` : last.plant.text, kind: choice.species && speciesNames[choice.species] ? speciesNames[choice.species].split(" – ")[0] : "",
+    variety: VARIETIES[choice.variety]?.name || "",
     health: last.health.text, stage: last.stage.text, answer: tr().answer[last.trim_now], headline: last.headline, how_far: last.how_far,
     weather: last.weather || "", month: new Date().toLocaleString("en", { month: "long" }) };
 }

@@ -103,7 +103,8 @@ class NotAPlant(Exception):
 
 def analyse(images: list, species: str = "unknown", month: int | None = None, hemisphere: str = "north",
             height_cm: float | None = None, age_years: float | None = None,
-            weather: Weather | None = None, plant: str = "auto", ages: dict | None = None) -> dict:
+            weather: Weather | None = None, plant: str = "auto", ages: dict | None = None,
+            variety: str | None = None) -> dict:
     """images: one or more paths / PIL images of the SAME plant.
     plant: a key from config.PLANTS, or "auto" to recognise it from the photos."""
     if not isinstance(images, (list, tuple)):
@@ -127,7 +128,7 @@ def analyse(images: list, species: str = "unknown", month: int | None = None, he
     advice = pruning.advise("unknown" if health.unsure else health.label,
                             "unknown" if stage.unsure else stage.label,
                             species, month or date.today().month,
-                            hemisphere, height_cm, age_years, weather, plant)
+                            hemisphere, height_cm, age_years, weather, plant, variety)
     if health.unsure or stage.unsure:
         if advice.trim_now == "yes":  # safety net: an unsure model must never cause a big cut
             advice.trim_now = "light"

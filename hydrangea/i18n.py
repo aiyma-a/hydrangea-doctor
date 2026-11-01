@@ -11,6 +11,11 @@ LANGS = ("en", "ru", "ky")
 
 MESSAGES: dict[str, dict[str, str]] = {
     "en": {
+        "variety_bobo": "Bobo stays small, usually under 1 m, so it has little to spare. A cut of one third is the most you should take.",
+        "variety_limelight": "Limelight grows large, often 2 m or more, and its heavy flower heads can bend the stems. A cut of one third each year keeps the stems strong.",
+        "variety_vanille_fraise": "Vanille Fraise grows to about 1.5 to 2.5 m. A cut of one third each year keeps it neat and full of flowers.",
+        "variety_magical_kilimanjaro": "Magical Kilimanjaro flowers on new wood like other panicle hydrangeas, so the cut of one third is right for it.",
+        "variety_annabelle": "Annabelle (a smooth hydrangea) flops under its big white heads. Cutting it low gives stronger stems.",
         # labels
         "label.autumn": "normal autumn change", "label.healthy": "healthy", "label.leaf_spot": "leaf spot", "label.powdery_mildew": "powdery mildew",
         "label.wilting": "wilting", "label.yellowing": "yellowing leaves", "label.unknown": "not sure",
@@ -89,6 +94,11 @@ MESSAGES: dict[str, dict[str, str]] = {
         "err_no_plant": "I don't see a plant in this photo. Please photograph a leaf, or the whole plant.",
     },
     "ru": {
+        "variety_bobo": "Бобо остаётся маленьким, обычно ниже 1 м, и запаса у него мало. Срезайте не больше трети.",
+        "variety_limelight": "Лаймлайт вырастает большим, часто 2 м и выше, а тяжёлые соцветия сгибают побеги. Ежегодная обрезка на треть делает побеги крепкими.",
+        "variety_vanille_fraise": "Ванильная клубника (Vanille Fraise) вырастает примерно до 1,5–2,5 м. Ежегодная обрезка на треть сохраняет аккуратную форму и обильное цветение.",
+        "variety_magical_kilimanjaro": "Мэджикал Килиманджаро цветёт на молодых побегах, как и другие метельчатые гортензии, поэтому обрезка на треть ему подходит.",
+        "variety_annabelle": "Анабель (гладкая гортензия) полегает под тяжестью больших белых шапок. Низкая обрезка даёт более крепкие побеги.",
         "label.autumn": "обычная осенняя смена цвета", "label.healthy": "здорова", "label.leaf_spot": "пятнистость листьев", "label.powdery_mildew": "мучнистая роса",
         "label.wilting": "вянет", "label.yellowing": "желтеют листья", "label.unknown": "не уверена",
         "label.budding": "бутоны", "label.blooming": "цветёт", "label.fading_blooms": "цветы отцветают",
@@ -158,6 +168,11 @@ MESSAGES: dict[str, dict[str, str]] = {
         "err_no_plant": "Я не вижу на фото растения. Сфотографируйте лист или растение целиком.",
     },
     "ky": {
+        "variety_bobo": "Бобо кичинекей калат, адатта 1 м ден аз, ошондуктан анын запасы аз. Үчтөн биринен көп кесүүгө болбойт.",
+        "variety_limelight": "Лаймлайт чоң өсөт, көбүнчө 2 м же андан ашык, ал эми оор гүлдөрү сабактарды ийип салат. Жыл сайын үчтөн бирин кесүү сабактарды бекем кылат.",
+        "variety_vanille_fraise": "Ванилле Фрайз (Vanille Fraise) болжол менен 1,5–2,5 м чейин өсөт. Жыл сайын үчтөн бирин кесүү аны жыйнактуу кылат жана гүлү мол болот.",
+        "variety_magical_kilimanjaro": "Мэджикал Килиманджаро башка шыпыргы сымал гортензиялар сыяктуу жаңы сабактарда гүлдөйт, ошондуктан үчтөн бирин кесүү ага ылайыктуу.",
+        "variety_annabelle": "Аннабель (жылмакай гортензия) чоң ак гүлдөрүнүн оордугунан жатып калат. Аз калтырып кесүү бекем сабактарды берет.",
         "label.autumn": "күздүн адаттагы өзгөрүшү", "label.healthy": "дени сак", "label.leaf_spot": "жалбырактагы тактар", "label.powdery_mildew": "ак күл оорусу",
         "label.wilting": "солуп жатат", "label.yellowing": "жалбырактар саргайып жатат", "label.unknown": "так эмес",
         "label.budding": "бүчүр байлап жатат", "label.blooming": "гүлдөп жатат", "label.fading_blooms": "гүлдөрү соолуп жатат",

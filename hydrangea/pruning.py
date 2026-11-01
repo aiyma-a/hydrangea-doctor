@@ -25,6 +25,9 @@ from .weather import Weather
 OLD_WOOD = {"bigleaf", "oakleaf"}
 NEW_WOOD = {"panicle", "smooth"}
 SPECIES = ("bigleaf", "oakleaf", "panicle", "smooth", "unknown")
+# Garden varieties the app knows: variety -> the kind it belongs to. Each has a note "variety_<key>" in i18n.py.
+VARIETIES = {"bobo": "panicle", "limelight": "panicle", "vanille_fraise": "panicle", "magical_kilimanjaro": "panicle",
+             "annabelle": "smooth"}
 YOUNG_YEARS = 3  # plants younger than this are still building roots
 OLD_YEARS = 6  # older shrubs benefit from renewal pruning
 RENEWAL_SHRUBS = {"hydrangea", "lilac", "currant"}  # multi-stem shrubs where you cut old stems at the ground
@@ -71,7 +74,7 @@ def season(month: int, hemisphere: str = "north") -> str:
 def advise(health: str, stage: str, species: str, month: int,
            hemisphere: str = "north", height_cm: float | None = None,
            age_years: float | None = None, weather: Weather | None = None,
-           plant: str = "hydrangea") -> Advice:
+           plant: str = "hydrangea", variety: str | None = None) -> Advice:
     if weather is not None:
         hemisphere = weather.hemisphere
     s = season(month, hemisphere)
@@ -87,6 +90,10 @@ def advise(health: str, stage: str, species: str, month: int,
             a.notes.insert(0, M("frost_wait_note", days=weather.first_frost_in_days))
         elif weather.frost_soon and a.trim_now == "yes":
             a.notes.append(M("frost_mild_day"))
+
+    # A known variety adds a size tip; only when the variety fits the kind and there is something to cut
+    if variety in VARIETIES and VARIETIES[variety] == species and plant == "hydrangea" and a.trim_now != "no":
+        a.notes.append(M(f"variety_{variety}"))
 
     # Age adjustments
     if age_years is not None and a.trim_now == "yes":
